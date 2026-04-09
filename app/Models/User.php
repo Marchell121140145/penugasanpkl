@@ -23,6 +23,7 @@ class User extends Authenticatable
         'password',
         'role_id',
         'divisi_id',
+        'pembimbing_id',
     ];
 
     /**
@@ -62,6 +63,22 @@ class User extends Authenticatable
     public function divisi(): \Illuminate\Database\Eloquent\Relations\BelongsTo
     {
         return $this->belongsTo(Divisi::class);
+    }
+
+    /**
+     * Pembimbing dari user pelaksana ini.
+     */
+    public function pembimbing(): \Illuminate\Database\Eloquent\Relations\BelongsTo
+    {
+        return $this->belongsTo(User::class, 'pembimbing_id');
+    }
+
+    /**
+     * Pelaksana yang dibimbing oleh user pembimbing ini.
+     */
+    public function bimbingan(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(User::class, 'pembimbing_id');
     }
 
     /**

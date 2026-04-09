@@ -168,7 +168,7 @@
                             </td>
                             <td class="p-4 text-sm">
                                 <div class="flex gap-2">
-                                    <button class="px-3 py-1.5 rounded-md bg-slate-100 text-slate-800 text-xs font-medium hover:bg-slate-200 transition-colors hover:-translate-y-px">Detail</button>
+                                    <a href="{{ route('pelaksana.show', $pelaksana->id) }}" class="px-3 py-1.5 rounded-md bg-slate-100 text-slate-800 text-xs font-medium hover:bg-slate-200 transition-colors hover:-translate-y-px">Detail</a>
                                 </div>
                             </td>
                         </tr>

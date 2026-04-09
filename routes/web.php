@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PelaksanaController;
+use App\Http\Controllers\PembimbingController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke dashboard jika sudah login
@@ -61,10 +62,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
     })->name('absensi.history');
 
     Route::get('/pelaksana-list', [PelaksanaController::class, 'index'])->name('pelaksana.list');
+    Route::get('/pelaksana-list/{id}', [PelaksanaController::class, 'show'])->name('pelaksana.show');
+    Route::put('/pelaksana-list/{id}', [PelaksanaController::class, 'update'])->name('pelaksana.update');
 
-    Route::get('/pembimbing-list', function () {
-        return view('monitoring.pembimbing');
-    })->name('pembimbing.list');
+    Route::get('/pembimbing-list', [PembimbingController::class, 'index'])->name('pembimbing.list');
+    Route::get('/pembimbing-list/{id}', [PembimbingController::class, 'show'])->name('pembimbing.show');
+    Route::put('/pembimbing-list/{id}', [PembimbingController::class, 'update'])->name('pembimbing.update');
 
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
