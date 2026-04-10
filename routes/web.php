@@ -35,6 +35,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/penugasan/{id}', [TaskController::class, 'update'])->name('penugasan.update');
     Route::delete('/penugasan/{id}', [TaskController::class, 'destroy'])->name('penugasan.destroy');
 
+    Route::get('/penugasan/excel-editor', [\App\Http\Controllers\ExcelEditorController::class, 'edit'])->name('excel.editor');
+    Route::post('/penugasan/excel-editor/save', [\App\Http\Controllers\ExcelEditorController::class, 'save'])->name('excel.editor.save');
+
     Route::get('/penugasan/detail/{id}', function ($id) {
         if (auth()->user()->role_id == 3) {
              return redirect()->route('pelaksana.penugasan.show', $id);

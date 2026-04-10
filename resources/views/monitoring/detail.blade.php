@@ -392,6 +392,10 @@
                                 <button type="button" class="pdf-viewer-toggle view-btn" onclick="openPdfModal('{{ $file->nama_file }}', '{{ asset('storage/' . $file->path) }}')" style="background: #f0fdf4; color: #16a34a;">
                                     <span>🔍</span> Fullscreen
                                 </button>
+                            @elseif(in_array(strtolower($file->tipe), ['xls', 'xlsx']))
+                                <a href="{{ route('excel.editor', ['type' => 'task_file', 'id' => $file->id]) }}" class="pdf-viewer-toggle view-btn" style="background: #ecfdf5; color: #059669; text-decoration: none;">
+                                    <span>✏️</span> Edit di Web
+                                </a>
                             @endif
                             <a href="{{ asset('storage/' . $file->path) }}" target="_blank" download class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors flex items-center gap-2">
                                 <span>⬇️</span> Download
@@ -415,9 +419,17 @@
                             <div class="text-xs text-slate-500">{{ $link->url }}</div>
                         </div>
                     </div>
-                    <a href="{{ $link->url }}" target="_blank" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors flex items-center gap-2">
-                        <span>🔗</span> Buka
-                    </a>
+                    <div class="flex items-center gap-2">
+                        @if(str_contains(strtolower($link->url), 'docs.google.com/spreadsheets'))
+                            <!-- Append ?rm=minimal to gsheets URL for embedding if not present, though normal URL works too -->
+                            <button type="button" onclick="openPdfModal('{{ $link->nama_file }}', '{{ $link->url }}')" class="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-emerald-100 transition-colors flex items-center gap-2">
+                                <span>📊</span> Live Sheet
+                            </button>
+                        @endif
+                        <a href="{{ $link->url }}" target="_blank" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors flex items-center gap-2">
+                            <span>🔗</span> Kunjungi
+                        </a>
+                    </div>
                 </div>
                 @endforeach
             </div>
@@ -515,6 +527,10 @@
                                             <button type="button" class="pdf-viewer-toggle view-btn" style="font-size: 0.7rem; padding: 3px 8px;" onclick="openPdfModal('{{ $submission->file_nama ?? 'Submission' }}', '{{ asset('storage/' . $submission->file_path) }}')">
                                                 👁️
                                             </button>
+                                        @elseif(Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.xlsx') || Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.xls'))
+                                            <a href="{{ route('excel.editor', ['type' => 'submission', 'id' => $submission->id]) }}" class="pdf-viewer-toggle view-btn" style="font-size: 0.7rem; padding: 3px 8px; background: #ecfdf5; color: #059669; text-decoration: none;" title="Edit di Web">
+                                                ✏️
+                                            </a>
                                         @endif
                                         </div>
                                     @else
