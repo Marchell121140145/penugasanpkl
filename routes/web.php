@@ -92,24 +92,11 @@ Route::prefix('pelaksana')->middleware(['auth', 'verified'])->name('pelaksana.')
         return view('pelaksana.upload-absensi');
     })->name('absensi.create');
 
-    Route::get('/penugasan/detail/{id}', function ($id) {
-        return view('pelaksana.detail');
-    })->name('penugasan.show');
+    Route::get('/penugasan/detail/{id}', [TaskController::class, 'pelaksanaShow'])->name('penugasan.show');
 
-    Route::get('/penugasan', function () {
-        return view('pelaksana.penugasan');
-    })->name('penugasan');
+    Route::get('/penugasan', [TaskController::class, 'pelaksanaIndex'])->name('penugasan');
 
-    Route::post('/penugasan/submit/{id}', function ($id) {
-        // TODO: Add actual task submission logic here
-        // - Validate that files have been uploaded
-        // - Update task status in database to 'submitted'
-        // - Record submission timestamp
-        // - Send notification to pembimbing
-        
-        return redirect()->route('pelaksana.penugasan.show', $id)
-            ->with('success', 'Tugas berhasil disubmit! File Anda telah dikirim untuk direview.');
-    })->name('penugasan.submit');
+    Route::post('/penugasan/submit/{id}', [TaskController::class, 'pelaksanaSubmit'])->name('penugasan.submit');
 });
 
 require __DIR__.'/auth.php';

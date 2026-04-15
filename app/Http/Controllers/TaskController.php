@@ -380,4 +380,168 @@ class TaskController extends Controller
                 ->with('error', 'Gagal menghapus tugas: ' . $e->getMessage());
         }
     }
+
+    /**
+     * Tampilkan daftar tugas untuk pelaksana (mahasiswa).
+     */
+    public function pelaksanaIndex(Request $request)
+    {
+        $user = Auth::user();
+
+        // Query active tasks assigned to this user
+        $query = Task::with(['creator', 'divisi'])
+            ->whereHas('assignees', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->where('status', 'active');
+
+        // Status Filter
+        if ($request->filled('status') && $request->status !== 'Semua Status') {
+            switch ($request->status) {
+                case 'Belum Dikerjakan':
+                    $query->whereHas('submissions', function($q) use ($user) {
+                        $q->where('user_id', $user->id)->whereIn('status', ['pending', 'returned']);
+                    });
+                    break;
+                case 'Dalam Proses':
+                    $query->whereHas('submissions', function($q) use ($user) {
+                        $q->where('user_id', $user->id)->where('status', 'working');
+                    });
+                    break;
+                case 'Selesai':
+                    $query->whereHas('submissions', function($q) use ($user) {
+                        $q->where('user_id', $user->id)->whereIn('status', ['submitted', 'graded']);
+                    });
+                    break;
+            }
+        }
+
+        // Search Filter
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where(function($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%");
+            });
+        }
+
+        $tasks = $query->orderBy('deadline_date', 'asc')->paginate(9)->appends($request->query());
+
+        // Calculate statistics for the logged-in user
+        $stats = [
+            'total' => Task::whereHas('assignees', fn($q) => $q->where('user_id', $user->id))
+                ->where('status', 'active')
+                ->count(),
+            'selesai' => Task::whereHas('submissions', function($q) use ($user) {
+                $q->where('user_id', $user->id)->whereIn('status', ['submitted', 'graded']);
+            })->whereHas('assignees', fn($q) => $q->where('user_id', $user->id))
+              ->where('status', 'active')
+              ->count(),
+            'dalam_proses' => Task::whereHas('submissions', function($q) use ($user) {
+                $q->where('user_id', $user->id)->where('status', 'working');
+            })->whereHas('assignees', fn($q) => $q->where('user_id', $user->id))
+              ->where('status', 'active')
+              ->count(),
+            'belum_dikerjakan' => Task::whereDoesntHave('submissions', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->whereHas('assignees', fn($q) => $q->where('user_id', $user->id))
+              ->where('status', 'active')
+              ->count() + 
+              Task::whereHas('submissions', function($q) use ($user) {
+                $q->where('user_id', $user->id)->whereIn('status', ['pending', 'returned']);
+            })->whereHas('assignees', fn($q) => $q->where('user_id', $user->id))
+              ->where('status', 'active')
+              ->count(),
+            'terlambat' => Task::where('deadline_date', '<', now())
+                ->whereHas('assignees', fn($q) => $q->where('user_id', $user->id))
+                ->whereDoesntHave('submissions', function($q) use ($user) {
+                    $q->where('user_id', $user->id)->whereIn('status', ['submitted', 'graded']);
+                })
+                ->where('status', 'active')
+                ->count(),
+        ];
+
+        // We also need to eager load the specific submission for each task to display progress easily
+        $tasks->getCollection()->each(function($task) use ($user) {
+            $task->my_submission = TaskSubmission::where('task_id', $task->id)->where('user_id', $user->id)->first();
+        });
+
+        return view('pelaksana.penugasan', compact('tasks', 'stats'));
+    }
+
+    /**
+     * Tampilkan detail tugas untuk pelaksana (mahasiswa).
+     */
+    public function pelaksanaShow($id)
+    {
+        $user = Auth::user();
+        
+        $task = Task::with(['files', 'divisi', 'creator'])
+            ->whereHas('assignees', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })
+            ->where('status', 'active')
+            ->findOrFail($id);
+            
+        $submission = TaskSubmission::where('task_id', $task->id)
+            ->where('user_id', $user->id)
+            ->first();
+
+        // Validate submission exists (should've been created during assignment)
+        if (!$submission) {
+            $submission = TaskSubmission::create([
+                'task_id' => $task->id,
+                'user_id' => $user->id,
+                'status' => 'pending'
+            ]);
+        }
+
+        return view('pelaksana.detail', compact('task', 'submission'));
+    }
+
+    /**
+     * Submit tugas oleh pelaksana (mahasiswa).
+     */
+    public function pelaksanaSubmit(Request $request, $id)
+    {
+        $user = Auth::user();
+        
+        $task = Task::whereHas('assignees', function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            })->findOrFail($id);
+            
+        $submission = TaskSubmission::where('task_id', $task->id)
+            ->where('user_id', $user->id)
+            ->firstOrFail();
+
+        $request->validate([
+            'file' => 'nullable|file|max:20480|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,zip,rar',
+        ]);
+
+        if ($request->hasFile('file')) {
+            // Jika ada file lama, hapus
+            if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
+                Storage::disk('public')->delete($submission->file_path);
+            }
+
+            $file = $request->file('file');
+            $path = $file->store('submissions', 'public');
+            
+            $submission->update([
+                'file_nama' => $file->getClientOriginalName(),
+                'file_path' => $path,
+                'file_ukuran' => $file->getSize(),
+                'status' => 'submitted',
+                'submitted_at' => now(),
+            ]);
+        } else {
+            $submission->update([
+                'status' => 'submitted',
+                'submitted_at' => now(),
+            ]);
+        }
+
+        return redirect()->route('pelaksana.penugasan.show', $id)
+            ->with('success', 'Tugas berhasil disubmit! File Anda telah dikirim untuk direview.');
+    }
 }
