@@ -158,16 +158,16 @@
             <div class="task-card {{ $isCompleted ? 'opacity-75 hover:opacity-100' : '' }} bg-white rounded-xl shadow-sm overflow-hidden border {{ $isLate ? 'border-red-200' : 'border-slate-100' }} hover:shadow-md transition-shadow group">
                 <div class="p-6">
                     <div class="task-header flex justify-between items-start mb-4">
-                        @if ($isCompleted)
+                        @if ($submission && $submission->status == 'graded')
+                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Dinilai</span>
+                        @elseif($submission && $submission->status == 'returned')
+                            <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">Revisi</span>
+                        @elseif ($isCompleted)
                             <span class="px-3 py-1 bg-emerald-100 text-emerald-700 text-xs font-semibold rounded-full">Selesai</span>
                         @elseif($isLate)
                             <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">Terlambat</span>
-                        @elseif($task->prioritas == 'tinggi')
-                            <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">High Priority</span>
-                        @elseif($task->prioritas == 'sedang')
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Medium Priority</span>
                         @else
-                            <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full">Low Priority</span>
+                            <span class="px-3 py-1 bg-slate-100 text-slate-700 text-xs font-semibold rounded-full">Baru</span>
                         @endif
 
                         <span class="deadline-label text-slate-400 text-xs text-right break-words flex-1 ml-2">
@@ -207,16 +207,20 @@
                     </div>
 
                     <div class="task-footer flex justify-between items-center pt-4 border-t border-slate-100">
-                        <div class="flex items-center gap-2">
-                            <div class="w-8 h-8 rounded-full bg-slate-200 border-2 border-white flex items-center justify-center text-xs" title="Pembuat: {{ $task->creator->name ?? 'Admin' }}">👨‍🏫</div>
-                            <span class="text-xs text-slate-500 hidden list-visible">{{ $task->creator->name ?? 'Admin' }}</span>
-                        </div>
-                        <a href="{{ route('pelaksana.penugasan.show', $task->id) }}" class="px-4 py-2 {{ $isCompleted ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-slate-50 text-slate-700 hover:bg-slate-100' }} text-sm font-medium rounded-lg transition-colors">
+                        <div class="flex items-center gap-3">
+                            <div class="flex items-center gap-1 text-slate-400" title="Diskusi">
+                                <span class="text-sm">💬</span>
+                                <span class="text-xs font-medium">{{ $submission->comments_count ?? 0 }}</span>
+                            </div>
                             @if($submission && $submission->status == 'graded')
-                                Nilai: {{ $submission->nilai ?? 'Lihat' }}
-                            @else
-                                Detail
+                                <div class="flex flex-col">
+                                    <span class="text-[10px] text-slate-400 uppercase font-bold leading-none">Nilai</span>
+                                    <span class="text-lg font-black text-blue-600 leading-tight">{{ $submission->nilai ?? '-' }}</span>
+                                </div>
                             @endif
+                        </div>
+                        <a href="{{ route('pelaksana.penugasan.show', $task->id) }}" class="px-4 py-2 {{ $isCompleted ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-blue-600 text-white hover:bg-blue-700' }} text-sm font-medium rounded-lg transition-colors">
+                            {{ $submission && $submission->status == 'graded' ? 'Lihat Review' : ($isCompleted ? 'Detail' : 'Kerjakan') }}
                         </a>
                     </div>
                 </div>

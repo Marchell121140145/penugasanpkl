@@ -238,6 +238,50 @@
             height: 100%;
             border: none;
         }
+
+        /* Comment & Evaluation Styles */
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .comment-avatar {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .comment-bubble {
+            background: #f1f5f9;
+            padding: 10px 14px;
+            border-radius: 12px;
+            font-size: 0.9rem;
+            max-width: 85%;
+            position: relative;
+        }
+        .comment-bubble.admin {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .comment-time {
+            font-size: 0.7rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .dialogue-container {
+            max-height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 16px;
+        }
     </style>
 
     <div class="task-detail-content">
@@ -476,6 +520,7 @@
                             <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Tanggal Submit</th>
                             <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">File</th>
                             <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Status</th>
+                            <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Nilai</th>
                             <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm text-right">Aksi</th>
                         </tr>
                     </thead>
@@ -548,12 +593,29 @@
                                         <span class="status-badge status-pending">Belum Submit</span>
                                     @endif
                                 </td>
+                                <td class="p-4 text-sm font-bold text-slate-800 text-center">
+                                    {{ $submission->nilai ?? '-' }}
+                                </td>
                                 <td class="p-4 text-sm text-right">
-                                    @if($submission->file_path)
-                                        <a href="{{ asset('storage/' . $submission->file_path) }}" target="_blank" download class="text-slate-500 hover:text-blue-600 transition-colors mr-2">Download</a>
-                                    @else
-                                        <span class="text-slate-400 cursor-not-allowed mr-2">Download</span>
-                                    @endif
+                                    <button type="button" 
+                                            onclick="openEvaluationModal({{ json_encode([
+                                                'id' => $submission->id,
+                                                'nama' => $user->name ?? 'Unknown',
+                                                'nilai' => $submission->nilai,
+                                                'status' => $submission->status,
+                                                'komentar' => $submission->komentar,
+                                                'comments' => $submission->comments->map(function($c) {
+                                                    return [
+                                                        'user_name' => $c->user->name,
+                                                        'pesan' => $c->pesan,
+                                                        'is_admin' => $c->user->role_id != 3,
+                                                        'time' => $c->created_at->translatedFormat('d M, H:i')
+                                                    ];
+                                                })
+                                            ]) }})"
+                                            class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors">
+                                        Review & Nilai
+                                    </button>
                                 </td>
                             </tr>
                         @empty
@@ -582,6 +644,68 @@
             </div>
             <div class="pdf-modal-body">
                 <iframe id="pdfModalIframe" src="" title="PDF Viewer"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <!-- Evaluation Modal -->
+    <div class="pdf-modal-overlay" id="evaluationModal" onclick="closeEvaluationModal(event)">
+        <div class="pdf-modal" style="max-width: 800px; height: 90vh;" onclick="event.stopPropagation()">
+            <div class="pdf-modal-header">
+                <h3 id="evalModalTitle">Review Submission: Nama Mahasiswa</h3>
+                <button class="pdf-modal-close" onclick="closeEvaluationModal()">&times;</button>
+            </div>
+            <div class="pdf-modal-body p-6 overflow-y-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <!-- Left: Review Form -->
+                    <div>
+                        <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span>📝</span> Form Penilaian
+                        </h4>
+                        <form id="evalForm" method="POST" action="">
+                            @csrf
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Status Submission</label>
+                                <select name="status" id="evalStatus" class="w-full rounded-lg border-slate-300 text-sm">
+                                    <option value="submitted">Menunggu Review</option>
+                                    <option value="graded">Dinilai (Selesai)</option>
+                                    <option value="returned">Dikembalikan (Perlu Revisi)</option>
+                                </select>
+                            </div>
+                            <div class="mb-4">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Nilai (0-100)</label>
+                                <input type="number" name="nilai" id="evalNilai" min="0" max="100" class="w-full rounded-lg border-slate-300 text-sm" placeholder="Contoh: 85">
+                            </div>
+                            <div class="mb-6">
+                                <label class="block text-sm font-medium text-slate-700 mb-1">Komentar Utama / Feedback Internal</label>
+                                <textarea name="komentar" id="evalKomentar" rows="3" class="w-full rounded-lg border-slate-300 text-sm" placeholder="Berikan feedback singkat..."></textarea>
+                            </div>
+                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                                Simpan Penilaian
+                            </button>
+                        </form>
+                    </div>
+
+                    <!-- Right: Dialogue / Chat -->
+                    <div class="flex flex-col h-full">
+                        <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
+                            <span>💬</span> Diskusi & Komunikasi
+                        </h4>
+                        <div class="dialogue-container flex-1" id="commentFeed">
+                            <!-- Comments will be injected here -->
+                        </div>
+                        <form id="commentForm" method="POST" action="">
+                            @csrf
+                            <div class="relative">
+                                <input type="text" name="pesan" id="commentInput" placeholder="Ketik pesan ke mahasiswa..." 
+                                       class="w-full rounded-full border-slate-300 pr-12 text-sm focus:ring-blue-500 focus:border-blue-500">
+                                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-1.5 rounded-full hover:bg-blue-700">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9-2-9-18-9 18 9 2zm0 0v-8"></path></svg>
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -620,9 +744,62 @@
             document.body.style.overflow = '';
         }
 
+        function openEvaluationModal(data) {
+            document.getElementById('evalModalTitle').textContent = "Review Submission: " + data.nama;
+            document.getElementById('evalForm').action = "/penugasan/grade/" + data.id;
+            document.getElementById('commentForm').action = "/penugasan/comment/" + data.id;
+            
+            document.getElementById('evalStatus').value = data.status;
+            document.getElementById('evalNilai').value = data.nilai || '';
+            document.getElementById('evalKomentar').value = data.komentar || '';
+
+            // Render comments
+            const feed = document.getElementById('commentFeed');
+            feed.innerHTML = '';
+            
+            if (data.comments.length === 0) {
+                feed.innerHTML = '<div class="text-center text-slate-400 text-xs py-8">Belum ada diskusi.</div>';
+            } else {
+                data.comments.forEach(c => {
+                    const initials = c.user_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
+                    const avatarColor = c.is_admin ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-600';
+                    const bubbleClass = c.is_admin ? 'admin' : '';
+                    
+                    feed.innerHTML += `
+                        <div class="comment-item">
+                            <div class="comment-avatar ${avatarColor}">${initials}</div>
+                            <div class="flex-1">
+                                <div class="comment-bubble ${bubbleClass}">
+                                    ${c.pesan}
+                                </div>
+                                <div class="comment-time">${c.time}</div>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+
+            document.getElementById('evaluationModal').classList.add('active');
+            document.body.style.overflow = 'hidden';
+            
+            // Scroll to bottom of chat
+            setTimeout(() => {
+                feed.scrollTop = feed.scrollHeight;
+            }, 100);
+        }
+
+        function closeEvaluationModal(event) {
+            if (event && event.target !== document.getElementById('evaluationModal')) return;
+            document.getElementById('evaluationModal').classList.remove('active');
+            document.body.style.overflow = '';
+        }
+
         // ESC key to close modal
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closePdfModal();
+            if (e.key === 'Escape') {
+                closePdfModal();
+                closeEvaluationModal();
+            }
         });
     </script>
 </x-admin-layout>

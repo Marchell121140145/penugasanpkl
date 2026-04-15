@@ -15,6 +15,7 @@ class TaskSubmission extends Model
         'file_ukuran',
         'status',
         'nilai',
+        'komentar',
         'submitted_at',
     ];
 
@@ -36,5 +37,13 @@ class TaskSubmission extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    /**
+     * Komentar/dialog pada submission ini
+     */
+    public function comments()
+    {
+        return $this->hasMany(SubmissionComment::class, 'submission_id')->orderBy('created_at', 'asc');
     }
 }

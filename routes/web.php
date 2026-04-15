@@ -45,6 +45,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return app(TaskController::class)->show($id);
     })->name('penugasan.show');
 
+    Route::post('/penugasan/grade/{id}', [TaskController::class, 'submitGrade'])->name('penugasan.grade');
+    Route::post('/penugasan/comment/{id}', [TaskController::class, 'storeComment'])->name('penugasan.comment');
+
     Route::get('/penugasan', function () {
         if (auth()->user()->role_id == 3) {
             return redirect()->route('pelaksana.penugasan');
@@ -97,6 +100,8 @@ Route::prefix('pelaksana')->middleware(['auth', 'verified'])->name('pelaksana.')
     Route::get('/penugasan', [TaskController::class, 'pelaksanaIndex'])->name('penugasan');
 
     Route::post('/penugasan/submit/{id}', [TaskController::class, 'pelaksanaSubmit'])->name('penugasan.submit');
+
+    Route::post('/penugasan/comment/{id}', [TaskController::class, 'storeComment'])->name('comment');
 });
 
 require __DIR__.'/auth.php';

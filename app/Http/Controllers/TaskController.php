@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Task;
 use App\Models\TaskFile;
 use App\Models\TaskSubmission;
+use App\Models\SubmissionComment;
 use App\Models\Divisi;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -198,7 +199,7 @@ class TaskController extends Controller
      */
     public function show($id)
     {
-        $task = Task::with(['assignees', 'submissions.user', 'files', 'divisi', 'creator'])
+        $task = Task::with(['assignees', 'submissions.user', 'submissions.comments.user', 'files', 'divisi', 'creator'])
             ->findOrFail($id);
 
         // Calculate progress
@@ -463,7 +464,10 @@ class TaskController extends Controller
 
         // We also need to eager load the specific submission for each task to display progress easily
         $tasks->getCollection()->each(function($task) use ($user) {
-            $task->my_submission = TaskSubmission::where('task_id', $task->id)->where('user_id', $user->id)->first();
+            $task->my_submission = TaskSubmission::withCount('comments')
+                ->where('task_id', $task->id)
+                ->where('user_id', $user->id)
+                ->first();
         });
 
         return view('pelaksana.penugasan', compact('tasks', 'stats'));
@@ -483,7 +487,7 @@ class TaskController extends Controller
             ->where('status', 'active')
             ->findOrFail($id);
             
-        $submission = TaskSubmission::where('task_id', $task->id)
+        $submission = TaskSubmission::with(['comments.user'])->where('task_id', $task->id)
             ->where('user_id', $user->id)
             ->first();
 
@@ -543,5 +547,47 @@ class TaskController extends Controller
 
         return redirect()->route('pelaksana.penugasan.show', $id)
             ->with('success', 'Tugas berhasil disubmit! File Anda telah dikirim untuk direview.');
+    }
+
+    /**
+     * Tambah komentar pada submission (Admin atau Pelaksana).
+     */
+    public function storeComment(Request $request, $submissionId)
+    {
+        $request->validate([
+            'pesan' => 'required|string',
+        ]);
+
+        $submission = TaskSubmission::findOrFail($submissionId);
+
+        SubmissionComment::create([
+            'submission_id' => $submission->id,
+            'user_id' => Auth::id(),
+            'pesan' => $request->pesan,
+        ]);
+
+        return redirect()->back()->with('success', 'Komentar berhasil ditambahkan.');
+    }
+
+    /**
+     * Beri nilai dan status pada submission oleh Admin.
+     */
+    public function submitGrade(Request $request, $submissionId)
+    {
+        $request->validate([
+            'nilai' => 'nullable|integer|min:0|max:100',
+            'status' => 'required|in:submitted,graded,returned',
+            'komentar' => 'nullable|string',
+        ]);
+
+        $submission = TaskSubmission::findOrFail($submissionId);
+        
+        $submission->update([
+            'nilai' => $request->nilai,
+            'status' => $request->status,
+            'komentar' => $request->komentar, // Main internal feedback
+        ]);
+
+        return redirect()->back()->with('success', 'Penilaian berhasil disimpan.');
     }
 }

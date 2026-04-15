@@ -491,6 +491,50 @@
             height: 100%;
             border: none;
         }
+
+        /* Dialogue Styles */
+        .comment-item {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .comment-avatar {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.8rem;
+            font-weight: bold;
+            flex-shrink: 0;
+        }
+        .comment-bubble {
+            background: #f1f5f9;
+            padding: 12px 16px;
+            border-radius: 14px;
+            font-size: 0.95rem;
+            max-width: 85%;
+            position: relative;
+        }
+        .comment-bubble.admin {
+            background: #dbeafe;
+            color: #1e40af;
+        }
+        .comment-time {
+            font-size: 0.75rem;
+            color: #94a3b8;
+            margin-top: 4px;
+        }
+        .dialogue-container {
+            max-height: 500px;
+            overflow-y: auto;
+            padding: 25px;
+            background: #f8fafc;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 20px;
+        }
     </style>
 
     <div class="task-detail-content">
@@ -519,6 +563,80 @@
             $isSubmitted = in_array($submission->status, ['submitted', 'graded']);
             $isLate = !$isSubmitted && \Carbon\Carbon::parse($task->deadline_date)->isPast();
         @endphp
+
+        <!-- Result & Review Section (Only if graded) -->
+        @if($submission->status == 'graded' || $submission->komentar)
+        <div class="task-detail-card" style="border-left: 6px solid var(--primary); background: #f0f9ff;">
+            <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px;">
+                <div>
+                    <h2 style="color: var(--dark); font-size: 1.2rem; font-weight: 700; margin-bottom: 5px;">Hasil Review Admin</h2>
+                    <p style="color: var(--secondary); font-size: 0.9rem;">Admin telah meninjau hasil pekerjaan Anda.</p>
+                </div>
+                <div style="text-align: right;">
+                    <div style="font-size: 0.8rem; color: var(--secondary); margin-bottom: 2px;">Nilai Akhir</div>
+                    <div style="font-size: 2.2rem; font-weight: 800; color: var(--primary); line-height: 1;">{{ $submission->nilai ?? '-' }}</div>
+                </div>
+            </div>
+            
+            @if($submission->komentar)
+            <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #bae6fd;">
+                <div style="font-weight: 600; font-size: 0.85rem; color: var(--primary); margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
+                    <span>📢</span> Pesan Utama dari Admin:
+                </div>
+                <p style="color: var(--dark); font-size: 0.95rem; line-height: 1.5; margin: 0;">{{ $submission->komentar }}</p>
+            </div>
+            @endif
+        </div>
+
+        @endif
+
+        <!-- Dialogue Section -->
+        <div class="task-detail-card">
+            <div class="upload-header" style="margin-bottom: 20px;">
+                <h2>💬 Diskusi dengan Admin</h2>
+            </div>
+            
+            <div class="dialogue-container" id="pelaksanaCommentFeed">
+                @forelse($submission->comments as $comment)
+                    @php
+                        $isAdmin = $comment->user->role_id != 3;
+                        $initials = collect(explode(' ', $comment->user->name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('');
+                        $avatarColor = $isAdmin ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-600';
+                        $bubbleClass = $isAdmin ? 'admin' : '';
+                    @endphp
+                    <div class="comment-item">
+                        <div class="comment-avatar {{ $avatarColor }}">{{ $initials }}</div>
+                        <div class="flex-1">
+                            <div class="comment-bubble {{ $bubbleClass }}">
+                                {{ $comment->pesan }}
+                            </div>
+                            <div class="comment-time">{{ $comment->created_at->translatedFormat('d M Y, H:i') }}</div>
+                        </div>
+                    </div>
+                @empty
+                    <div style="text-align: center; color: var(--secondary); padding: 40px 0;">
+                        <span style="font-size: 3rem; display: block; margin-bottom: 10px;">💬</span>
+                        <p>Belum ada diskusi untuk tugas ini.</p>
+                        <p style="font-size: 0.85rem;">Gunakan kolom di bawah untuk bertanya atau memberikan kabar progres.</p>
+                    </div>
+                @endforelse
+            </div>
+
+            <form action="{{ route('pelaksana.comment', $submission->id) }}" method="POST">
+                @csrf
+                <div style="display: flex; gap: 15px;">
+                    <input type="text" name="pesan" placeholder="Tulis pesan atau balasan ke admin..." 
+                           required
+                           style="flex: 1; padding: 12px 20px; border: 2px solid #e2e8f0; border-radius: 30px; font-size: 0.95rem; outline: none; transition: border-color 0.2s;"
+                           onfocus="this.style.borderColor='var(--primary)'"
+                           onblur="this.style.borderColor='#e2e8f0'">
+                    <button type="submit" class="upload-btn" style="border-radius: 30px; padding: 0 25px; display: flex; align-items: center; gap: 8px;">
+                        <span>Kirim</span>
+                        <svg style="width: 18px; height: 18px;" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9-2-9-18-9 18 9 2zm0 0v-8"></path></svg>
+                    </button>
+                </div>
+            </form>
+        </div>
 
         <!-- Task Detail Card -->
         <div class="task-detail-card">
@@ -795,7 +913,15 @@
 
         // ESC key to close modal
         document.addEventListener('keydown', function(e) {
-            if (e.key === 'Escape') closePdfModal();
+            if (e.key === 'Escape') {
+                closePdfModal();
+            }
         });
+
+        // Auto scroll to bottom of chat
+        const chatContainer = document.getElementById('pelaksanaCommentFeed');
+        if (chatContainer) {
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
     </script>
 </x-pelaksana-layout>
