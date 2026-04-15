@@ -13,9 +13,42 @@
         @csrf
     </form>
 
-    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6">
+    <form method="post" action="{{ route('profile.update') }}" class="mt-6 space-y-6" enctype="multipart/form-data">
         @csrf
         @method('patch')
+
+        <div class="flex items-center gap-6 mb-6">
+            <div class="shrink-0 relative group">
+                <img id="avatar-preview" class="h-24 w-24 object-cover rounded-full border-4 border-white shadow-lg" 
+                     src="{{ $user->avatar ? asset('storage/' . $user->avatar) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=3b82f6&color=fff&size=200' }}" 
+                     alt="{{ $user->name }}">
+                <div class="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                     onclick="document.getElementById('avatar-input').click()">
+                    <span class="text-white text-xs font-bold">Ubah Foto</span>
+                </div>
+            </div>
+            <label class="block">
+                <span class="sr-only">Pilih foto profil</span>
+                <input type="file" name="avatar" id="avatar-input" class="block w-full text-sm text-slate-500
+                    file:mr-4 file:py-2 file:px-4
+                    file:rounded-full file:border-0
+                    file:text-sm file:font-semibold
+                    file:bg-blue-50 file:text-blue-700
+                    hover:file:bg-blue-100 transition-all cursor-pointer"
+                    onchange="previewImage(event)"/>
+            </label>
+        </div>
+
+        <script>
+            function previewImage(event) {
+                const reader = new FileReader();
+                reader.onload = function(){
+                    const output = document.getElementById('avatar-preview');
+                    output.src = reader.result;
+                };
+                reader.readAsDataURL(event.target.files[0]);
+            }
+        </script>
 
         <div>
             <x-input-label for="name" :value="__('Name')" />

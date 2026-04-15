@@ -40,6 +40,14 @@
                 <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">📅</span> 
                 <span x-show="sidebarOpen">Absensi</span>
             </a>
+        <li class="mb-1">
+            <a href="{{ route('profile.edit') }}" 
+               class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap {{ request()->routeIs('profile.edit') ? 'bg-blue-600 text-white' : '' }}"
+               :class="{ 'justify-center px-0': !sidebarOpen }"
+            >
+                <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">⚙️</span> 
+                <span x-show="sidebarOpen">Settings</span>
+            </a>
         </li>
         
         <li class="mt-auto mb-1 pt-5 border-t border-slate-700">
