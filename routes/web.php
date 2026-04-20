@@ -5,6 +5,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PelaksanaController;
 use App\Http\Controllers\PembimbingController;
+use App\Http\Controllers\AttendanceController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke dashboard jika sudah login
@@ -55,12 +56,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
         return app(TaskController::class)->index(request());
     })->name('penugasan');
 
-    Route::get('/absensi', function () {
-        if (auth()->user()->role_id == 3) {
-            return redirect()->route('pelaksana.absensi');
-        }
-        return view('monitoring.absensi');
-    })->name('absensi');
+    Route::get('/absensi/create', [AttendanceController::class, 'create'])->name('absensi.create');
+    Route::post('/absensi', [AttendanceController::class, 'store'])->name('absensi.store');
+
+    Route::get('/absensi', [AttendanceController::class, 'index'])->name('absensi');
 
     Route::get('/absensi/history/{nim}', function ($nim) {
         // In production, fetch student data from database
@@ -87,13 +86,10 @@ Route::prefix('pelaksana')->middleware(['auth', 'verified'])->name('pelaksana.')
         return view('pelaksana.dashboard');
     })->name('dashboard');
 
-    Route::get('/absensi', function () {
-        return view('pelaksana.absensi');
-    })->name('absensi');
+    Route::get('/absensi', [AttendanceController::class, 'pelaksanaIndex'])->name('absensi');
 
-    Route::get('/absensi/create', function () {
-        return view('pelaksana.upload-absensi');
-    })->name('absensi.create');
+    Route::get('/absensi/upload/{id}', [AttendanceController::class, 'pelaksanaShowUpload'])->name('absensi.create');
+    Route::post('/absensi/submit/{id}', [AttendanceController::class, 'pelaksanaSubmit'])->name('absensi.submit');
 
     Route::get('/penugasan/detail/{id}', [TaskController::class, 'pelaksanaShow'])->name('penugasan.show');
 

@@ -105,4 +105,20 @@ class User extends Authenticatable
     {
         return $this->hasMany(TaskSubmission::class);
     }
+
+    /**
+     * Absensi yang dibuat oleh user ini (sebagai admin/pembimbing)
+     */
+    public function createdAttendances(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(Attendance::class, 'created_by');
+    }
+
+    /**
+     * Absensi yang ditugaskan ke user ini (sebagai pelaksana)
+     */
+    public function assignedAttendances(): \Illuminate\Database\Eloquent\Relations\HasMany
+    {
+        return $this->hasMany(AttendanceAssignee::class, 'user_id');
+    }
 }

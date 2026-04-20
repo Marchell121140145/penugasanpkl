@@ -358,12 +358,12 @@
                         <span class="info-value">{{ Auth::user()->name }}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">NIM</span>
-                        <span class="info-value">TI2024001</span>
+                        <span class="info-label">Tugas Absen</span>
+                        <span class="info-value">{{ $assignee->attendance->title ?? 'Absensi Rutin' }}</span>
                     </div>
                     <div class="info-item">
-                        <span class="info-label">Jenis Absen</span>
-                        <span class="info-value" id="attendanceType">Masuk</span>
+                        <span class="info-label">Batas Waktu</span>
+                        <span class="info-value" id="attendanceType">{{ $assignee->attendance->deadline->format('d M Y - H:i') }}</span>
                     </div>
                     <div class="info-item">
                         <span class="info-label">Status</span>
@@ -427,11 +427,22 @@
                 </div>
             </div>
 
-            <!-- Action Buttons -->
-            <div class="action-buttons">
-                <a href="{{ route('pelaksana.absensi') }}" class="btn btn-outline text-center" style="line-height: inherit; text-decoration: none;">Kembali</a>
-                <button class="btn btn-primary" onclick="submitAttendance()" id="submitBtn">Submit Absensi</button>
-            </div>
+            <form id="attendanceForm" action="{{ route('pelaksana.absensi.submit', $assignee->id) }}" method="POST">
+                @csrf
+                <input type="hidden" name="image_data" id="image_data" required>
+                <input type="hidden" name="lokasi" id="lokasi" value="Mendeteksi lokasi..." required>
+                
+                <div class="mb-4" style="margin-top: 25px; margin-bottom: 25px;">
+                    <label for="keterangan" style="display: block; font-weight: 600; margin-bottom: 10px; color: #1e293b;">Catatan / Keterangan (Opsional):</label>
+                    <textarea name="keterangan" id="keterangan" rows="3" style="width: 100%; border: 2px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 1rem; color: #333;" placeholder="Tuliskan keterangan jika ada kondisi khusus (telat, hujan, alat rusak, dsb)"></textarea>
+                </div>
+
+                <!-- Action Buttons -->
+                <div class="action-buttons">
+                    <a href="{{ route('pelaksana.absensi') }}" class="btn btn-outline text-center" style="line-height: inherit; text-decoration: none; align-content: center;">Kembali</a>
+                    <button type="submit" class="btn btn-primary" id="submitBtn">Submit Absensi</button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -454,15 +465,6 @@
         // Update time every second
         setInterval(updateTime, 1000);
         updateTime();
-
-        // Set attendance type based on time
-        function setAttendanceType() {
-            const now = new Date();
-            const hours = now.getHours();
-            const attendanceType = hours < 12 ? 'Masuk' : 'Pulang';
-            document.getElementById('attendanceType').textContent = attendanceType;
-        }
-        setAttendanceType();
 
         // File upload handling - Camera only
         const uploadArea = document.getElementById('uploadArea');
@@ -569,49 +571,44 @@
                     (position) => {
                         const lat = position.coords.latitude;
                         const lng = position.coords.longitude;
-                        document.getElementById('locationText').textContent = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+                        const locText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
+                        document.getElementById('locationText').textContent = locText;
+                        document.getElementById('lokasi').value = `${lat}, ${lng}`; // Set hidden input value
                         
-                        // Simulate location validation
-                        const isValid = Math.random() > 0.3; // 70% chance valid
                         const statusElement = document.getElementById('locationStatus');
-                        if (isValid) {
-                            statusElement.textContent = 'Dalam Area';
-                            statusElement.className = 'location-status status-valid';
-                        } else {
-                            statusElement.textContent = 'Luar Area';
-                            statusElement.className = 'location-status status-invalid';
-                        }
+                        statusElement.textContent = 'Dalam Area';
+                        statusElement.className = 'location-status status-valid';
                     },
                     (error) => {
                         document.getElementById('locationText').textContent = 'Tidak dapat mengakses lokasi';
-                        document.getElementById('locationStatus').textContent = 'Error';
+                        document.getElementById('locationStatus').textContent = 'Location Off';
                         document.getElementById('locationStatus').className = 'location-status status-invalid';
+                        document.getElementById('lokasi').value = 'Location Off / GPS Error';
                     }
                 );
             } else {
                 document.getElementById('locationText').textContent = 'Geolocation tidak didukung';
+                document.getElementById('lokasi').value = 'Geolocation tidak didukung browser';
             }
         }
 
-        // Submit attendance
-        function submitAttendance() {
+        // Intercept form submission to add captured image
+        document.getElementById('attendanceForm').addEventListener('submit', function(e) {
             const hasPhoto = previewContainer.children.length > 0;
             
-            if (!hasPhoto) {
+            if (!hasPhoto || !capturedImageData) {
+                e.preventDefault();
                 alert('Harap ambil foto bukti terlebih dahulu!');
-                return;
+                return false;
             }
 
-            // Simulate submission
+            // Set hidden input with base64 data
+            document.getElementById('image_data').value = capturedImageData;
+
             const submitBtn = document.getElementById('submitBtn');
             submitBtn.textContent = 'Mengirim...';
             submitBtn.disabled = true;
-
-            setTimeout(() => {
-                alert('✅ Absensi berhasil! Foto dan lokasi telah tersimpan.');
-                window.location.href = "{{ route('pelaksana.absensi') }}";
-            }, 2000);
-        }
+        });
 
         // Initialize
         document.getElementById('submitBtn').disabled = true;
