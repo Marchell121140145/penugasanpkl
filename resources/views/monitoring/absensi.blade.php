@@ -57,43 +57,76 @@
 
     <!-- Date Navigation -->
     <div class="flex items-center gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm">
-        <button class="date-nav-btn text-blue-500 p-2 rounded-lg hover:bg-slate-100 transition-colors text-lg">◀</button>
-        <div class="date-display font-semibold text-slate-800 text-lg">Senin, 9 Desember 2024</div>
-        <button class="date-nav-btn text-blue-500 p-2 rounded-lg hover:bg-slate-100 transition-colors text-lg">▶</button>
-        <button class="today-btn ml-auto bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors">Hari Ini</button>
+        <button class="date-nav-btn text-blue-500 p-2 rounded-lg hover:bg-slate-100 transition-colors text-lg" id="prevDateBtn">◀</button>
+        <div class="date-display font-semibold text-slate-800 text-lg">{{ $selectedDate->locale('id')->isoFormat('dddd, D MMMM Y') }}</div>
+        <button class="date-nav-btn text-blue-500 p-2 rounded-lg hover:bg-slate-100 transition-colors text-lg" id="nextDateBtn">▶</button>
+        <button class="today-btn ml-auto bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors" id="todayBtn">Hari Ini</button>
     </div>
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-slate-400">
-            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Mahasiswa</h3>
-            <div class="text-3xl font-bold text-slate-800 mb-1">50</div>
-            <div class="text-xs text-slate-500">Terdaftar aktif</div>
+            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Penugasan Sesi</h3>
+            <div class="text-3xl font-bold text-slate-800 mb-1">{{ count($attendances) }}</div>
+            <div class="text-xs text-slate-500">Sesi terdata</div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
-            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Hadir Hari Ini</h3>
-            <div class="text-3xl font-bold text-slate-800 mb-1">42</div>
-            <div class="text-xs text-emerald-500">84% kehadiran</div>
+            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Hadir Hari Terpilih</h3>
+            <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->where('status', 'Hadir')->count() }}</div>
+            <div class="text-xs text-blue-500">Dari {{ count($assignees) }} daftar hadir</div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-amber-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Terlambat</h3>
-            <div class="text-3xl font-bold text-slate-800 mb-1">5</div>
-            <div class="text-xs text-amber-500">10% mahasiswa</div>
+            <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->where('status', 'Terlambat')->count() }}</div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
-            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Tidak Hadir</h3>
-            <div class="text-3xl font-bold text-slate-800 mb-1">3</div>
-            <div class="text-xs text-red-500">2 alpha, 1 izin</div>
+            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Tidak Hadir (Alpha/Izin)</h3>
+            <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->whereIn('status', ['Alpha', 'Izin', 'Sakit'])->count() }}</div>
+        </div>
+    </div>
+
+    <!-- Active Attendances Table -->
+    <div class="bg-white rounded-xl p-8 shadow-sm mb-8">
+        <div class="flex justify-between items-center mb-6">
+            <h2 class="text-slate-800 text-xl font-semibold">Daftar Sesi Absensi Aktif / Riwayat</h2>
+        </div>
+        
+        <div class="overflow-x-auto border border-slate-200 rounded-lg">
+            <table class="w-full border-collapse">
+                <thead>
+                    <tr class="bg-slate-50 text-left">
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Judul Sesi</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Batas Waktu</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Pembuat</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Progress (Hadir / Total)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @forelse($attendances as $att)
+                        <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                            <td class="p-4 text-sm text-slate-800">{{ $att->title ?? 'Absensi Rutin' }}</td>
+                            <td class="p-4 text-sm text-slate-800 font-medium {{ $att->deadline < now() ? 'text-red-500' : 'text-emerald-500' }}">
+                                {{ $att->deadline->format('d M Y, H:i') }}
+                            </td>
+                            <td class="p-4 text-sm text-slate-600">{{ $att->creator->name ?? 'Admin' }}</td>
+                            <td class="p-4 text-sm text-slate-600">
+                                {{ $att->hadir_count }} / {{ $att->total_assignees }} Pelaksana absen
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="4" class="p-8 text-center text-slate-500 font-medium">Belum ada sesi absensi yang dibuat.</td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
         </div>
     </div>
 
     <!-- Attendance Table -->
     <div class="bg-white rounded-xl p-8 shadow-sm">
         <div class="flex justify-between items-center mb-6">
-            <h2 class="text-slate-800 text-xl font-semibold">Tabel Absensi</h2>
-            <div class="text-slate-500 text-sm">
-                Terakhir update: 10:30 WIB
-            </div>
+            <h2 class="text-slate-800 text-xl font-semibold">Tabel Absensi Pelaksana (Tanggal: {{ $selectedDate->format('d/m/Y') }})</h2>
         </div>
         
         <div class="overflow-x-auto border border-slate-200 rounded-lg">
@@ -143,8 +176,7 @@
                             <td class="p-4 text-sm text-slate-800">{{ $assignee->keterangan ?? '-' }}</td>
                             <td class="p-4 text-sm">
                                 <div class="flex gap-2">
-                                    <button onclick="viewAttendanceHistory('{{ $user->nim ?? $user->id }}')" class="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-600 text-xs font-medium hover:bg-emerald-200 transition-colors hover:-translate-y-px">View</button>
-                                    <button class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors hover:-translate-y-px">Edit</button>
+                                    <button onclick="viewAttendanceHistory('{{ $user->id }}')" class="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-600 text-xs font-medium hover:bg-emerald-200 transition-colors hover:-translate-y-px">View Riwayat</button>
                                 </div>
                             </td>
                         </tr>
@@ -162,48 +194,35 @@
             <div class="text-slate-500 text-sm">
                 Menampilkan <span class="font-medium text-slate-800">{{ count($assignees) }}</span> data mahasiswa
             </div>
-            <div class="flex gap-2">
-                <button class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 hover:shadow-md transition-all">Sebelumnya</button>
-                <button class="px-3 py-2 bg-blue-500 rounded-lg text-sm text-white hover:shadow-md transition-all">1</button>
-                <button class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 hover:shadow-md transition-all">Selanjutnya</button>
-            </div>
         </div>
     </div>
 
     <script>
-        // Simple date navigation functionality
         document.addEventListener('DOMContentLoaded', function() {
-            const dateDisplay = document.querySelector('.date-display');
-            // Update selectors to match Tailwind classes/structure if needed, 
-            // but relying on classes .date-display, .date-nav-btn, .today-btn which are preserved in the HTML
-            const prevBtn = document.querySelectorAll('.date-nav-btn')[0];
-            const nextBtn = document.querySelectorAll('.date-nav-btn')[1]; 
-            const todayBtn = document.querySelector('.today-btn');
+            const currentDateStr = "{{ $selectedDate->format('Y-m-d') }}";
+            let currentDate = new Date(currentDateStr);
             
-            let currentDate = new Date();
-            
-            function updateDateDisplay() {
-                const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
-                // Enforce Indonesian locale
-                dateDisplay.textContent = currentDate.toLocaleDateString('id-ID', options);
+            function reloadWithDate(date) {
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                
+                window.location.href = `{{ route('absensi') }}?date=${year}-${month}-${day}`;
             }
             
-            prevBtn.addEventListener('click', function() {
+            document.getElementById('prevDateBtn').addEventListener('click', function() {
                 currentDate.setDate(currentDate.getDate() - 1);
-                updateDateDisplay();
+                reloadWithDate(currentDate);
             });
             
-            nextBtn.addEventListener('click', function() {
+            document.getElementById('nextDateBtn').addEventListener('click', function() {
                 currentDate.setDate(currentDate.getDate() + 1);
-                updateDateDisplay();
+                reloadWithDate(currentDate);
             });
             
-            todayBtn.addEventListener('click', function() {
-                currentDate = new Date();
-                updateDateDisplay();
+            document.getElementById('todayBtn').addEventListener('click', function() {
+                reloadWithDate(new Date());
             });
-            
-            updateDateDisplay();
         });
 
         // Search and Filter Functionality

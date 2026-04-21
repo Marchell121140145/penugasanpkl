@@ -19,16 +19,24 @@
             <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
                     <div class="text-sm text-slate-500 mb-1">Nama Mahasiswa</div>
-                    <div class="text-lg font-semibold text-slate-800">Andi Wijaya</div>
+                    <div class="text-lg font-semibold text-slate-800">{{ $pelaksana->name }}</div>
                 </div>
                 <div>
                     <div class="text-sm text-slate-500 mb-1">NIM</div>
-                    <div class="text-lg font-semibold text-slate-800">TI2024001</div>
+                    <div class="text-lg font-semibold text-slate-800">{{ $pelaksana->nim ?? 'NIM-'.$pelaksana->id }}</div>
                 </div>
                 <div>
                     <div class="text-sm text-slate-500 mb-1">Divisi</div>
                     <div class="text-lg font-semibold text-slate-800">
-                        <span class="px-3 py-1.5 rounded-md bg-purple-50 text-purple-600 text-sm font-medium">IT Development</span>
+                        @php
+                            $divName = $pelaksana->divisi->nama_divisi ?? 'Tanpa Divisi';
+                            $divisionColor = 'bg-gray-50 text-gray-600';
+                            if (str_contains(strtolower($divName), 'it')) $divisionColor = 'bg-purple-50 text-purple-600';
+                            elseif (str_contains(strtolower($divName), 'data')) $divisionColor = 'bg-blue-50 text-blue-600';
+                            elseif (str_contains(strtolower($divName), 'design')) $divisionColor = 'bg-pink-50 text-pink-600';
+                            elseif (str_contains(strtolower($divName), 'quality')) $divisionColor = 'bg-green-50 text-green-600';
+                        @endphp
+                        <span class="px-3 py-1.5 rounded-md {{ $divisionColor }} text-sm font-medium">{{ $divName }}</span>
                     </div>
                 </div>
             </div>
@@ -41,7 +49,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <div class="text-sm text-slate-500 mb-1">Total Hadir</div>
-                    <div class="text-2xl font-bold text-emerald-600">42</div>
+                    <div class="text-2xl font-bold text-emerald-600">{{ $stats['totalHadir'] }}</div>
                 </div>
                 <div class="text-3xl">✅</div>
             </div>
@@ -50,7 +58,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <div class="text-sm text-slate-500 mb-1">Terlambat</div>
-                    <div class="text-2xl font-bold text-amber-600">5</div>
+                    <div class="text-2xl font-bold text-amber-600">{{ $stats['terlambat'] }}</div>
                 </div>
                 <div class="text-3xl">⏰</div>
             </div>
@@ -59,7 +67,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <div class="text-sm text-slate-500 mb-1">Izin</div>
-                    <div class="text-2xl font-bold text-blue-600">2</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ $stats['izinSakit'] }}</div>
                 </div>
                 <div class="text-3xl">📝</div>
             </div>
@@ -68,7 +76,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <div class="text-sm text-slate-500 mb-1">Alpha</div>
-                    <div class="text-2xl font-bold text-red-600">1</div>
+                    <div class="text-2xl font-bold text-red-600">{{ $stats['alpha'] }}</div>
                 </div>
                 <div class="text-3xl">❌</div>
             </div>
@@ -80,7 +88,7 @@
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-slate-800 text-xl font-semibold">Riwayat Kehadiran</h2>
             <div class="text-slate-500 text-sm">
-                Total: 50 hari kerja
+                Total: {{ count($assignees) }} hari kerja
             </div>
         </div>
 
@@ -96,121 +104,48 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
-                        <td class="p-4 text-sm text-slate-800 text-center">1</td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <div class="font-medium">Senin, 16 Desember 2024</div>
-                            <div class="text-xs text-slate-500">07:45 WIB</div>
-                        </td>
-                        <td class="p-4 text-sm">
-                            <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500 bg-emerald-100 text-emerald-600 border-emerald-200" onchange="updateStatus(this, 1)">
-                                <option value="Hadir" selected>Hadir</option>
-                                <option value="Terlambat">Terlambat</option>
-                                <option value="Izin">Izin</option>
-                                <option value="Alpha">Alpha</option>
-                            </select>
-                        </td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <input type="text" value="-" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-blue-500" />
-                        </td>
-                        <td class="p-4 text-sm">
-                            <button onclick="viewPhoto('https://via.placeholder.com/400x300/4ade80/ffffff?text=Bukti+Absensi+1')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors">
-                                Lihat Foto
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
-                        <td class="p-4 text-sm text-slate-800 text-center">2</td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <div class="font-medium">Selasa, 15 Desember 2024</div>
-                            <div class="text-xs text-slate-500">08:10 WIB</div>
-                        </td>
-                        <td class="p-4 text-sm">
-                            <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500 bg-amber-100 text-amber-600 border-amber-200" onchange="updateStatus(this, 2)">
-                                <option value="Hadir">Hadir</option>
-                                <option value="Terlambat" selected>Terlambat</option>
-                                <option value="Izin">Izin</option>
-                                <option value="Alpha">Alpha</option>
-                            </select>
-                        </td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <input type="text" value="Macet di jalan" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-blue-500" />
-                        </td>
-                        <td class="p-4 text-sm">
-                            <button onclick="viewPhoto('https://via.placeholder.com/400x300/fb923c/ffffff?text=Bukti+Absensi+2')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors">
-                                Lihat Foto
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
-                        <td class="p-4 text-sm text-slate-800 text-center">3</td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <div class="font-medium">Senin, 14 Desember 2024</div>
-                            <div class="text-xs text-slate-500">07:50 WIB</div>
-                        </td>
-                        <td class="p-4 text-sm">
-                            <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500 bg-emerald-100 text-emerald-600 border-emerald-200" onchange="updateStatus(this, 3)">
-                                <option value="Hadir" selected>Hadir</option>
-                                <option value="Terlambat">Terlambat</option>
-                                <option value="Izin">Izin</option>
-                                <option value="Alpha">Alpha</option>
-                            </select>
-                        </td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <input type="text" value="-" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-blue-500" />
-                        </td>
-                        <td class="p-4 text-sm">
-                            <button onclick="viewPhoto('https://via.placeholder.com/400x300/4ade80/ffffff?text=Bukti+Absensi+3')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors">
-                                Lihat Foto
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
-                        <td class="p-4 text-sm text-slate-800 text-center">4</td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <div class="font-medium">Jumat, 13 Desember 2024</div>
-                            <div class="text-xs text-slate-500">-</div>
-                        </td>
-                        <td class="p-4 text-sm">
-                            <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500 bg-blue-100 text-blue-600 border-blue-200" onchange="updateStatus(this, 4)">
-                                <option value="Hadir">Hadir</option>
-                                <option value="Terlambat">Terlambat</option>
-                                <option value="Izin" selected>Izin</option>
-                                <option value="Alpha">Alpha</option>
-                            </select>
-                        </td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <input type="text" value="Sakit demam" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-blue-500" />
-                        </td>
-                        <td class="p-4 text-sm">
-                            <button onclick="viewPhoto('https://via.placeholder.com/400x300/60a5fa/ffffff?text=Surat+Izin')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors">
-                                Lihat Foto
-                            </button>
-                        </td>
-                    </tr>
-                    <tr class="hover:bg-slate-50 transition-colors">
-                        <td class="p-4 text-sm text-slate-800 text-center">5</td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <div class="font-medium">Kamis, 12 Desember 2024</div>
-                            <div class="text-xs text-slate-500">07:55 WIB</div>
-                        </td>
-                        <td class="p-4 text-sm">
-                            <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500 bg-emerald-100 text-emerald-600 border-emerald-200" onchange="updateStatus(this, 5)">
-                                <option value="Hadir" selected>Hadir</option>
-                                <option value="Terlambat">Terlambat</option>
-                                <option value="Izin">Izin</option>
-                                <option value="Alpha">Alpha</option>
-                            </select>
-                        </td>
-                        <td class="p-4 text-sm text-slate-800">
-                            <input type="text" value="-" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-blue-500" />
-                        </td>
-                        <td class="p-4 text-sm">
-                            <button onclick="viewPhoto('https://via.placeholder.com/400x300/4ade80/ffffff?text=Bukti+Absensi+5')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors">
-                                Lihat Foto
-                            </button>
-                        </td>
-                    </tr>
+                    @forelse($assignees as $index => $assignee)
+                        @php
+                            $statusColor = 'bg-slate-100 text-slate-600 border-slate-200';
+                            if ($assignee->status == 'Hadir') $statusColor = 'bg-emerald-100 text-emerald-600 border-emerald-200';
+                            elseif ($assignee->status == 'Terlambat') $statusColor = 'bg-amber-100 text-amber-600 border-amber-200';
+                            elseif ($assignee->status == 'Alpha') $statusColor = 'bg-red-100 text-red-600 border-red-200';
+                            elseif ($assignee->status == 'Izin' || $assignee->status == 'Sakit') $statusColor = 'bg-blue-100 text-blue-600 border-blue-200';
+                        @endphp
+                        <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
+                            <td class="p-4 text-sm text-slate-800 text-center">{{ $index + 1 }}</td>
+                            <td class="p-4 text-sm text-slate-800">
+                                <div class="font-medium">{{ $assignee->attendance->deadline->locale('id')->isoFormat('dddd, D MMMM Y') }}</div>
+                                <div class="text-xs text-slate-500">Batas: {{ $assignee->attendance->deadline->format('H:i') }} WIB | Masuk: {{ $assignee->check_in_time ? $assignee->check_in_time->format('H:i') : '--' }} WIB</div>
+                                <div class="text-xs text-slate-400 mt-1">{{ $assignee->attendance->title ?? 'Absensi' }}</div>
+                            </td>
+                            <td class="p-4 text-sm">
+                                <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500 {{ $statusColor }}" onchange="updateStatus(this, {{ $assignee->id }})">
+                                    <option value="Belum Mengisi" {{ $assignee->status == 'Belum Mengisi' ? 'selected' : '' }}>Belum Mengisi</option>
+                                    <option value="Hadir" {{ $assignee->status == 'Hadir' ? 'selected' : '' }}>Hadir</option>
+                                    <option value="Terlambat" {{ $assignee->status == 'Terlambat' ? 'selected' : '' }}>Terlambat</option>
+                                    <option value="Izin" {{ $assignee->status == 'Izin' ? 'selected' : '' }}>Izin/Sakit</option>
+                                    <option value="Alpha" {{ $assignee->status == 'Alpha' ? 'selected' : '' }}>Alpha</option>
+                                </select>
+                            </td>
+                            <td class="p-4 text-sm text-slate-800">
+                                <input type="text" value="{{ $assignee->keterangan ?? '-' }}" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-blue-500" readonly />
+                            </td>
+                            <td class="p-4 text-sm">
+                                @if($assignee->photo_path)
+                                    <button onclick="viewPhoto('{{ url('storage/' . $assignee->photo_path) }}')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors whitespace-nowrap">
+                                        Lihat Foto
+                                    </button>
+                                @else
+                                    <span class="text-xs text-slate-400 italic">Tidak ada foto</span>
+                                @endif
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="5" class="p-8 text-center text-slate-500 font-medium">Belum ada riwayat kehadiran.</td>
+                        </tr>
+                    @endforelse
                 </tbody>
             </table>
         </div>
@@ -218,14 +153,10 @@
         <!-- Pagination -->
         <div class="flex justify-between items-center mt-6 pt-5 border-t border-slate-200">
             <div class="text-slate-500 text-sm">
-                Menampilkan 1-5 dari 50 hari kerja
+                Menampilkan <span class="font-bold">{{ count($assignees) }}</span> hari kerja
             </div>
             <div class="flex gap-2">
-                <button class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 hover:shadow-md transition-all">Sebelumnya</button>
-                <button class="px-3 py-2 bg-blue-500 rounded-lg text-sm text-white hover:shadow-md transition-all">1</button>
-                <button class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 hover:shadow-md transition-all">2</button>
-                <button class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 hover:shadow-md transition-all">3</button>
-                <button class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 hover:shadow-md transition-all">Selanjutnya</button>
+                <!-- Pagination buttons omitted for simplicity -->
             </div>
         </div>
     </div>

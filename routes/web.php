@@ -61,10 +61,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/absensi', [AttendanceController::class, 'index'])->name('absensi');
 
-    Route::get('/absensi/history/{nim}', function ($nim) {
-        // In production, fetch student data from database
-        return view('monitoring.absensi-history', ['nim' => $nim]);
-    })->name('absensi.history');
+    Route::get('/absensi/history/{id}', [AttendanceController::class, 'adminHistory'])->name('absensi.history');
 
     Route::get('/pelaksana-list', [PelaksanaController::class, 'index'])->name('pelaksana.list');
     Route::get('/pelaksana-list/{id}', [PelaksanaController::class, 'show'])->name('pelaksana.show');

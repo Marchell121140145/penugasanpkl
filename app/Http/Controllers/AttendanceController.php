@@ -18,23 +18,40 @@ class AttendanceController extends Controller
             return redirect()->route('pelaksana.absensi');
         }
 
-        $today = Carbon::today();
+        $selectedDate = $request->input('date') ? Carbon::parse($request->input('date')) : Carbon::today();
         
-        $query = AttendanceAssignee::with(['user.divisi', 'attendance'])
-            ->whereHas('attendance', function($q) use ($today) {
-                // Untuk sekarang ambil yang dibuat hari ini, atau bisa di-sesuaikan
+        // 1. Dapatkan daftar "Sesi Absensi" 
+        $attendancesQuery = Attendance::withCount([
+            'assignees as hadir_count' => function($q) {
+                $q->whereIn('status', ['Hadir', 'Terlambat']);
+            },
+            'assignees as total_assignees'
+        ])->latest();
+
+        if ($user->role_id == 2) {
+            $attendancesQuery->whereHas('assignees.user', function($q) use ($user) {
+                $q->where('pembimbing_id', $user->id)
+                  ->orWhere('divisi_id', $user->divisi_id);
+            });
+        }
+        $attendances = $attendancesQuery->take(15)->get();
+
+        // 2. Dapatkan daftar detail "Assignee" pada hari yang dipilih
+        $assigneesQuery = AttendanceAssignee::with(['user.divisi', 'attendance'])
+            ->whereHas('attendance', function($q) use ($selectedDate) {
+                $q->whereDate('deadline', $selectedDate);
             });
             
         if ($user->role_id == 2) {
-            $query->whereHas('user', function($q) use ($user) {
+            $assigneesQuery->whereHas('user', function($q) use ($user) {
                 $q->where('pembimbing_id', $user->id)
                   ->orWhere('divisi_id', $user->divisi_id);
             });
         }
 
-        $assignees = $query->latest()->take(100)->get();
+        $assignees = $assigneesQuery->latest()->get();
 
-        return view('monitoring.absensi', compact('assignees'));
+        return view('monitoring.absensi', compact('assignees', 'attendances', 'selectedDate'));
     }
 
     public function create()
@@ -103,6 +120,36 @@ class AttendanceController extends Controller
         }
 
         return redirect()->route('absensi')->with('success', 'Absensi berhasil dibuat dan ditugaskan.');
+    }
+
+    public function adminHistory($id)
+    {
+        $userActive = auth()->user();
+        if ($userActive->role_id == 3) {
+            return redirect()->route('pelaksana.absensi');
+        }
+
+        $pelaksana = User::with('divisi')->findOrFail($id);
+
+        if ($userActive->role_id == 2) {
+            if ($pelaksana->pembimbing_id != $userActive->id && $pelaksana->divisi_id != $userActive->divisi_id) {
+                return redirect()->route('absensi')->with('error', 'Anda tidak memiliki akses ke riwayat mahasiswa ini.');
+            }
+        }
+
+        $assignees = AttendanceAssignee::with('attendance')
+            ->where('user_id', $id)
+            ->oldest('created_at')
+            ->get();
+
+        $stats = [
+            'totalHadir' => $assignees->where('status', 'Hadir')->count(),
+            'terlambat' => $assignees->where('status', 'Terlambat')->count(),
+            'izinSakit' => $assignees->whereIn('status', ['Izin', 'Sakit'])->count(),
+            'alpha' => $assignees->where('status', 'Alpha')->count(),
+        ];
+
+        return view('monitoring.absensi-history', compact('pelaksana', 'assignees', 'stats'));
     }
 
     public function pelaksanaIndex()
