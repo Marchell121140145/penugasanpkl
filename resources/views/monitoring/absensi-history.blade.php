@@ -29,7 +29,7 @@
                     <div class="text-sm text-slate-500 mb-1">Divisi</div>
                     <div class="text-lg font-semibold text-slate-800">
                         @php
-                            $divName = $pelaksana->divisi->nama_divisi ?? 'Tanpa Divisi';
+                            $divName = $pelaksana->divisi->nama ?? 'Tanpa Divisi';
                             $divisionColor = 'bg-gray-50 text-gray-600';
                             if (str_contains(strtolower($divName), 'it')) $divisionColor = 'bg-purple-50 text-purple-600';
                             elseif (str_contains(strtolower($divName), 'data')) $divisionColor = 'bg-blue-50 text-blue-600';

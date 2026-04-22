@@ -155,7 +155,7 @@
                             elseif ($assignee->status == 'Izin') $statusColor = 'bg-blue-100 text-blue-600';
 
                             $divisionColor = 'bg-gray-50 text-gray-600';
-                            $divName = $user->divisi->nama_divisi ?? 'Tanpa Divisi';
+                            $divName = $user->divisi->nama ?? 'Tanpa Divisi';
                             if (str_contains(strtolower($divName), 'it')) $divisionColor = 'bg-purple-50 text-purple-600';
                             elseif (str_contains(strtolower($divName), 'data')) $divisionColor = 'bg-blue-50 text-blue-600';
                             elseif (str_contains(strtolower($divName), 'design')) $divisionColor = 'bg-pink-50 text-pink-600';

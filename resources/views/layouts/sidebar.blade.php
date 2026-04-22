@@ -60,7 +60,8 @@
             </a>
         </li>
         <li class="mb-1">
-            <a href="#" class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap"
+            <a href="{{ route('laporan.index') }}" 
+               class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap {{ request()->routeIs('laporan.index') ? 'bg-blue-600 text-white' : '' }}"
                :class="{ 'justify-center px-0': !sidebarOpen }"
             >
                 <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">📈</span> 

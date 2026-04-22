@@ -6,6 +6,7 @@ use App\Http\Controllers\TaskController;
 use App\Http\Controllers\PelaksanaController;
 use App\Http\Controllers\PembimbingController;
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\ReportController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke dashboard jika sudah login
@@ -16,12 +17,7 @@ Route::get('/', function () {
 // Admin Routes (Protected)
 Route::middleware(['auth', 'verified'])->group(function () {
     
-    Route::get('/dashboard', function () {
-        if (auth()->user()->role_id == 3) {
-            return redirect()->route('pelaksana.dashboard');
-        }
-        return view('dashboard.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/penugasan/create', [TaskController::class, 'create'])->name('penugasan.create');
     Route::post('/penugasan', [TaskController::class, 'store'])->name('penugasan.store');
@@ -63,6 +59,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/absensi/history/{id}', [AttendanceController::class, 'adminHistory'])->name('absensi.history');
 
+    Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
+
     Route::get('/pelaksana-list', [PelaksanaController::class, 'index'])->name('pelaksana.list');
     Route::get('/pelaksana-list/{id}', [PelaksanaController::class, 'show'])->name('pelaksana.show');
     Route::put('/pelaksana-list/{id}', [PelaksanaController::class, 'update'])->name('pelaksana.update');
@@ -79,9 +77,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // Student Routes
 // Pelaksana Routes
 Route::prefix('pelaksana')->middleware(['auth', 'verified'])->name('pelaksana.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('pelaksana.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [PelaksanaController::class, 'dashboard'])->name('dashboard');
 
     Route::get('/absensi', [AttendanceController::class, 'pelaksanaIndex'])->name('absensi');
 

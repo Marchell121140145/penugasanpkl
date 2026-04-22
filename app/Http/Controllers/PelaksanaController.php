@@ -5,7 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Divisi;
 use App\Models\TaskSubmission;
+use App\Models\AttendanceAssignee;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class PelaksanaController extends Controller
 {
@@ -147,5 +149,82 @@ class PelaksanaController extends Controller
         ]);
 
         return redirect()->route('pelaksana.show', $id)->with('success', 'Data pelaksana berhasil diperbarui.');
+    }
+
+    /**
+     * Tampilkan dashboard pelaksana.
+     */
+    public function dashboard()
+    {
+        $user = auth()->user();
+        
+        // 1. Task Statistics
+        $assignedTaskIds = $user->assignedTasks()->pluck('tasks.id');
+        $totalTasks = $assignedTaskIds->count();
+        
+        // Pending tasks = assigned but not submitted
+        $submittedTaskIds = $user->submissions()->pluck('task_id');
+        $pendingTasks = $user->assignedTasks()
+            ->whereNotIn('tasks.id', $submittedTaskIds)
+            ->count();
+            
+        // Tasks nearing deadline (within 3 days)
+        $nearingDeadlineCount = $user->assignedTasks()
+            ->whereNotIn('tasks.id', $submittedTaskIds)
+            ->where('deadline_date', '<=', now()->addDays(3))
+            ->where('deadline_date', '>=', now()->toDateString())
+            ->count();
+            
+        // 2. Attendance Statistics
+        $attendances = AttendanceAssignee::where('user_id', $user->id)->get();
+        $totalAttendanceSessions = $attendances->count();
+        $presentCount = $attendances->whereIn('status', ['Hadir', 'Terlambat'])->count();
+        $attendanceRate = $totalAttendanceSessions > 0 ? round(($presentCount / $totalAttendanceSessions) * 100) : 0;
+        
+        // 3. PKL Duration
+        $daysLeft = 0;
+        $endDateFormatted = '-';
+        if ($user->pkl_end) {
+            $endDate = Carbon::parse($user->pkl_end);
+            $endDateFormatted = $endDate->translatedFormat('d M Y');
+            if ($endDate->isFuture()) {
+                $daysLeft = now()->diffInDays($endDate);
+            }
+        }
+        
+        // 4. Recent Activities
+        $recentTasks = $user->assignedTasks()
+            ->with(['submissions' => function($q) use ($user) {
+                $q->where('user_id', $user->id);
+            }])
+            ->latest()
+            ->take(2)
+            ->get();
+            
+        $recentAttendances = AttendanceAssignee::with('attendance')
+            ->where('user_id', $user->id)
+            ->latest('updated_at')
+            ->take(3)
+            ->get();
+            
+        // 5. Priority Task (Nearest deadline, not submitted)
+        $priorityTask = $user->assignedTasks()
+            ->whereNotIn('tasks.id', $submittedTaskIds)
+            ->orderBy('deadline_date', 'asc')
+            ->first();
+
+        return view('pelaksana.dashboard', compact(
+            'totalTasks',
+            'pendingTasks',
+            'nearingDeadlineCount',
+            'attendanceRate',
+            'presentCount',
+            'totalAttendanceSessions',
+            'daysLeft',
+            'endDateFormatted',
+            'recentTasks',
+            'recentAttendances',
+            'priorityTask'
+        ));
     }
 }

@@ -79,7 +79,7 @@
                         @foreach($divisis as $divisi)
                             <label class="flex items-center p-3 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-blue-50 transition-colors">
                                 <input type="checkbox" name="divisi_ids[]" value="{{ $divisi->id }}" class="w-4 h-4 text-blue-600 rounded focus:ring-blue-500 mr-3" {{ (is_array(old('divisi_ids')) && in_array($divisi->id, old('divisi_ids'))) ? 'checked' : '' }}>
-                                <span class="font-medium text-slate-700">{{ $divisi->nama_divisi }}</span>
+                                <span class="font-medium text-slate-700">{{ $divisi->nama }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -103,7 +103,7 @@
                                     </div>
                                     <div class="overflow-hidden">
                                         <div class="font-medium text-slate-800 text-sm truncate">{{ $pelaksana->name }}</div>
-                                        <div class="text-xs text-slate-500 truncate">{{ $pelaksana->divisi?->nama_divisi ?? 'Tanpa Divisi' }}</div>
+                                        <div class="text-xs text-slate-500 truncate">{{ $pelaksana->divisi?->nama ?? 'Tanpa Divisi' }}</div>
                                     </div>
                                 </div>
                             </label>

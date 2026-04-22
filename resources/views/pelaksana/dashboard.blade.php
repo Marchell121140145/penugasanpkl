@@ -40,26 +40,30 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Tugas Saya</h3>
             <div class="flex items-end justify-between">
-                <div class="text-3xl font-bold text-slate-800">5</div>
-                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-lg">2 Pending</span>
+                <div class="text-3xl font-bold text-slate-800">{{ $totalTasks }}</div>
+                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-lg">{{ $pendingTasks }} Pending</span>
             </div>
-            <div class="text-xs text-slate-500 mt-2">1 tugas mendekati deadline</div>
+            <div class="text-xs text-slate-500 mt-2">{{ $nearingDeadlineCount }} tugas mendekati deadline</div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-emerald-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Kehadiran</h3>
             <div class="flex items-end justify-between">
-                <div class="text-3xl font-bold text-slate-800">95%</div>
-                <span class="text-xs px-2 py-1 bg-emerald-100 text-emerald-600 rounded-lg">Sangat Baik</span>
+                <div class="text-3xl font-bold text-slate-800">{{ $attendanceRate }}%</div>
+                @php
+                    $statusColor = $attendanceRate >= 90 ? 'bg-emerald-100 text-emerald-600' : ($attendanceRate >= 75 ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600');
+                    $statusText = $attendanceRate >= 90 ? 'Sangat Baik' : ($attendanceRate >= 75 ? 'Baik' : 'Cukup');
+                @endphp
+                <span class="text-xs px-2 py-1 {{ $statusColor }} rounded-lg">{{ $statusText }}</span>
             </div>
-            <div class="text-xs text-slate-500 mt-2">Hadir 19 dari 20 hari</div>
+            <div class="text-xs text-slate-500 mt-2">Hadir {{ $presentCount }} dari {{ $totalAttendanceSessions }} hari</div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-violet-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Sisa Hari PKL</h3>
             <div class="flex items-end justify-between">
-                <div class="text-3xl font-bold text-slate-800">45</div>
+                <div class="text-3xl font-bold text-slate-800">{{ $daysLeft }}</div>
                 <span class="text-xs px-2 py-1 bg-violet-100 text-violet-600 rounded-lg">Hari</span>
             </div>
-            <div class="text-xs text-slate-500 mt-2">Berakhir: 28 Feb 2026</div>
+            <div class="text-xs text-slate-500 mt-2">Berakhir: {{ $endDateFormatted }}</div>
         </div>
     </div>
 
@@ -71,30 +75,30 @@
                 <a href="{{ route('pelaksana.penugasan') }}" class="text-blue-500 text-sm hover:underline">Lihat Semua</a>
             </div>
             <div class="space-y-4">
-                <a href="{{ route('pelaksana.penugasan.show', 1) }}" class="flex items-start p-4 bg-slate-50 rounded-lg border border-slate-100 block hover:bg-slate-100 transition-colors">
-                    <div class="bg-amber-100 text-amber-600 p-3 rounded-lg mr-4">
-                        <span class="text-xl">⚠️</span>
+                @forelse($recentTasks as $task)
+                @php
+                    $hasSubmission = $task->submissions->isNotEmpty();
+                    $isPending = !$hasSubmission;
+                    $statusColor = $isPending ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600';
+                    $icon = $isPending ? '⚠️' : '✓';
+                @endphp
+                <a href="{{ route('pelaksana.penugasan.show', $task->id) }}" class="flex items-start p-4 bg-slate-50 rounded-lg border border-slate-100 block hover:bg-slate-100 transition-colors">
+                    <div class="{{ $statusColor }} p-3 rounded-lg mr-4">
+                        <span class="text-xl">{{ $icon }}</span>
                     </div>
                     <div class="flex-1">
-                        <h4 class="font-semibold text-slate-800 mb-1">Laporan Mingguan #4</h4>
-                        <p class="text-sm text-slate-600 mb-2">Deadline: Besok, 23:59 WIB</p>
+                        <h4 class="font-semibold text-slate-800 mb-1">{{ $task->judul }}</h4>
+                        <p class="text-sm text-slate-600 mb-2">Deadline: {{ \Carbon\Carbon::parse($task->deadline_date)->translatedFormat('d M Y') }}</p>
                         <div class="w-full bg-slate-200 rounded-full h-1.5 mb-2">
-                            <div class="bg-amber-500 h-1.5 rounded-full" style="width: 20%"></div>
+                            <div class="{{ $isPending ? 'bg-amber-500' : 'bg-emerald-500' }} h-1.5 rounded-full" style="width: {{ $hasSubmission ? '100%' : '0%' }}"></div>
                         </div>
                     </div>
                 </a>
-                <div class="flex items-start p-4 bg-slate-50 rounded-lg border border-slate-100">
-                    <div class="bg-blue-100 text-blue-600 p-3 rounded-lg mr-4">
-                        <span class="text-xl">📝</span>
-                    </div>
-                    <div class="flex-1">
-                        <h4 class="font-semibold text-slate-800 mb-1">Desain Mockup Dashboard</h4>
-                        <p class="text-sm text-slate-600 mb-2">Deadline: 20 Des 2025</p>
-                        <div class="w-full bg-slate-200 rounded-full h-1.5 mb-2">
-                            <div class="bg-blue-500 h-1.5 rounded-full" style="width: 0%"></div>
-                        </div>
-                    </div>
+                @empty
+                <div class="text-center py-8 text-slate-500">
+                    <p>Belum ada tugas yang diberikan.</p>
                 </div>
+                @endforelse
             </div>
         </div>
 
@@ -106,28 +110,35 @@
             </div>
             
             <div class="flex-1 flex flex-col justify-center items-center text-center p-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
-                <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-3xl">
-                    📊
-                </div>
-                <h3 class="text-xl font-bold text-slate-800 mb-2">Laporan Mingguan #4</h3>
-                <p class="text-slate-500 text-sm max-w-xs mb-6">
-                    Kumpulkan laporan kegiatan harian selama satu minggu ini beserta foto dokumentasi.
-                </p>
-                
-                <div class="grid grid-cols-2 gap-4 w-full max-w-xs mb-6">
-                    <div class="bg-white p-3 rounded-lg border border-slate-100">
-                        <div class="text-xs text-slate-400 uppercase">Deadline</div>
-                        <div class="font-semibold text-slate-700">Besok</div>
+                @if($priorityTask)
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-3xl">
+                        📊
                     </div>
-                    <div class="bg-white p-3 rounded-lg border border-slate-100">
-                        <div class="text-xs text-slate-400 uppercase">Status</div>
-                        <div class="font-semibold text-amber-500">Pending</div>
+                    <h3 class="text-xl font-bold text-slate-800 mb-2">{{ $priorityTask->judul }}</h3>
+                    <p class="text-slate-500 text-sm max-w-xs mb-6">
+                        {{ Str::limit($priorityTask->deskripsi, 100) }}
+                    </p>
+                    
+                    <div class="grid grid-cols-2 gap-4 w-full max-w-xs mb-6">
+                        <div class="bg-white p-3 rounded-lg border border-slate-100">
+                            <div class="text-xs text-slate-400 uppercase">Deadline</div>
+                            <div class="font-semibold text-slate-700">{{ \Carbon\Carbon::parse($priorityTask->deadline_date)->diffForHumans() }}</div>
+                        </div>
+                        <div class="bg-white p-3 rounded-lg border border-slate-100">
+                            <div class="text-xs text-slate-400 uppercase">Prioritas</div>
+                            <div class="font-semibold text-amber-500">{{ $priorityTask->prioritas ?? 'Normal' }}</div>
+                        </div>
                     </div>
-                </div>
 
-                <a href="{{ route('pelaksana.penugasan.show', 1) }}" class="w-full max-w-xs bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-medium">
-                    Lihat Detail Tugas
-                </a>
+                    <a href="{{ route('pelaksana.penugasan.show', $priorityTask->id) }}" class="w-full max-w-xs bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-medium">
+                        Lihat Detail Tugas
+                    </a>
+                @else
+                    <div class="text-slate-400">
+                        <p>Tidak ada tugas pending saat ini.</p>
+                        <p class="text-xs">Kerja bagus! 🎉</p>
+                    </div>
+                @endif
             </div>
         </div>
     </div>
@@ -139,39 +150,43 @@
             <a href="{{ route('pelaksana.absensi') }}" class="text-blue-500 text-sm hover:underline">Lihat Semua</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+            @forelse($recentAttendances as $attendance)
+            @php
+                $statusColor = 'bg-slate-50 border-slate-100';
+                $iconColor = 'bg-slate-400';
+                $textClass = 'text-slate-700';
+                $subTextClass = 'text-slate-500';
+                $icon = '✓';
+
+                if ($attendance->status == 'Hadir') {
+                    $statusColor = 'bg-emerald-50 border-emerald-100';
+                    $iconColor = 'bg-emerald-500';
+                    $textClass = 'text-emerald-800';
+                    $subTextClass = 'text-emerald-600';
+                } elseif ($attendance->status == 'Terlambat') {
+                    $statusColor = 'bg-amber-50 border-amber-100';
+                    $iconColor = 'bg-amber-500';
+                    $textClass = 'text-amber-800';
+                    $subTextClass = 'text-amber-600';
+                    $icon = '!';
+                }
+            @endphp
             <div class="relative pl-4 md:pl-0">
-                <div class="flex items-center gap-4 bg-emerald-50 p-4 rounded-xl border border-emerald-100">
-                    <div class="bg-emerald-500 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-sm shrink-0">
-                        ✓
+                <div class="flex items-center gap-4 {{ $statusColor }} p-4 rounded-xl border">
+                    <div class="{{ $iconColor }} h-10 w-10 rounded-full flex items-center justify-center text-white shadow-sm shrink-0">
+                        {{ $icon }}
                     </div>
                     <div>
-                        <h4 class="font-semibold text-emerald-800 text-sm">Hadir Tepat Waktu</h4>
-                        <p class="text-xs text-emerald-600">Hari ini, 07:45 WIB</p>
+                        <h4 class="font-semibold {{ $textClass }} text-sm">{{ $attendance->status }}</h4>
+                        <p class="text-xs {{ $subTextClass }}">{{ $attendance->check_in_time ? \Carbon\Carbon::parse($attendance->check_in_time)->translatedFormat('d M Y, H:i') : 'Belum Absen' }} WIB</p>
                     </div>
                 </div>
             </div>
-            <div class="relative pl-4 md:pl-0">
-                 <div class="flex items-center gap-4 bg-slate-50 p-4 rounded-xl border border-slate-100">
-                    <div class="bg-slate-400 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-sm shrink-0">
-                        ✓
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-slate-700 text-sm">Hadir</h4>
-                        <p class="text-xs text-slate-500">Kemarin, 07:50 WIB</p>
-                    </div>
-                </div>
+            @empty
+            <div class="col-span-3 text-center py-8 text-slate-500">
+                <p>Belum ada riwayat absensi.</p>
             </div>
-            <div class="relative pl-4 md:pl-0">
-                 <div class="flex items-center gap-4 bg-amber-50 p-4 rounded-xl border border-amber-100">
-                    <div class="bg-amber-500 h-10 w-10 rounded-full flex items-center justify-center text-white shadow-sm shrink-0">
-                        !
-                    </div>
-                    <div>
-                        <h4 class="font-semibold text-amber-800 text-sm">Terlambat</h4>
-                        <p class="text-xs text-amber-600">11 Des 2024, 08:15 WIB</p>
-                    </div>
-                </div>
-            </div>
+            @endforelse
         </div>
     </div>
 </x-pelaksana-layout>
