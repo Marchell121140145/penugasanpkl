@@ -172,9 +172,10 @@
     </div>
 
     <script>
-        // Update status styling when changed
+        // Update status via AJAX
         function updateStatus(selectElement, id) {
             const status = selectElement.value;
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             
             // Remove all status classes
             selectElement.className = 'px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500';
@@ -193,13 +194,32 @@
                 case 'Alpha':
                     selectElement.classList.add('bg-red-100', 'text-red-600', 'border-red-200');
                     break;
+                default:
+                    selectElement.classList.add('bg-slate-100', 'text-slate-600', 'border-slate-200');
+                    break;
             }
-            
-            // In production, save to database via AJAX
-            console.log(`Status for record ${id} changed to: ${status}`);
-            
-            // Show success notification
-            showNotification(`Status berhasil diubah menjadi: ${status}`);
+
+            // Send PATCH request to save the status
+            fetch(`/absensi/status/${id}`, {
+                method: 'PATCH',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'Accept': 'application/json',
+                },
+                body: JSON.stringify({ status: status })
+            })
+            .then(response => {
+                if (!response.ok) throw new Error('Gagal menyimpan status');
+                return response.json();
+            })
+            .then(data => {
+                showNotification(data.message || `Status berhasil diubah menjadi: ${status}`, 'success');
+            })
+            .catch(error => {
+                showNotification('Gagal menyimpan perubahan status. Silakan coba lagi.', 'error');
+                console.error('Error:', error);
+            });
         }
 
         // View photo in modal
@@ -217,15 +237,16 @@
         }
 
         // Show notification
-        function showNotification(message) {
-            // Simple alert for now, can be replaced with toast notification
+        function showNotification(message, type = 'success') {
             const notification = document.createElement('div');
-            notification.className = 'fixed top-4 right-4 bg-green-500 text-white px-6 py-3 rounded-lg shadow-lg z-50';
+            const bgColor = type === 'error' ? 'bg-red-500' : 'bg-green-500';
+            notification.className = `fixed top-4 right-4 ${bgColor} text-white px-6 py-3 rounded-lg shadow-lg z-50 transition-opacity duration-300`;
             notification.textContent = message;
             document.body.appendChild(notification);
             
             setTimeout(() => {
-                notification.remove();
+                notification.style.opacity = '0';
+                setTimeout(() => notification.remove(), 300);
             }, 3000);
         }
 

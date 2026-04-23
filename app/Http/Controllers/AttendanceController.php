@@ -152,6 +152,34 @@ class AttendanceController extends Controller
         return view('monitoring.absensi-history', compact('pelaksana', 'assignees', 'stats'));
     }
 
+    public function updateStatus(Request $request, $id)
+    {
+        $userActive = auth()->user();
+        if ($userActive->role_id == 3) {
+            return response()->json(['error' => 'Unauthorized'], 403);
+        }
+
+        $request->validate([
+            'status' => 'required|in:Belum Mengisi,Hadir,Terlambat,Izin,Sakit,Alpha',
+        ]);
+
+        $assignee = AttendanceAssignee::findOrFail($id);
+
+        // Scope check for pembimbing
+        if ($userActive->role_id == 2) {
+            $student = User::find($assignee->user_id);
+            if ($student && $student->pembimbing_id != $userActive->id && $student->divisi_id != $userActive->divisi_id) {
+                return response()->json(['error' => 'Unauthorized'], 403);
+            }
+        }
+
+        $assignee->update([
+            'status' => $request->status,
+        ]);
+
+        return response()->json(['success' => true, 'message' => 'Status berhasil diubah menjadi: ' . $request->status]);
+    }
+
     public function pelaksanaIndex()
     {
         $user = auth()->user();

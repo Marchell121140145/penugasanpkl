@@ -58,8 +58,11 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/absensi', [AttendanceController::class, 'index'])->name('absensi');
 
     Route::get('/absensi/history/{id}', [AttendanceController::class, 'adminHistory'])->name('absensi.history');
+    Route::patch('/absensi/status/{id}', [AttendanceController::class, 'updateStatus'])->name('absensi.updateStatus');
 
     Route::get('/laporan', [ReportController::class, 'index'])->name('laporan.index');
+    Route::get('/laporan/export', [ReportController::class, 'exportCsv'])->name('laporan.export');
+    Route::get('/laporan/pelaksana/{id}', [ReportController::class, 'show'])->name('laporan.show');
 
     Route::get('/pelaksana-list', [PelaksanaController::class, 'index'])->name('pelaksana.list');
     Route::get('/pelaksana-list/{id}', [PelaksanaController::class, 'show'])->name('pelaksana.show');
