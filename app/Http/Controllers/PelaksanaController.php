@@ -4,10 +4,12 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Divisi;
+use App\Models\Role;
 use App\Models\TaskSubmission;
 use App\Models\AttendanceAssignee;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class PelaksanaController extends Controller
 {
@@ -75,8 +77,14 @@ class PelaksanaController extends Controller
 
         // Divisi list for filter dropdown
         $divisis = Divisi::orderBy('nama')->get();
+        
+        // Role list for admin to create new users
+        $roles = [];
+        if (auth()->user()->role_id == 1) {
+            $roles = Role::all();
+        }
 
-        return view('monitoring.pelaksana', compact('pelaksanas', 'totalPelaksana', 'divisis'));
+        return view('monitoring.pelaksana', compact('pelaksanas', 'totalPelaksana', 'divisis', 'roles'));
     }
 
     /**
@@ -226,5 +234,33 @@ class PelaksanaController extends Controller
             'recentAttendances',
             'priorityTask'
         ));
+    }
+
+    /**
+     * Simpan user baru (Admin Only).
+     */
+    public function store(Request $request)
+    {
+        // Hanya Admin (role_id 1) yang boleh menambah user
+        if (auth()->user()->role_id != 1) {
+            abort(403, 'Hanya Admin yang dapat menambah user baru.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'divisi_id' => 'nullable|exists:divisi,id',
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => 3, // Fixed for Pelaksana
+            'divisi_id' => $request->divisi_id,
+        ]);
+
+        return redirect()->route('pelaksana.list')->with('success', 'Pelaksana baru berhasil ditambahkan.');
     }
 }

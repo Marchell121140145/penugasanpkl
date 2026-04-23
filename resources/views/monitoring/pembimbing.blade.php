@@ -1,4 +1,5 @@
 <x-admin-layout>
+    <div x-data="{ openAddPembimbing: false, openAddDivisi: false }">
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div>
@@ -6,12 +7,31 @@
             <p class="text-slate-600">Daftar seluruh pembimbing PKL</p>
         </div>
         <div class="flex items-center gap-4">
-            <div class="relative cursor-pointer">
+            @if(auth()->user()->role_id == 1)
+                <div class="flex gap-2">
+                    <button @click="openAddDivisi = true" class="bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95 text-sm">
+                        <span class="text-lg">+</span> Divisi
+                    </button>
+                    <button @click="openAddPembimbing = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all active:scale-95 text-sm">
+                        <span class="text-lg">+</span> Pembimbing
+                    </button>
+                </div>
+            @endif
+            <div class="relative cursor-pointer text-slate-400">
                 <span class="text-xl">🔔</span>
-                <div class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-[18px] h-[18px] text-[0.7rem] flex items-center justify-center">2</div>
             </div>
         </div>
     </div>
+
+    @if(session('success'))
+        <div class="bg-emerald-100 border-l-4 border-emerald-500 text-emerald-700 p-4 mb-6 rounded-r-xl shadow-sm flex items-center justify-between" x-data="{ show: true }" x-show="show">
+            <div class="flex items-center">
+                <span class="mr-3 text-xl">✅</span>
+                <p class="font-bold">{{ session('success') }}</p>
+            </div>
+            <button @click="show = false" class="text-emerald-500 hover:text-emerald-700">✕</button>
+        </div>
+    @endif
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
@@ -152,4 +172,120 @@
         searchInput.addEventListener('input', filterTable);
         divisiFilter.addEventListener('change', filterTable);
     </script>
+
+    @if(auth()->user()->role_id == 1)
+    <!-- Modal Add Pembimbing -->
+    <div x-show="openAddPembimbing" 
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" @click="openAddPembimbing = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-slate-800">Tambah Pembimbing Baru</h3>
+                    <button @click="openAddPembimbing = false" class="text-slate-400 hover:text-slate-600">✕</button>
+                </div>
+
+                <form action="{{ route('pembimbing.store') }}" method="POST">
+                    @csrf
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                            <input type="text" name="name" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Masukkan nama lengkap">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+                            <input type="email" name="email" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="contoh@telkom.co.id">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Divisi (Opsional)</label>
+                                <select name="divisi_id" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors bg-white">
+                                    <option value="">Tidak ada divisi</option>
+                                    @foreach($divisis as $divisi)
+                                        <option value="{{ $divisi->id }}">{{ $divisi->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="flex items-end pb-1">
+                                <div class="px-4 py-2 bg-purple-50 text-purple-600 rounded-xl text-xs font-bold border border-purple-100 flex items-center gap-2">
+                                    <span>👨‍🏫</span> Role: Pembimbing
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                                <input type="password" name="password" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Min. 8 karakter">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Konfirmasi</label>
+                                <input type="password" name="password_confirmation" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Ulangi password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                        <button type="button" @click="openAddPembimbing = false" class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">Batal</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
+                            Simpan Pembimbing
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Add Divisi -->
+    <div x-show="openAddDivisi" 
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <div class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" @click="openAddDivisi = false"></div>
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-slate-800">Tambah Divisi Baru</h3>
+                    <button @click="openAddDivisi = false" class="text-slate-400 hover:text-slate-600">✕</button>
+                </div>
+
+                <form action="{{ route('divisi.store') }}" method="POST">
+                    @csrf
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Divisi</label>
+                            <input type="text" name="nama" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Contoh: Digital Service, Network, dsb.">
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                        <button type="button" @click="openAddDivisi = false" class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">Batal</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
+                            Simpan Divisi
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
+    </div>
 </x-admin-layout>

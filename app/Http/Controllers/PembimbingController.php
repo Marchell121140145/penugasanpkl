@@ -6,6 +6,7 @@ use App\Models\User;
 use App\Models\Divisi;
 use App\Models\Task;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 
 class PembimbingController extends Controller
 {
@@ -98,5 +99,52 @@ class PembimbingController extends Controller
         ]);
 
         return redirect()->route('pembimbing.show', $id)->with('success', 'Data pembimbing berhasil diperbarui.');
+    }
+
+    /**
+     * Simpan pembimbing baru (Admin Only).
+     */
+    public function store(Request $request)
+    {
+        if (auth()->user()->role_id != 1) {
+            abort(403, 'Hanya Admin yang dapat menambah pembimbing baru.');
+        }
+
+        $request->validate([
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|confirmed',
+            'divisi_id' => 'nullable|exists:divisi,id',
+        ]);
+
+        User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => Hash::make($request->password),
+            'role_id' => 2, // Fixed for Pembimbing
+            'divisi_id' => $request->divisi_id,
+        ]);
+
+        return redirect()->route('pembimbing.list')->with('success', 'Pembimbing baru berhasil ditambahkan.');
+    }
+
+    /**
+     * Simpan divisi baru (Admin Only).
+     */
+    public function storeDivisi(Request $request)
+    {
+        if (auth()->user()->role_id != 1) {
+            abort(403, 'Hanya Admin yang dapat menambah divisi baru.');
+        }
+
+        $request->validate([
+            'nama' => 'required|string|max:255|unique:divisi,nama',
+        ]);
+
+        Divisi::create([
+            'nama' => $request->nama,
+        ]);
+
+        return redirect()->route('pembimbing.list')->with('success', 'Divisi baru "' . $request->nama . '" berhasil ditambahkan.');
     }
 }

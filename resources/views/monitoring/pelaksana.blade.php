@@ -1,4 +1,14 @@
 <x-admin-layout>
+    <div x-data="{ openAddUser: false }">
+    @if(session('success'))
+        <div class="bg-emerald-100 border-l-4 border-emerald-500 text-emerald-700 p-4 mb-6 rounded-r-xl shadow-sm flex items-center justify-between" x-data="{ show: true }" x-show="show">
+            <div class="flex items-center">
+                <span class="mr-3 text-xl">✅</span>
+                <p class="font-bold">{{ session('success') }}</p>
+            </div>
+            <button @click="show = false" class="text-emerald-500 hover:text-emerald-700">✕</button>
+        </div>
+    @endif
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div>
@@ -6,6 +16,11 @@
             <p class="text-slate-600">Daftar seluruh mahasiswa pelaksana PKL</p>
         </div>
         <div class="flex items-center gap-4">
+            @if(auth()->user()->role_id == 1)
+                <button @click="openAddUser = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all active:scale-95">
+                    <span class="text-xl">+</span> Tambah User
+                </button>
+            @endif
             <div class="relative cursor-pointer">
                 <span class="text-xl">🔔</span>
             </div>
@@ -224,4 +239,89 @@
         </div>
         @endif
     </div>
+
+    @if(auth()->user()->role_id == 1)
+    <!-- Modal Add User -->
+    <div x-show="openAddUser" 
+         class="fixed inset-0 z-50 overflow-y-auto" 
+         x-cloak
+         x-transition:enter="transition ease-out duration-300"
+         x-transition:enter-start="opacity-0"
+         x-transition:enter-end="opacity-100"
+         x-transition:leave="transition ease-in duration-200"
+         x-transition:leave-start="opacity-100"
+         x-transition:leave-end="opacity-0">
+        
+        <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
+            <!-- Overlay -->
+            <div class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" @click="openAddUser = false"></div>
+
+            <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
+
+            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+                 x-transition:enter="transition ease-out duration-300"
+                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave="transition ease-in duration-200"
+                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                
+                <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
+                    <h3 class="text-lg font-bold text-slate-800">Tambah User Baru</h3>
+                    <button @click="openAddUser = false" class="text-slate-400 hover:text-slate-600">✕</button>
+                </div>
+
+                <form action="{{ route('pelaksana.store') }}" method="POST">
+                    @csrf
+                    <div class="p-6 space-y-4">
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap</label>
+                            <input type="text" name="name" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Masukkan nama lengkap">
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-semibold text-slate-700 mb-1">Email</label>
+                            <input type="email" name="email" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="contoh@telkom.co.id">
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Divisi (Opsional)</label>
+                                <select name="divisi_id" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors bg-white">
+                                    <option value="">Tidak ada divisi</option>
+                                    @foreach($divisis as $divisi)
+                                        <option value="{{ $divisi->id }}">{{ $divisi->nama }}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="flex items-end pb-1">
+                                <div class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold border border-blue-100 flex items-center gap-2">
+                                    <span>👤</span> Role: Pelaksana
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Password</label>
+                                <input type="password" name="password" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Min. 8 karakter">
+                            </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Konfirmasi</label>
+                                <input type="password" name="password_confirmation" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Ulangi password">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
+                        <button type="button" @click="openAddUser = false" class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">Batal</button>
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
+                            Simpan User
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    @endif
 </x-admin-layout>

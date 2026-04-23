@@ -7,6 +7,8 @@ use App\Http\Controllers\PelaksanaController;
 use App\Http\Controllers\PembimbingController;
 use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ReportController;
+use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\ExcelEditorController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke dashboard jika sudah login
@@ -32,8 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::put('/penugasan/{id}', [TaskController::class, 'update'])->name('penugasan.update');
     Route::delete('/penugasan/{id}', [TaskController::class, 'destroy'])->name('penugasan.destroy');
 
-    Route::get('/penugasan/excel-editor', [\App\Http\Controllers\ExcelEditorController::class, 'edit'])->name('excel.editor');
-    Route::post('/penugasan/excel-editor/save', [\App\Http\Controllers\ExcelEditorController::class, 'save'])->name('excel.editor.save');
+    Route::get('/penugasan/excel-editor', [ExcelEditorController::class, 'edit'])->name('excel.editor');
+    Route::post('/penugasan/excel-editor/save', [ExcelEditorController::class, 'save'])->name('excel.editor.save');
 
     Route::get('/penugasan/detail/{id}', function ($id) {
         if (auth()->user()->role_id == 3) {
@@ -65,19 +67,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/laporan/pelaksana/{id}', [ReportController::class, 'show'])->name('laporan.show');
 
     Route::get('/pelaksana-list', [PelaksanaController::class, 'index'])->name('pelaksana.list');
+    Route::post('/pelaksana-list', [PelaksanaController::class, 'store'])->name('pelaksana.store');
     Route::get('/pelaksana-list/{id}', [PelaksanaController::class, 'show'])->name('pelaksana.show');
     Route::put('/pelaksana-list/{id}', [PelaksanaController::class, 'update'])->name('pelaksana.update');
 
     Route::get('/pembimbing-list', [PembimbingController::class, 'index'])->name('pembimbing.list');
+    Route::post('/pembimbing-list', [PembimbingController::class, 'store'])->name('pembimbing.store');
     Route::get('/pembimbing-list/{id}', [PembimbingController::class, 'show'])->name('pembimbing.show');
     Route::put('/pembimbing-list/{id}', [PembimbingController::class, 'update'])->name('pembimbing.update');
 
+    Route::post('/divisi', [PembimbingController::class, 'storeDivisi'])->name('divisi.store');
+
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Student Routes
 // Pelaksana Routes
 Route::prefix('pelaksana')->middleware(['auth', 'verified'])->name('pelaksana.')->group(function () {
     Route::get('/dashboard', [PelaksanaController::class, 'dashboard'])->name('dashboard');
