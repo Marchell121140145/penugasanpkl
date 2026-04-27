@@ -12,7 +12,7 @@
                     <button @click="openAddDivisi = true" class="bg-white border-2 border-slate-200 hover:border-slate-300 text-slate-700 px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 transition-all active:scale-95 text-sm">
                         <span class="text-lg">+</span> Divisi
                     </button>
-                    <button @click="openAddPembimbing = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all active:scale-95 text-sm">
+                    <button @click="openAddPembimbing = true" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-red-200 transition-all active:scale-95 text-sm">
                         <span class="text-lg">+</span> Pembimbing
                     </button>
                 </div>
@@ -35,7 +35,7 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Pembimbing</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $totalPembimbing }}</div>
             <div class="text-xs text-slate-500">Terdaftar aktif</div>
@@ -58,13 +58,13 @@
             <div class="text-sm font-medium text-slate-500 pt-2">Filter Pembimbing:</div>
         </div>
         <div class="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
-            <select id="divisiFilter" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-blue-500">
+            <select id="divisiFilter" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-red-500">
                 <option value="">Semua Divisi</option>
                 @foreach($divisis as $divisi)
                     <option value="{{ $divisi->nama }}">{{ $divisi->nama }}</option>
                 @endforeach
             </select>
-            <input type="text" id="searchInput" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-blue-500" placeholder="Cari nama pembimbing...">
+            <input type="text" id="searchInput" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500" placeholder="Cari nama pembimbing...">
         </div>
     </div>
 
@@ -121,7 +121,7 @@
                         <td class="p-4 text-sm">
                             <div class="flex flex-col gap-1">
                                 <span class="text-emerald-600 font-medium text-xs">✅ Selesai: {{ $pembimbing->tugas_selesai_count }}</span>
-                                <span class="text-blue-500 font-medium text-xs">🔄 Aktif: {{ $pembimbing->tugas_aktif_count }}</span>
+                                <span class="text-red-500 font-medium text-xs">🔄 Aktif: {{ $pembimbing->tugas_aktif_count }}</span>
                             </div>
                         </td>
                         <td class="p-4 text-sm">
@@ -199,18 +199,18 @@
                     <div class="p-6 space-y-4">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap</label>
-                            <input type="text" name="name" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Masukkan nama lengkap">
+                            <input type="text" name="name" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Masukkan nama lengkap">
                         </div>
 
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Email</label>
-                            <input type="email" name="email" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="contoh@telkom.co.id">
+                            <input type="email" name="email" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="contoh@telkom.co.id">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1">Divisi (Opsional)</label>
-                                <select name="divisi_id" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors bg-white">
+                                <select name="divisi_id" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors bg-white">
                                     <option value="">Tidak ada divisi</option>
                                     @foreach($divisis as $divisi)
                                         <option value="{{ $divisi->id }}">{{ $divisi->nama }}</option>
@@ -227,18 +227,18 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1">Password</label>
-                                <input type="password" name="password" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Min. 8 karakter">
+                                <input type="password" name="password" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Min. 8 karakter">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1">Konfirmasi</label>
-                                <input type="password" name="password_confirmation" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Ulangi password">
+                                <input type="password" name="password_confirmation" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Ulangi password">
                             </div>
                         </div>
                     </div>
 
                     <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
                         <button type="button" @click="openAddPembimbing = false" class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">Batal</button>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-red-200 transition-all active:scale-95">
                             Simpan Pembimbing
                         </button>
                     </div>
@@ -272,13 +272,13 @@
                     <div class="p-6 space-y-4">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Divisi</label>
-                            <input type="text" name="nama" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Contoh: Digital Service, Network, dsb.">
+                            <input type="text" name="nama" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Contoh: Digital Service, Network, dsb.">
                         </div>
                     </div>
 
                     <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
                         <button type="button" @click="openAddDivisi = false" class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">Batal</button>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-red-200 transition-all active:scale-95">
                             Simpan Divisi
                         </button>
                     </div>
@@ -289,3 +289,5 @@
     @endif
     </div>
 </x-admin-layout>
+
+

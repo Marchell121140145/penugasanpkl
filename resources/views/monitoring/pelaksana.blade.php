@@ -17,7 +17,7 @@
         </div>
         <div class="flex items-center gap-4">
             @if(auth()->user()->role_id == 1)
-                <button @click="openAddUser = true" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-blue-200 transition-all active:scale-95">
+                <button @click="openAddUser = true" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg shadow-red-200 transition-all active:scale-95">
                     <span class="text-xl">+</span> Tambah User
                 </button>
             @endif
@@ -29,7 +29,7 @@
 
     <!-- Stats Cards -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Pelaksana</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $totalPelaksana }}</div>
             <div class="text-xs text-slate-500">Terdaftar aktif</div>
@@ -44,10 +44,10 @@
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $pelaksanas->sum('tugas_aktif_count') }}</div>
             <div class="text-xs text-amber-500">Sedang dikerjakan</div>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-violet-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Tugas</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $pelaksanas->sum('assigned_tasks_count') }}</div>
-            <div class="text-xs text-violet-500">Semua tugas ditugaskan</div>
+            <div class="text-xs text-red-500">Semua tugas ditugaskan</div>
         </div>
     </div>
 
@@ -61,19 +61,19 @@
                 <div class="text-sm font-medium text-slate-500 pt-2">Filter Pelaksana:</div>
             </div>
             <div class="flex flex-col md:flex-row gap-3 items-center w-full md:w-auto">
-                <select name="divisi_id" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-blue-500">
+                <select name="divisi_id" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-red-500">
                     <option value="">Semua Divisi</option>
                     @foreach($divisis as $divisi)
                         <option value="{{ $divisi->id }}" {{ request('divisi_id') == $divisi->id ? 'selected' : '' }}>{{ $divisi->nama }}</option>
                     @endforeach
                 </select>
                 <div class="relative w-full md:w-auto">
-                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-blue-500 pr-8" placeholder="Cari nama pelaksana...">
+                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500 pr-8" placeholder="Cari nama pelaksana...">
                     @if(request('search'))
                         <a href="{{ route('pelaksana.list', request()->except('search', 'page')) }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm">✕</a>
                     @endif
                 </div>
-                <button type="submit" class="p-2.5 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors px-4">Cari</button>
+                <button type="submit" class="p-2.5 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors px-4">Cari</button>
                 @if(request()->hasAny(['divisi_id', 'search']))
                     <a href="{{ route('pelaksana.list') }}" class="p-2.5 border-2 border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors px-4 whitespace-nowrap">Reset Filter</a>
                 @endif
@@ -93,8 +93,8 @@
             $currentDir = request('sort_dir', 'asc');
             if ($currentSort !== $column) return '<span class="text-slate-300 ml-1">↕</span>';
             return $currentDir === 'asc'
-                ? '<span class="text-blue-500 ml-1">↑</span>'
-                : '<span class="text-blue-500 ml-1">↓</span>';
+                ? '<span class="text-red-500 ml-1">↑</span>'
+                : '<span class="text-red-500 ml-1">↓</span>';
         }
     @endphp
 
@@ -113,23 +113,23 @@
                     <tr class="bg-slate-50 text-left">
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm w-12">No</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
-                            <a href="{{ pelaksanaSortUrl('name') }}" class="flex items-center hover:text-blue-600 transition-colors">
+                            <a href="{{ pelaksanaSortUrl('name') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Nama {!! pelaksanaSortIcon('name') !!}
                             </a>
                         </th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
-                            <a href="{{ pelaksanaSortUrl('email') }}" class="flex items-center hover:text-blue-600 transition-colors">
+                            <a href="{{ pelaksanaSortUrl('email') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Email {!! pelaksanaSortIcon('email') !!}
                             </a>
                         </th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Divisi</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
-                            <a href="{{ pelaksanaSortUrl('assigned_tasks_count') }}" class="flex items-center hover:text-blue-600 transition-colors">
+                            <a href="{{ pelaksanaSortUrl('assigned_tasks_count') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Total Tugas {!! pelaksanaSortIcon('assigned_tasks_count') !!}
                             </a>
                         </th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
-                            <a href="{{ pelaksanaSortUrl('tugas_selesai_count') }}" class="flex items-center hover:text-blue-600 transition-colors">
+                            <a href="{{ pelaksanaSortUrl('tugas_selesai_count') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Tugas {!! pelaksanaSortIcon('tugas_selesai_count') !!}
                             </a>
                         </th>
@@ -145,12 +145,12 @@
                                 ->join('');
                             
                             $avatarColors = [
-                                'bg-indigo-100 text-indigo-600',
-                                'bg-blue-100 text-blue-600',
+                                'bg-red-100 text-red-600',
+                                'bg-red-100 text-red-600',
                                 'bg-pink-100 text-pink-600',
                                 'bg-green-100 text-green-600',
                                 'bg-amber-100 text-amber-600',
-                                'bg-cyan-100 text-cyan-600',
+                                'bg-red-100 text-red-600',
                                 'bg-rose-100 text-rose-600',
                                 'bg-purple-100 text-purple-600',
                             ];
@@ -173,12 +173,12 @@
                                 @endif
                             </td>
                             <td class="p-4 text-sm text-center">
-                                <span class="px-2 py-1 rounded-md bg-blue-50 text-blue-600 text-xs font-medium">{{ $pelaksana->assigned_tasks_count }} tugas</span>
+                                <span class="px-2 py-1 rounded-md bg-red-50 text-red-600 text-xs font-medium">{{ $pelaksana->assigned_tasks_count }} tugas</span>
                             </td>
                             <td class="p-4 text-sm">
                                 <div class="flex flex-col gap-1">
                                     <span class="text-emerald-600 font-medium text-xs">✅ Selesai: {{ $pelaksana->tugas_selesai_count }}</span>
-                                    <span class="text-blue-500 font-medium text-xs">🔄 Aktif: {{ $pelaksana->tugas_aktif_count }}</span>
+                                    <span class="text-red-500 font-medium text-xs">🔄 Aktif: {{ $pelaksana->tugas_aktif_count }}</span>
                                 </div>
                             </td>
                             <td class="p-4 text-sm">
@@ -195,7 +195,7 @@
                                     <div>
                                         @if(request()->hasAny(['divisi_id', 'search']))
                                             <p class="font-medium text-slate-600">Tidak ada pelaksana yang cocok</p>
-                                            <p class="text-sm">Coba ubah filter atau <a href="{{ route('pelaksana.list') }}" class="text-blue-500 hover:underline">reset filter</a>.</p>
+                                            <p class="text-sm">Coba ubah filter atau <a href="{{ route('pelaksana.list') }}" class="text-red-500 hover:underline">reset filter</a>.</p>
                                         @else
                                             <p class="font-medium text-slate-600">Belum ada data pelaksana</p>
                                             <p class="text-sm">Pelaksana akan muncul setelah user dengan role "pelaksana" terdaftar.</p>
@@ -224,7 +224,7 @@
 
                 @foreach($pelaksanas->getUrlRange(1, $pelaksanas->lastPage()) as $page => $url)
                     @if($page == $pelaksanas->currentPage())
-                        <span class="px-3 py-2 bg-blue-500 rounded-lg text-sm text-white">{{ $page }}</span>
+                        <span class="px-3 py-2 bg-red-500 rounded-lg text-sm text-white">{{ $page }}</span>
                     @else
                         <a href="{{ $url }}" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 hover:shadow-md transition-all">{{ $page }}</a>
                     @endif
@@ -276,18 +276,18 @@
                     <div class="p-6 space-y-4">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap</label>
-                            <input type="text" name="name" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Masukkan nama lengkap">
+                            <input type="text" name="name" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Masukkan nama lengkap">
                         </div>
 
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Email</label>
-                            <input type="email" name="email" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="contoh@telkom.co.id">
+                            <input type="email" name="email" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="contoh@telkom.co.id">
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1">Divisi (Opsional)</label>
-                                <select name="divisi_id" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors bg-white">
+                                <select name="divisi_id" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors bg-white">
                                     <option value="">Tidak ada divisi</option>
                                     @foreach($divisis as $divisi)
                                         <option value="{{ $divisi->id }}">{{ $divisi->nama }}</option>
@@ -295,7 +295,7 @@
                                 </select>
                             </div>
                             <div class="flex items-end pb-1">
-                                <div class="px-4 py-2 bg-blue-50 text-blue-600 rounded-xl text-xs font-bold border border-blue-100 flex items-center gap-2">
+                                <div class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100 flex items-center gap-2">
                                     <span>👤</span> Role: Pelaksana
                                 </div>
                             </div>
@@ -304,18 +304,18 @@
                         <div class="grid grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1">Password</label>
-                                <input type="password" name="password" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Min. 8 karakter">
+                                <input type="password" name="password" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Min. 8 karakter">
                             </div>
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1">Konfirmasi</label>
-                                <input type="password" name="password_confirmation" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-blue-500 transition-colors" placeholder="Ulangi password">
+                                <input type="password" name="password_confirmation" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Ulangi password">
                             </div>
                         </div>
                     </div>
 
                     <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-3">
                         <button type="button" @click="openAddUser = false" class="px-4 py-2 text-sm font-bold text-slate-600 hover:text-slate-800 transition-colors">Batal</button>
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-blue-200 transition-all active:scale-95">
+                        <button type="submit" class="bg-red-600 hover:bg-red-700 text-white px-6 py-2 rounded-xl font-bold shadow-lg shadow-red-200 transition-all active:scale-95">
                             Simpan User
                         </button>
                     </div>
@@ -325,3 +325,5 @@
     </div>
     @endif
 </x-admin-layout>
+
+

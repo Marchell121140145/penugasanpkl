@@ -2,7 +2,7 @@
     <div class="py-6 px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumbs / Back Button -->
         <div class="mb-6">
-            <a href="{{ route('laporan.index') }}" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-blue-600 transition-colors">
+            <a href="{{ route('laporan.index') }}" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-red-600 transition-colors">
                 <span class="mr-2">←</span> Kembali ke Rekap Laporan
             </a>
         </div>
@@ -10,7 +10,7 @@
         <!-- Individual Header -->
         <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-8 mb-8 relative overflow-hidden">
             <!-- Background Decoration -->
-            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full blur-3xl opacity-50 -mr-32 -mt-32"></div>
+            <div class="absolute top-0 right-0 w-64 h-64 bg-red-50 rounded-full blur-3xl opacity-50 -mr-32 -mt-32"></div>
             
             <div class="flex flex-col md:flex-row items-center gap-8 relative z-10">
                 <!-- Avatar -->
@@ -18,7 +18,7 @@
                     @if($pelaksana->avatar)
                         <img src="{{ asset('storage/' . $pelaksana->avatar) }}" alt="{{ $pelaksana->name }}" class="w-full h-full object-cover">
                     @else
-                        <div class="w-full h-full flex items-center justify-center bg-blue-600 text-white text-4xl font-bold">
+                        <div class="w-full h-full flex items-center justify-center bg-red-600 text-white text-4xl font-bold">
                             {{ substr($pelaksana->name, 0, 1) }}
                         </div>
                     @endif
@@ -28,7 +28,7 @@
                 <div class="flex-1 text-center md:text-left">
                     <div class="flex flex-col md:flex-row md:items-center gap-3 mb-2">
                         <h1 class="text-3xl font-black text-slate-800">{{ $pelaksana->name }}</h1>
-                        <span class="px-3 py-1 bg-blue-50 text-blue-600 text-xs font-bold uppercase rounded-full self-center">
+                        <span class="px-3 py-1 bg-red-50 text-red-600 text-xs font-bold uppercase rounded-full self-center">
                             {{ $pelaksana->divisi->nama ?? 'Umum' }}
                         </span>
                     </div>
@@ -188,3 +188,5 @@
         });
     </script>
 </x-admin-layout>
+
+

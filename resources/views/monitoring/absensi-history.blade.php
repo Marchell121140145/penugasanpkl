@@ -2,7 +2,7 @@
     <!-- Header -->
     <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
-            <a href="{{ route('absensi') }}" class="text-blue-500 hover:text-blue-700 transition-colors">
+            <a href="{{ route('absensi') }}" class="text-red-500 hover:text-red-700 transition-colors">
                 <span class="text-2xl">←</span>
             </a>
             <h1 class="text-slate-800 text-3xl font-bold">Riwayat Absensi Mahasiswa</h1>
@@ -13,7 +13,7 @@
     <!-- Student Info Card -->
     <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
         <div class="flex items-center gap-6">
-            <div class="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center text-3xl">
+            <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-3xl">
                 👤
             </div>
             <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -32,7 +32,7 @@
                             $divName = $pelaksana->divisi->nama ?? 'Tanpa Divisi';
                             $divisionColor = 'bg-gray-50 text-gray-600';
                             if (str_contains(strtolower($divName), 'it')) $divisionColor = 'bg-purple-50 text-purple-600';
-                            elseif (str_contains(strtolower($divName), 'data')) $divisionColor = 'bg-blue-50 text-blue-600';
+                            elseif (str_contains(strtolower($divName), 'data')) $divisionColor = 'bg-red-50 text-red-600';
                             elseif (str_contains(strtolower($divName), 'design')) $divisionColor = 'bg-pink-50 text-pink-600';
                             elseif (str_contains(strtolower($divName), 'quality')) $divisionColor = 'bg-green-50 text-green-600';
                         @endphp
@@ -67,7 +67,7 @@
             <div class="flex items-center justify-between">
                 <div>
                     <div class="text-sm text-slate-500 mb-1">Izin</div>
-                    <div class="text-2xl font-bold text-blue-600">{{ $stats['izinSakit'] }}</div>
+                    <div class="text-2xl font-bold text-red-600">{{ $stats['izinSakit'] }}</div>
                 </div>
                 <div class="text-3xl">📝</div>
             </div>
@@ -110,7 +110,7 @@
                             if ($assignee->status == 'Hadir') $statusColor = 'bg-emerald-100 text-emerald-600 border-emerald-200';
                             elseif ($assignee->status == 'Terlambat') $statusColor = 'bg-amber-100 text-amber-600 border-amber-200';
                             elseif ($assignee->status == 'Alpha') $statusColor = 'bg-red-100 text-red-600 border-red-200';
-                            elseif ($assignee->status == 'Izin' || $assignee->status == 'Sakit') $statusColor = 'bg-blue-100 text-blue-600 border-blue-200';
+                            elseif ($assignee->status == 'Izin' || $assignee->status == 'Sakit') $statusColor = 'bg-red-100 text-red-600 border-red-200';
                         @endphp
                         <tr class="border-b border-slate-200 hover:bg-slate-50 transition-colors">
                             <td class="p-4 text-sm text-slate-800 text-center">{{ $index + 1 }}</td>
@@ -120,7 +120,7 @@
                                 <div class="text-xs text-slate-400 mt-1">{{ $assignee->attendance->title ?? 'Absensi' }}</div>
                             </td>
                             <td class="p-4 text-sm">
-                                <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500 {{ $statusColor }}" onchange="updateStatus(this, {{ $assignee->id }})">
+                                <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-red-500 {{ $statusColor }}" onchange="updateStatus(this, {{ $assignee->id }})">
                                     <option value="Belum Mengisi" {{ $assignee->status == 'Belum Mengisi' ? 'selected' : '' }}>Belum Mengisi</option>
                                     <option value="Hadir" {{ $assignee->status == 'Hadir' ? 'selected' : '' }}>Hadir</option>
                                     <option value="Terlambat" {{ $assignee->status == 'Terlambat' ? 'selected' : '' }}>Terlambat</option>
@@ -129,11 +129,11 @@
                                 </select>
                             </td>
                             <td class="p-4 text-sm text-slate-800">
-                                <input type="text" value="{{ $assignee->keterangan ?? '-' }}" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-blue-500" readonly />
+                                <input type="text" value="{{ $assignee->keterangan ?? '-' }}" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-red-500" readonly />
                             </td>
                             <td class="p-4 text-sm">
                                 @if($assignee->photo_path)
-                                    <button onclick="viewPhoto('{{ url('storage/' . $assignee->photo_path) }}')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors whitespace-nowrap">
+                                    <button onclick="viewPhoto('{{ url('storage/' . $assignee->photo_path) }}')" class="px-3 py-1.5 rounded-md bg-red-100 text-red-600 text-xs font-medium hover:bg-red-200 transition-colors whitespace-nowrap">
                                         Lihat Foto
                                     </button>
                                 @else
@@ -178,7 +178,7 @@
             const csrfToken = document.querySelector('meta[name="csrf-token"]').getAttribute('content');
             
             // Remove all status classes
-            selectElement.className = 'px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-blue-500';
+            selectElement.className = 'px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-red-500';
             
             // Add appropriate class based on status
             switch(status) {
@@ -189,7 +189,7 @@
                     selectElement.classList.add('bg-amber-100', 'text-amber-600', 'border-amber-200');
                     break;
                 case 'Izin':
-                    selectElement.classList.add('bg-blue-100', 'text-blue-600', 'border-blue-200');
+                    selectElement.classList.add('bg-red-100', 'text-red-600', 'border-red-200');
                     break;
                 case 'Alpha':
                     selectElement.classList.add('bg-red-100', 'text-red-600', 'border-red-200');
@@ -258,3 +258,5 @@
         });
     </script>
 </x-admin-layout>
+
+

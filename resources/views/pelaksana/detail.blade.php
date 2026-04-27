@@ -601,7 +601,7 @@
                     @php
                         $isAdmin = $comment->user->role_id != 3;
                         $initials = collect(explode(' ', $comment->user->name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('');
-                        $avatarColor = $isAdmin ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-600';
+                        $avatarColor = $isAdmin ? 'bg-red-100 text-red-600' : 'bg-slate-200 text-slate-600';
                         $bubbleClass = $isAdmin ? 'admin' : '';
                     @endphp
                     <div class="comment-item">
@@ -925,3 +925,5 @@
         }
     </script>
 </x-pelaksana-layout>
+
+

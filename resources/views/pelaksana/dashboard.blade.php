@@ -11,7 +11,7 @@
                 <div class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-[18px] h-[18px] text-[0.7rem] flex items-center justify-center">2</div>
             </div>
             <div class="flex items-center gap-2.5 cursor-pointer relative" x-data="{ open: false }" @click.away="open = false" @click="open = !open">
-                <div class="w-10 h-10 rounded-full bg-indigo-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'P', 0, 1) }}</div>
+                <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'P', 0, 1) }}</div>
                 <div class="hidden md:block text-right">
                     <span class="block font-medium text-slate-700 text-sm leading-none">{{ Auth::user()->name ?? 'Pelaksana' }}</span>
                     <span class="text-xs text-slate-500">Mahasiswa PKL</span>
@@ -37,11 +37,11 @@
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Tugas Saya</h3>
             <div class="flex items-end justify-between">
                 <div class="text-3xl font-bold text-slate-800">{{ $totalTasks }}</div>
-                <span class="text-xs px-2 py-1 bg-blue-100 text-blue-600 rounded-lg">{{ $pendingTasks }} Pending</span>
+                <span class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded-lg">{{ $pendingTasks }} Pending</span>
             </div>
             <div class="text-xs text-slate-500 mt-2">{{ $nearingDeadlineCount }} tugas mendekati deadline</div>
         </div>
@@ -50,18 +50,18 @@
             <div class="flex items-end justify-between">
                 <div class="text-3xl font-bold text-slate-800">{{ $attendanceRate }}%</div>
                 @php
-                    $statusColor = $attendanceRate >= 90 ? 'bg-emerald-100 text-emerald-600' : ($attendanceRate >= 75 ? 'bg-blue-100 text-blue-600' : 'bg-amber-100 text-amber-600');
+                    $statusColor = $attendanceRate >= 90 ? 'bg-emerald-100 text-emerald-600' : ($attendanceRate >= 75 ? 'bg-red-100 text-red-600' : 'bg-amber-100 text-amber-600');
                     $statusText = $attendanceRate >= 90 ? 'Sangat Baik' : ($attendanceRate >= 75 ? 'Baik' : 'Cukup');
                 @endphp
                 <span class="text-xs px-2 py-1 {{ $statusColor }} rounded-lg">{{ $statusText }}</span>
             </div>
             <div class="text-xs text-slate-500 mt-2">Hadir {{ $presentCount }} dari {{ $totalAttendanceSessions }} hari</div>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-violet-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Sisa Hari PKL</h3>
             <div class="flex items-end justify-between">
                 <div class="text-3xl font-bold text-slate-800">{{ $daysLeft }}</div>
-                <span class="text-xs px-2 py-1 bg-violet-100 text-violet-600 rounded-lg">Hari</span>
+                <span class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded-lg">Hari</span>
             </div>
             <div class="text-xs text-slate-500 mt-2">Berakhir: {{ $endDateFormatted }}</div>
         </div>
@@ -72,7 +72,7 @@
         <div class="bg-white rounded-xl shadow-sm p-6">
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-lg font-bold text-slate-800">Tugas Terbaru</h2>
-                <a href="{{ route('pelaksana.penugasan') }}" class="text-blue-500 text-sm hover:underline">Lihat Semua</a>
+                <a href="{{ route('pelaksana.penugasan') }}" class="text-red-500 text-sm hover:underline">Lihat Semua</a>
             </div>
             <div class="space-y-4">
                 @forelse($recentTasks as $task)
@@ -130,7 +130,7 @@
                         </div>
                     </div>
 
-                    <a href="{{ route('pelaksana.penugasan.show', $priorityTask->id) }}" class="w-full max-w-xs bg-blue-600 text-white py-2.5 rounded-lg hover:bg-blue-700 transition font-medium">
+                    <a href="{{ route('pelaksana.penugasan.show', $priorityTask->id) }}" class="w-full max-w-xs bg-red-600 text-white py-2.5 rounded-lg hover:bg-red-700 transition font-medium">
                         Lihat Detail Tugas
                     </a>
                 @else
@@ -147,7 +147,7 @@
     <div class="bg-white rounded-xl shadow-sm p-6">
         <div class="flex justify-between items-center mb-6">
             <h2 class="text-lg font-bold text-slate-800">Riwayat Absensi</h2>
-            <a href="{{ route('pelaksana.absensi') }}" class="text-blue-500 text-sm hover:underline">Lihat Semua</a>
+            <a href="{{ route('pelaksana.absensi') }}" class="text-red-500 text-sm hover:underline">Lihat Semua</a>
         </div>
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
             @forelse($recentAttendances as $attendance)
@@ -190,3 +190,5 @@
         </div>
     </div>
 </x-pelaksana-layout>
+
+

@@ -29,7 +29,7 @@
 
     <!-- Stats Grid -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Penugasan</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $totalTasks }}</div>
             <div class="text-xs text-slate-500">Aktif dan selesai</div>
@@ -50,7 +50,7 @@
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $activeTasks }}</div>
             <div class="text-xs text-slate-500">Dalam progres pengerjaan</div>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-violet-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Keterlambatan</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $lateTasks }}</div>
             <div class="text-xs text-slate-500">Perlu tindak lanjut</div>
@@ -64,36 +64,36 @@
         <input type="hidden" name="sort_dir" value="{{ request('sort_dir', 'desc') }}">
 
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-5 rounded-xl shadow-sm gap-4">
-            <a href="{{ route('penugasan.create') }}" class="bg-blue-500 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm">
+            <a href="{{ route('penugasan.create') }}" class="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm">
                 <span>📝</span> Buat Penugasan
             </a>
             <div class="flex flex-col md:flex-row gap-3 items-center w-full md:w-auto">
-                <select name="status" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[140px] focus:outline-none focus:border-blue-500">
+                <select name="status" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[140px] focus:outline-none focus:border-red-500">
                     <option value="">Semua Status</option>
                     <option value="active" {{ request('status') == 'active' ? 'selected' : '' }}>Aktif</option>
                     <option value="completed" {{ request('status') == 'completed' ? 'selected' : '' }}>Selesai</option>
                     <option value="draft" {{ request('status') == 'draft' ? 'selected' : '' }}>Draft</option>
                     <option value="late" {{ request('status') == 'late' ? 'selected' : '' }}>Terlambat</option>
                 </select>
-                <select name="prioritas" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[140px] focus:outline-none focus:border-blue-500">
+                <select name="prioritas" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[140px] focus:outline-none focus:border-red-500">
                     <option value="">Semua Prioritas</option>
                     <option value="tinggi" {{ request('prioritas') == 'tinggi' ? 'selected' : '' }}>Tinggi</option>
                     <option value="sedang" {{ request('prioritas') == 'sedang' ? 'selected' : '' }}>Sedang</option>
                     <option value="rendah" {{ request('prioritas') == 'rendah' ? 'selected' : '' }}>Rendah</option>
                 </select>
-                <select name="divisi_id" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[140px] focus:outline-none focus:border-blue-500">
+                <select name="divisi_id" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[140px] focus:outline-none focus:border-red-500">
                     <option value="">Semua Divisi</option>
                     @foreach($divisis as $divisi)
                         <option value="{{ $divisi->id }}" {{ request('divisi_id') == $divisi->id ? 'selected' : '' }}>{{ $divisi->nama }}</option>
                     @endforeach
                 </select>
                 <div class="relative w-full md:w-auto">
-                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-blue-500 pr-8" placeholder="Cari tugas atau mahasiswa...">
+                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500 pr-8" placeholder="Cari tugas atau mahasiswa...">
                     @if(request('search'))
                         <a href="{{ route('penugasan', request()->except('search', 'page')) }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm">✕</a>
                     @endif
                 </div>
-                <button type="submit" class="p-2.5 bg-blue-500 text-white rounded-lg text-sm font-medium hover:bg-blue-600 transition-colors px-4">Cari</button>
+                <button type="submit" class="p-2.5 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors px-4">Cari</button>
                 @if(request()->hasAny(['status', 'prioritas', 'divisi_id', 'search']))
                     <a href="{{ route('penugasan') }}" class="p-2.5 border-2 border-slate-200 rounded-lg text-sm text-slate-600 hover:bg-slate-50 transition-colors px-4 whitespace-nowrap">Reset Filter</a>
                 @endif
@@ -114,8 +114,8 @@
             $currentDir = request('sort_dir', 'desc');
             if ($currentSort !== $column) return '<span class="text-slate-300 ml-1">↕</span>';
             return $currentDir === 'asc'
-                ? '<span class="text-blue-500 ml-1">↑</span>'
-                : '<span class="text-blue-500 ml-1">↓</span>';
+                ? '<span class="text-red-500 ml-1">↑</span>'
+                : '<span class="text-red-500 ml-1">↓</span>';
         }
     @endphp
 
@@ -133,25 +133,25 @@
                 <thead>
                     <tr class="bg-slate-50 text-left">
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
-                            <a href="{{ taskSortUrl('judul') }}" class="flex items-center hover:text-blue-600 transition-colors">
+                            <a href="{{ taskSortUrl('judul') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Judul Tugas {!! taskSortIcon('judul') !!}
                             </a>
                         </th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Mahasiswa</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Divisi</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
-                            <a href="{{ taskSortUrl('deadline_date') }}" class="flex items-center hover:text-blue-600 transition-colors">
+                            <a href="{{ taskSortUrl('deadline_date') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Deadline {!! taskSortIcon('deadline_date') !!}
                             </a>
                         </th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
-                            <a href="{{ taskSortUrl('prioritas') }}" class="flex items-center hover:text-blue-600 transition-colors">
+                            <a href="{{ taskSortUrl('prioritas') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Prioritas {!! taskSortIcon('prioritas') !!}
                             </a>
                         </th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Progress</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
-                            <a href="{{ taskSortUrl('status') }}" class="flex items-center hover:text-blue-600 transition-colors">
+                            <a href="{{ taskSortUrl('status') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Status {!! taskSortIcon('status') !!}
                             </a>
                         </th>
@@ -181,7 +181,7 @@
                                 $statusClass = 'bg-red-100 text-red-600';
                             } else {
                                 $statusLabel = 'Aktif';
-                                $statusClass = 'bg-blue-100 text-blue-600';
+                                $statusClass = 'bg-red-100 text-red-600';
                             }
 
                             $prioritasColors = [
@@ -235,7 +235,7 @@
                             <td class="p-4 text-sm">
                                 <div class="flex gap-2">
                                     <a href="{{ route('penugasan.show', $task->id) }}" class="px-3 py-1.5 rounded-md bg-slate-100 text-slate-800 text-xs font-medium hover:bg-slate-200 transition-colors hover:-translate-y-px text-center">Lihat</a>
-                                    <a href="{{ route('penugasan.edit', $task->id) }}" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors hover:-translate-y-px">Edit</a>
+                                    <a href="{{ route('penugasan.edit', $task->id) }}" class="px-3 py-1.5 rounded-md bg-red-100 text-red-600 text-xs font-medium hover:bg-red-200 transition-colors hover:-translate-y-px">Edit</a>
                                 </div>
                             </td>
                         </tr>
@@ -247,7 +247,7 @@
                                     <div>
                                         @if(request()->hasAny(['status', 'prioritas', 'divisi_id', 'search']))
                                             <p class="font-medium text-slate-600">Tidak ada tugas yang cocok</p>
-                                            <p class="text-sm">Coba ubah filter atau <a href="{{ route('penugasan') }}" class="text-blue-500 hover:underline">reset filter</a>.</p>
+                                            <p class="text-sm">Coba ubah filter atau <a href="{{ route('penugasan') }}" class="text-red-500 hover:underline">reset filter</a>.</p>
                                         @else
                                             <p class="font-medium text-slate-600">Belum ada tugas</p>
                                             <p class="text-sm">Klik "Buat Penugasan" untuk membuat tugas pertama.</p>
@@ -276,7 +276,7 @@
 
                 @foreach($tasks->getUrlRange(1, $tasks->lastPage()) as $page => $url)
                     @if($page == $tasks->currentPage())
-                        <span class="px-3 py-2 bg-blue-500 rounded-lg text-sm text-white">{{ $page }}</span>
+                        <span class="px-3 py-2 bg-red-500 rounded-lg text-sm text-white">{{ $page }}</span>
                     @else
                         <a href="{{ $url }}" class="px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white text-slate-700 hover:shadow-md transition-all">{{ $page }}</a>
                     @endif
@@ -292,3 +292,5 @@
         @endif
     </div>
 </x-admin-layout>
+
+

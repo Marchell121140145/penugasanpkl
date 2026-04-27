@@ -26,41 +26,41 @@
     <!-- Action Bar -->
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-5 rounded-xl shadow-sm gap-4">
         <div class="flex gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
-            <a href="{{ route('absensi.create') }}" class="bg-blue-500 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap">
+            <a href="{{ route('absensi.create') }}" class="bg-red-500 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap">
                 <span>📝</span> Buat Absensi
             </a>
             <button class="bg-emerald-500 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap">
                 <span>📥</span> Download
             </button>
-            <button class="bg-white text-slate-800 border-2 border-slate-200 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap hover:border-blue-300">
+            <button class="bg-white text-slate-800 border-2 border-slate-200 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap hover:border-red-300">
                 <span>🔄</span> Refresh
             </button>
         </div>
         <div class="flex gap-4 items-center w-full md:w-auto">
-            <select id="statusFilter" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-blue-500">
+            <select id="statusFilter" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-red-500">
                 <option value="">Semua Status</option>
                 <option value="Hadir">Hadir</option>
                 <option value="Terlambat">Terlambat</option>
                 <option value="Alpha">Alpha</option>
                 <option value="Izin">Izin</option>
             </select>
-            <select id="divisionFilter" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-blue-500">
+            <select id="divisionFilter" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-red-500">
                 <option value="">Semua Divisi</option>
                 <option value="IT Development">IT Development</option>
                 <option value="Data Analytics">Data Analytics</option>
                 <option value="UI/UX Design">UI/UX Design</option>
                 <option value="Quality Assurance">Quality Assurance</option>
             </select>
-            <input type="text" id="searchInput" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-blue-500" placeholder="Cari nama atau NIM...">
+            <input type="text" id="searchInput" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500" placeholder="Cari nama atau NIM...">
         </div>
     </div>
 
     <!-- Date Navigation -->
     <div class="flex items-center gap-4 mb-6 bg-white p-4 rounded-xl shadow-sm">
-        <button class="date-nav-btn text-blue-500 p-2 rounded-lg hover:bg-slate-100 transition-colors text-lg" id="prevDateBtn">◀</button>
+        <button class="date-nav-btn text-red-500 p-2 rounded-lg hover:bg-slate-100 transition-colors text-lg" id="prevDateBtn">◀</button>
         <div class="date-display font-semibold text-slate-800 text-lg">{{ $selectedDate->locale('id')->isoFormat('dddd, D MMMM Y') }}</div>
-        <button class="date-nav-btn text-blue-500 p-2 rounded-lg hover:bg-slate-100 transition-colors text-lg" id="nextDateBtn">▶</button>
-        <button class="today-btn ml-auto bg-blue-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-blue-600 transition-colors" id="todayBtn">Hari Ini</button>
+        <button class="date-nav-btn text-red-500 p-2 rounded-lg hover:bg-slate-100 transition-colors text-lg" id="nextDateBtn">▶</button>
+        <button class="today-btn ml-auto bg-red-500 text-white px-4 py-2 rounded-lg text-sm hover:bg-red-600 transition-colors" id="todayBtn">Hari Ini</button>
     </div>
 
     <!-- Stats Cards -->
@@ -70,10 +70,10 @@
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ count($attendances) }}</div>
             <div class="text-xs text-slate-500">Sesi terdata</div>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Hadir Hari Terpilih</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->where('status', 'Hadir')->count() }}</div>
-            <div class="text-xs text-blue-500">Dari {{ count($assignees) }} daftar hadir</div>
+            <div class="text-xs text-red-500">Dari {{ count($assignees) }} daftar hadir</div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-amber-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Terlambat</h3>
@@ -152,12 +152,12 @@
                             if ($assignee->status == 'Hadir') $statusColor = 'bg-emerald-100 text-emerald-600';
                             elseif ($assignee->status == 'Terlambat') $statusColor = 'bg-amber-100 text-amber-600';
                             elseif ($assignee->status == 'Alpha') $statusColor = 'bg-red-100 text-red-600';
-                            elseif ($assignee->status == 'Izin') $statusColor = 'bg-blue-100 text-blue-600';
+                            elseif ($assignee->status == 'Izin') $statusColor = 'bg-red-100 text-red-600';
 
                             $divisionColor = 'bg-gray-50 text-gray-600';
                             $divName = $user->divisi->nama ?? 'Tanpa Divisi';
                             if (str_contains(strtolower($divName), 'it')) $divisionColor = 'bg-purple-50 text-purple-600';
-                            elseif (str_contains(strtolower($divName), 'data')) $divisionColor = 'bg-blue-50 text-blue-600';
+                            elseif (str_contains(strtolower($divName), 'data')) $divisionColor = 'bg-red-50 text-red-600';
                             elseif (str_contains(strtolower($divName), 'design')) $divisionColor = 'bg-pink-50 text-pink-600';
                             elseif (str_contains(strtolower($divName), 'quality')) $divisionColor = 'bg-green-50 text-green-600';
                         @endphp
@@ -266,3 +266,5 @@
         };
     </script>
 </x-admin-layout>
+
+

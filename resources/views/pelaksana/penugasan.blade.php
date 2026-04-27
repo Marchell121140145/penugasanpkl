@@ -87,7 +87,7 @@
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <!-- Total Tasks -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4">
-            <div class="w-12 h-12 bg-blue-50 rounded-full flex items-center justify-center text-blue-600">
+            <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-600">
                 <span class="text-xl">📋</span>
             </div>
             <div>
@@ -136,13 +136,13 @@
              <div class="text-sm font-medium text-slate-500 pt-2">Filter Tugas:</div>
         </div>
         <div class="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
-            <select name="status" onchange="this.form.submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-blue-500">
+            <select name="status" onchange="this.form.submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-red-500">
                 <option value="Semua Status" {{ request('status') == 'Semua Status' ? 'selected' : '' }}>Semua Status</option>
                 <option value="Belum Dikerjakan" {{ request('status') == 'Belum Dikerjakan' ? 'selected' : '' }}>Belum Dikerjakan</option>
                 <option value="Dalam Proses" {{ request('status') == 'Dalam Proses' ? 'selected' : '' }}>Dalam Proses</option>
                 <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
             </select>
-            <input type="text" name="search" value="{{ request('search') }}" onblur="this.form.submit()" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-blue-500" placeholder="Cari tugas...">
+            <input type="text" name="search" value="{{ request('search') }}" onblur="this.form.submit()" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500" placeholder="Cari tugas...">
         </div>
     </form>
 
@@ -159,7 +159,7 @@
                 <div class="p-6">
                     <div class="task-header flex justify-between items-start mb-4">
                         @if ($submission && $submission->status == 'graded')
-                            <span class="px-3 py-1 bg-blue-100 text-blue-700 text-xs font-semibold rounded-full">Dinilai</span>
+                            <span class="px-3 py-1 bg-red-100 text-red-700 text-xs font-semibold rounded-full">Dinilai</span>
                         @elseif($submission && $submission->status == 'returned')
                             <span class="px-3 py-1 bg-amber-100 text-amber-700 text-xs font-semibold rounded-full">Revisi</span>
                         @elseif ($isCompleted)
@@ -180,7 +180,7 @@
                     </div>
                     
                     <div class="task-body mb-4">
-                        <h3 class="text-lg font-bold text-slate-800 mb-2 group-hover:text-blue-600 transition-colors line-clamp-1" title="{{ $task->judul }}">{{ $task->judul }}</h3>
+                        <h3 class="text-lg font-bold text-slate-800 mb-2 group-hover:text-red-600 transition-colors line-clamp-1" title="{{ $task->judul }}">{{ $task->judul }}</h3>
                         <p class="text-slate-500 text-sm line-clamp-2">{{ strip_tags($task->deskripsi) }}</p>
                     </div>
                     
@@ -190,7 +190,7 @@
                             @if ($isCompleted)
                                 <span class="text-emerald-600 font-medium">100%</span>
                             @elseif ($submission && $submission->status == 'working')
-                                <span class="text-blue-600 font-medium">50%</span>
+                                <span class="text-red-600 font-medium">50%</span>
                             @else
                                 <span class="text-slate-800 font-medium">0%</span>
                             @endif
@@ -199,7 +199,7 @@
                             @if ($isCompleted)
                                 <div class="bg-emerald-500 h-2 rounded-full" style="width: 100%"></div>
                             @elseif ($submission && $submission->status == 'working')
-                                <div class="bg-blue-500 h-2 rounded-full" style="width: 50%"></div>
+                                <div class="bg-red-500 h-2 rounded-full" style="width: 50%"></div>
                             @else
                                 <div class="bg-slate-300 h-2 rounded-full" style="width: 0%"></div>
                             @endif
@@ -215,11 +215,11 @@
                             @if($submission && $submission->status == 'graded')
                                 <div class="flex flex-col">
                                     <span class="text-[10px] text-slate-400 uppercase font-bold leading-none">Nilai</span>
-                                    <span class="text-lg font-black text-blue-600 leading-tight">{{ $submission->nilai ?? '-' }}</span>
+                                    <span class="text-lg font-black text-red-600 leading-tight">{{ $submission->nilai ?? '-' }}</span>
                                 </div>
                             @endif
                         </div>
-                        <a href="{{ route('pelaksana.penugasan.show', $task->id) }}" class="px-4 py-2 {{ $isCompleted ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-blue-600 text-white hover:bg-blue-700' }} text-sm font-medium rounded-lg transition-colors">
+                        <a href="{{ route('pelaksana.penugasan.show', $task->id) }}" class="px-4 py-2 {{ $isCompleted ? 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100' : 'bg-red-600 text-white hover:bg-red-700' }} text-sm font-medium rounded-lg transition-colors">
                             {{ $submission && $submission->status == 'graded' ? 'Lihat Review' : ($isCompleted ? 'Detail' : 'Kerjakan') }}
                         </a>
                     </div>
@@ -266,3 +266,5 @@
         });
     </script>
 </x-pelaksana-layout>
+
+

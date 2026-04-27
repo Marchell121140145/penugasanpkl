@@ -288,14 +288,14 @@
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
-                <a href="{{ route('penugasan') }}" class="text-slate-500 hover:text-blue-600 mb-2 inline-block flex items-center gap-1">
+                <a href="{{ route('penugasan') }}" class="text-slate-500 hover:text-red-600 mb-2 inline-block flex items-center gap-1">
                     <span>←</span> Kembali ke Daftar Tugas
                 </a>
                 <h1 class="text-slate-800 text-3xl font-bold mb-1">Detail Penugasan</h1>
                 <p class="text-slate-600">Monitoring progres tugas mahasiswa</p>
             </div>
             <div class="flex items-center gap-3">
-                 <a href="{{ route('penugasan.edit', $task->id) }}" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-blue-700 transition-colors">Edit Tugas</a>
+                 <a href="{{ route('penugasan.edit', $task->id) }}" class="bg-red-600 text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-red-700 transition-colors">Edit Tugas</a>
                  <form action="{{ route('penugasan.destroy', $task->id) }}" method="POST" class="delete-form" onsubmit="return confirm('Yakin ingin menghapus tugas ini? Semua data terkait akan ikut terhapus.')">
                     @csrf
                     @method('DELETE')
@@ -370,7 +370,7 @@
                                     $statusClass = 'bg-red-100 text-red-600';
                                 } else {
                                     $statusLabel = 'Aktif';
-                                    $statusClass = 'bg-blue-100 text-blue-600';
+                                    $statusClass = 'bg-red-100 text-red-600';
                                 }
                             @endphp
                             <span class="px-3 py-1 rounded-full text-xs font-semibold {{ $statusClass }}">{{ $statusLabel }}</span>
@@ -441,7 +441,7 @@
                                     <span>✏️</span> Edit di Web
                                 </a>
                             @endif
-                            <a href="{{ asset('storage/' . $file->path) }}" target="_blank" download class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors flex items-center gap-2">
+                            <a href="{{ asset('storage/' . $file->path) }}" target="_blank" download class="bg-red-50 text-red-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
                                 <span>⬇️</span> Download
                             </a>
                         </div>
@@ -470,7 +470,7 @@
                                 <span>📊</span> Live Sheet
                             </button>
                         @endif
-                        <a href="{{ $link->url }}" target="_blank" class="bg-blue-50 text-blue-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-blue-100 transition-colors flex items-center gap-2">
+                        <a href="{{ $link->url }}" target="_blank" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
                             <span>🔗</span> Kunjungi
                         </a>
                     </div>
@@ -531,12 +531,12 @@
                                 $initials = $user ? collect(explode(' ', $user->name))->map(fn($w) => strtoupper(substr($w, 0, 1)))->take(2)->join('') : '??';
 
                                 $avatarColors = [
-                                    'bg-indigo-100 text-indigo-600',
+                                    'bg-red-100 text-red-600',
                                     'bg-pink-100 text-pink-600',
                                     'bg-emerald-100 text-emerald-600',
                                     'bg-amber-100 text-amber-600',
-                                    'bg-cyan-100 text-cyan-600',
-                                    'bg-violet-100 text-violet-600',
+                                    'bg-red-100 text-red-600',
+                                    'bg-red-100 text-red-600',
                                     'bg-rose-100 text-rose-600',
                                     'bg-teal-100 text-teal-600',
                                 ];
@@ -565,7 +565,7 @@
                                 <td class="p-4 text-sm">
                                     @if($submission->file_path)
                                         <div class="flex items-center gap-2">
-                                        <a href="{{ asset('storage/' . $submission->file_path) }}" target="_blank" class="text-blue-600 hover:underline flex items-center gap-1">
+                                        <a href="{{ asset('storage/' . $submission->file_path) }}" target="_blank" class="text-red-600 hover:underline flex items-center gap-1">
                                             <span>📄</span> {{ $submission->file_nama ?? 'Download' }}
                                         </a>
                                         @if(Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.pdf'))
@@ -613,7 +613,7 @@
                                                     ];
                                                 })
                                             ]) }})"
-                                            class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-blue-700 transition-colors">
+                                            class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-xs font-medium hover:bg-red-700 transition-colors">
                                         Review & Nilai
                                     </button>
                                 </td>
@@ -680,7 +680,7 @@
                                 <label class="block text-sm font-medium text-slate-700 mb-1">Komentar Utama / Feedback Internal</label>
                                 <textarea name="komentar" id="evalKomentar" rows="3" class="w-full rounded-lg border-slate-300 text-sm" placeholder="Berikan feedback singkat..."></textarea>
                             </div>
-                            <button type="submit" class="w-full bg-blue-600 text-white font-bold py-2 rounded-lg hover:bg-blue-700 transition-colors">
+                            <button type="submit" class="w-full bg-red-600 text-white font-bold py-2 rounded-lg hover:bg-red-700 transition-colors">
                                 Simpan Penilaian
                             </button>
                         </form>
@@ -698,8 +698,8 @@
                             @csrf
                             <div class="relative">
                                 <input type="text" name="pesan" id="commentInput" placeholder="Ketik pesan ke mahasiswa..." 
-                                       class="w-full rounded-full border-slate-300 pr-12 text-sm focus:ring-blue-500 focus:border-blue-500">
-                                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-blue-600 text-white p-1.5 rounded-full hover:bg-blue-700">
+                                       class="w-full rounded-full border-slate-300 pr-12 text-sm focus:ring-red-500 focus:border-red-500">
+                                <button type="submit" class="absolute right-2 top-1/2 -translate-y-1/2 bg-red-600 text-white p-1.5 rounded-full hover:bg-red-700">
                                     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9-2-9-18-9 18 9 2zm0 0v-8"></path></svg>
                                 </button>
                             </div>
@@ -762,7 +762,7 @@
             } else {
                 data.comments.forEach(c => {
                     const initials = c.user_name.split(' ').map(n => n[0]).join('').substring(0, 2).toUpperCase();
-                    const avatarColor = c.is_admin ? 'bg-blue-100 text-blue-600' : 'bg-slate-200 text-slate-600';
+                    const avatarColor = c.is_admin ? 'bg-red-100 text-red-600' : 'bg-slate-200 text-slate-600';
                     const bubbleClass = c.is_admin ? 'admin' : '';
                     
                     feed.innerHTML += `
@@ -803,3 +803,5 @@
         });
     </script>
 </x-admin-layout>
+
+

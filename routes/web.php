@@ -79,6 +79,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/divisi', [PembimbingController::class, 'storeDivisi'])->name('divisi.store');
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
+    Route::delete('/settings/user/{id}', [SettingsController::class, 'destroyUser'])->name('settings.user.destroy');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');

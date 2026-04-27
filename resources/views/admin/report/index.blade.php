@@ -52,7 +52,7 @@
                 <a href="{{ route('laporan.export', request()->query()) }}" class="flex items-center gap-2 px-4 py-2.5 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-all shadow-sm font-semibold text-sm">
                     <span class="text-lg">Excel</span>
                 </a>
-                <button onclick="window.print()" class="flex items-center gap-2 px-4 py-2.5 bg-blue-600 text-white rounded-xl hover:bg-blue-700 transition-all shadow-sm font-semibold text-sm">
+                <button onclick="window.print()" class="flex items-center gap-2 px-4 py-2.5 bg-red-600 text-white rounded-xl hover:bg-red-700 transition-all shadow-sm font-semibold text-sm">
                     <span class="text-lg">Print PDF</span>
                 </button>
             </div>
@@ -65,7 +65,7 @@
                 @if(Auth::user()->role_id == 1)
                 <div class="flex-1 min-w-[200px]">
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Divisi</label>
-                    <select name="divisi_id" onchange="this.form.submit()" class="w-full bg-slate-50 border-slate-100 text-slate-700 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 p-2.5">
+                    <select name="divisi_id" onchange="this.form.submit()" class="w-full bg-slate-50 border-slate-100 text-slate-700 text-sm rounded-xl focus:ring-2 focus:ring-red-500 p-2.5">
                         <option value="">Seluruh Divisi</option>
                         @foreach($allDivisi as $divisi)
                             <option value="{{ $divisi->id }}" {{ $divisiId == $divisi->id ? 'selected' : '' }}>
@@ -79,7 +79,7 @@
                 <!-- Month Filter -->
                 <div class="flex-1 min-w-[200px]">
                     <label class="block text-xs font-bold text-slate-400 uppercase mb-1 ml-1">Periode Bulan</label>
-                    <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="w-full bg-slate-50 border-slate-100 text-slate-700 text-sm rounded-xl focus:ring-2 focus:ring-blue-500 p-2.5">
+                    <input type="month" name="month" value="{{ $selectedMonth }}" onchange="this.form.submit()" class="w-full bg-slate-50 border-slate-100 text-slate-700 text-sm rounded-xl focus:ring-2 focus:ring-red-500 p-2.5">
                 </div>
 
                 <div class="flex items-end">
@@ -93,7 +93,7 @@
         <!-- Summary Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 transition-all hover:shadow-md card">
-                <div class="w-16 h-16 rounded-2xl bg-blue-50 flex items-center justify-center text-3xl">👥</div>
+                <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl">👥</div>
                 <div>
                     <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Pelaksana</h3>
                     <div class="text-3xl font-extrabold text-slate-800 mt-1">{{ $summary['total_students'] }}</div>
@@ -109,7 +109,7 @@
             </div>
 
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 transition-all hover:shadow-md card">
-                <div class="w-16 h-16 rounded-2xl bg-indigo-50 flex items-center justify-center text-3xl">📅</div>
+                <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl">📅</div>
                 <div>
                     <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Avg Kehadiran</h3>
                     <div class="text-3xl font-extrabold text-slate-800 mt-1">{{ $summary['avg_attendance'] }}%</div>
@@ -142,7 +142,7 @@
                                         @if($student['avatar'])
                                             <img src="{{ asset('storage/' . $student['avatar']) }}" alt="{{ $student['name'] }}" class="w-full h-full object-cover">
                                         @else
-                                            <div class="w-full h-full flex items-center justify-center bg-blue-500 text-white font-bold text-sm">
+                                            <div class="w-full h-full flex items-center justify-center bg-red-500 text-white font-bold text-sm">
                                                 {{ substr($student['name'], 0, 1) }}
                                             </div>
                                         @endif
@@ -164,7 +164,7 @@
                                 <div class="w-full max-w-[100px]">
                                     <div class="text-xs font-bold text-slate-700 mb-1">{{ $student['attendance_percentage'] }}%</div>
                                     <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                                        <div class="h-full bg-blue-500" style="width: {{ $student['attendance_percentage'] }}%"></div>
+                                        <div class="h-full bg-red-500" style="width: {{ $student['attendance_percentage'] }}%"></div>
                                     </div>
                                 </div>
                             </td>
@@ -172,12 +172,12 @@
                                 <div class="grid grid-cols-2 gap-x-2 gap-y-1 text-[9px] uppercase font-bold tracking-tight">
                                     <span class="text-emerald-600">H:{{ $student['attendance_details']['hadir'] }}</span>
                                     <span class="text-amber-500">T:{{ $student['attendance_details']['terlambat'] }}</span>
-                                    <span class="text-violet-500">I:{{ $student['attendance_details']['izin'] + $student['attendance_details']['sakit'] }}</span>
+                                    <span class="text-red-500">I:{{ $student['attendance_details']['izin'] + $student['attendance_details']['sakit'] }}</span>
                                     <span class="text-rose-500">A:{{ $student['attendance_details']['alpha'] }}</span>
                                 </div>
                             </td>
                             <td class="px-6 py-5 text-right no-print">
-                                <a href="{{ route('laporan.show', $student['id']) }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-blue-50 text-blue-600 hover:bg-blue-100 transition-colors" title="Analisis Lengkap">
+                                <a href="{{ route('laporan.show', $student['id']) }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Analisis Lengkap">
                                     <span class="text-lg">📈</span>
                                 </a>
                             </td>
@@ -193,3 +193,5 @@
         </div>
     </div>
 </x-admin-layout>
+
+

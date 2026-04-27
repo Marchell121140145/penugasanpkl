@@ -14,7 +14,7 @@
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2.5 cursor-pointer relative" x-data="{ open: false }" @click.away="open = false" @click="open = !open">
                 <!-- Gunakan inisial nama jika ada -->
-                <div class="w-10 h-10 rounded-full bg-blue-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</div>
+                <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</div>
                 <span class="font-medium text-slate-700">{{ Auth::user()->name ?? 'Guest' }}</span>
                 <span class="ml-2 text-xs text-slate-500">▼</span>
 
@@ -48,7 +48,7 @@
     @if(Auth::user()->role_id == 1)
     <div class="bg-white p-4 rounded-xl shadow-sm mb-8 border border-slate-100 flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
-            <div class="p-2 bg-blue-50 text-blue-600 rounded-lg">
+            <div class="p-2 bg-red-50 text-red-600 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
             </div>
             <div>
@@ -57,7 +57,7 @@
             </div>
         </div>
         <form action="{{ route('dashboard') }}" method="GET" id="filterForm" class="flex items-center gap-2">
-            <select name="divisi_id" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 min-w-[200px]">
+            <select name="divisi_id" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 min-w-[200px]">
                 <option value="">Seluruh Divisi</option>
                 @foreach($allDivisi as $divisi)
                     <option value="{{ $divisi->id }}" {{ $divisiId == $divisi->id ? 'selected' : '' }}>
@@ -73,14 +73,14 @@
         </form>
     </div>
     @elseif(Auth::user()->role_id == 2)
-    <div class="bg-blue-50 border border-blue-100 p-4 rounded-xl mb-8 flex items-center justify-between">
+    <div class="bg-red-50 border border-red-100 p-4 rounded-xl mb-8 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <div class="p-2 bg-blue-100 text-blue-600 rounded-lg">
+            <div class="p-2 bg-red-100 text-red-600 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
             </div>
             <div>
-                <h4 class="text-sm font-bold text-blue-800">Mode Pembimbing: {{ Auth::user()->divisi->nama ?? 'Umum' }}</h4>
-                <p class="text-xs text-blue-600">Menampilkan statistik untuk divisi anda.</p>
+                <h4 class="text-sm font-bold text-red-800">Mode Pembimbing: {{ Auth::user()->divisi->nama ?? 'Umum' }}</h4>
+                <p class="text-xs text-red-600">Menampilkan statistik untuk divisi anda.</p>
             </div>
         </div>
     </div>
@@ -89,7 +89,7 @@
     <!-- Stats Grid - Penugasan & Absensi -->
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
         <!-- Statistik Penugasan -->
-        <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-l-blue-500">
+        <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Penugasan</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $totalTasks }}</div>
             <div class="text-xs {{ $newTasksThisWeek > 0 ? 'text-emerald-500' : 'text-slate-400' }}">
@@ -263,7 +263,7 @@
                 <ul class="list-none">
                     @foreach($recentActivities as $activity)
                     <li class="flex items-center py-4 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors rounded-lg px-2">
-                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-4 text-blue-500 text-lg shrink-0">{{ $activity['icon'] }}</div>
+                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-4 text-red-500 text-lg shrink-0">{{ $activity['icon'] }}</div>
                         <div class="flex-1">
                             <h4 class="text-slate-800 text-sm font-semibold mb-1">{{ $activity['title'] }}</h4>
                             <p class="text-slate-500 text-xs">{{ $activity['description'] }}</p>
@@ -286,20 +286,20 @@
                     <h2 class="text-slate-800 text-xl font-semibold">Quick Actions</h2>
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <a href="{{ route('penugasan.create') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-blue-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-blue-500">📋</div>
+                    <a href="{{ route('penugasan.create') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
+                        <div class="text-2xl mb-2 text-red-500">📋</div>
                         <span class="text-slate-800 font-medium text-sm">Buat Penugasan</span>
                     </a>
-                    <a href="{{ route('absensi') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-blue-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-blue-500">📊</div>
+                    <a href="{{ route('absensi') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
+                        <div class="text-2xl mb-2 text-red-500">📊</div>
                         <span class="text-slate-800 font-medium text-sm">Rekap Absensi</span>
                     </a>
-                    <a href="{{ route('pelaksana.list') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-blue-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-blue-500">👤</div>
+                    <a href="{{ route('pelaksana.list') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
+                        <div class="text-2xl mb-2 text-red-500">👤</div>
                         <span class="text-slate-800 font-medium text-sm">Pelaksana</span>
                     </a>
-                    <a href="{{ route('penugasan') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-blue-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-blue-500">📈</div>
+                    <a href="{{ route('penugasan') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
+                        <div class="text-2xl mb-2 text-red-500">📈</div>
                         <span class="text-slate-800 font-medium text-sm">Semua Tugas</span>
                     </a>
                 </div>
@@ -312,7 +312,7 @@
             <div class="bg-white rounded-xl p-6 shadow-sm mb-6|">
                 <div class="flex justify-between items-center mb-5">
                     <h2 class="text-slate-800 text-xl font-semibold">Penugasan Terbaru</h2>
-                    <a href="{{ route('penugasan') }}" class="text-blue-500 text-sm font-medium hover:underline">Lihat Semua</a>
+                    <a href="{{ route('penugasan') }}" class="text-red-500 text-sm font-medium hover:underline">Lihat Semua</a>
                 </div>
                 @if($recentTasks->count() > 0)
                 <ul class="list-none">
@@ -340,7 +340,7 @@
             <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
                 <div class="flex justify-between items-center mb-5">
                     <h2 class="text-slate-800 text-xl font-semibold">Absensi Hari Ini</h2>
-                    <a href="{{ route('absensi') }}" class="text-blue-500 text-sm font-medium hover:underline">Detail</a>
+                    <a href="{{ route('absensi') }}" class="text-red-500 text-sm font-medium hover:underline">Detail</a>
                 </div>
                 @if($todayAttendanceDetail->count() > 0)
                 <ul class="list-none">
@@ -364,3 +364,4 @@
         </div>
     </div>
 </x-admin-layout>
+

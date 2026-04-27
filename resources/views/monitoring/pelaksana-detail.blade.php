@@ -1,6 +1,6 @@
 <x-admin-layout>
     <div class="mb-6">
-        <a href="{{ route('pelaksana.list') }}" class="text-blue-500 hover:text-blue-700 hover:underline flex items-center gap-2 text-sm font-medium transition-colors w-max">
+        <a href="{{ route('pelaksana.list') }}" class="text-red-500 hover:text-red-700 hover:underline flex items-center gap-2 text-sm font-medium transition-colors w-max">
             &larr; Kembali ke Data Pelaksana
         </a>
     </div>
@@ -43,14 +43,14 @@
                         {{ $pelaksana->divisi->nama ?? 'Belum ada Divisi' }}
                     </span>
                     <span>•</span>
-                    <span class="px-2 py-0.5 rounded bg-blue-50 text-blue-700 font-medium">
+                    <span class="px-2 py-0.5 rounded bg-red-50 text-red-700 font-medium">
                         🧑‍🏫 Pembimbing: <strong class="ml-1">{{ $pelaksana->pembimbing->name ?? 'Belum ditugaskan' }}</strong>
                     </span>
                 </div>
             </div>
         </div>
         <div>
-            <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl shadow-md transition-all hover:-translate-y-0.5 mt-4 md:mt-0">
+            <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl shadow-md transition-all hover:-translate-y-0.5 mt-4 md:mt-0">
                 ✏️ Edit Profil
             </button>
         </div>
@@ -58,9 +58,9 @@
 
     <!-- Stats -->
     <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-        <div class="bg-gradient-to-br from-indigo-50 to-white p-6 rounded-2xl shadow-sm border border-indigo-100 relative overflow-hidden">
+        <div class="bg-gradient-to-br from-red-50 to-white p-6 rounded-2xl shadow-sm border border-red-100 relative overflow-hidden">
             <div class="relative z-10">
-                <p class="text-indigo-600/80 text-sm font-bold uppercase tracking-wider mb-1">Total Tugas</p>
+                <p class="text-red-600/80 text-sm font-bold uppercase tracking-wider mb-1">Total Tugas</p>
                 <p class="text-4xl font-extrabold text-indigo-900">{{ $pelaksana->assigned_tasks_count }}</p>
             </div>
             <div class="absolute -right-4 -bottom-4 text-8xl opacity-10">📋</div>
@@ -115,7 +115,7 @@
                             {{ \Carbon\Carbon::parse($task->deadline_date)->format('d M Y') }}
                         </td>
                         <td class="px-6 py-4">
-                            <a href="{{ route('penugasan.show', $task->id) }}" class="inline-flex items-center justify-center p-2 rounded-lg text-blue-600 hover:bg-blue-50 hover:text-blue-800 transition-colors tooltip" title="Lihat Detail">
+                            <a href="{{ route('penugasan.show', $task->id) }}" class="inline-flex items-center justify-center p-2 rounded-lg text-red-600 hover:bg-red-50 hover:text-red-800 transition-colors tooltip" title="Lihat Detail">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"/><circle cx="12" cy="12" r="3"/></svg>
                             </a>
                         </td>
@@ -157,17 +157,17 @@
                     <div class="space-y-5">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
-                            <input type="text" name="name" value="{{ old('name', $pelaksana->name) }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all text-sm outline-none" required>
+                            <input type="text" name="name" value="{{ old('name', $pelaksana->name) }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-sm transition-all text-sm outline-none" required>
                         </div>
                         
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Email</label>
-                            <input type="email" name="email" value="{{ old('email', $pelaksana->email) }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all text-sm outline-none" required>
+                            <input type="email" name="email" value="{{ old('email', $pelaksana->email) }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-sm transition-all text-sm outline-none" required>
                         </div>
 
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Divisi</label>
-                            <select name="divisi_id" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all text-sm cursor-pointer outline-none">
+                            <select name="divisi_id" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-sm transition-all text-sm cursor-pointer outline-none">
                                 <option value="">-- Pilih Divisi --</option>
                                 @foreach($divisis as $div)
                                     <option value="{{ $div->id }}" {{ old('divisi_id', $pelaksana->divisi_id) == $div->id ? 'selected' : '' }}>
@@ -179,7 +179,7 @@
 
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Pembimbing Khusus</label>
-                            <select name="pembimbing_id" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm transition-all text-sm cursor-pointer outline-none">
+                            <select name="pembimbing_id" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-sm transition-all text-sm cursor-pointer outline-none">
                                 <option value="">-- Kosong / Belum ada --</option>
                                 @foreach($pembimbings as $pb)
                                     <option value="{{ $pb->id }}" {{ old('pembimbing_id', $pelaksana->pembimbing_id) == $pb->id ? 'selected' : '' }}>
@@ -194,7 +194,7 @@
                         <button type="button" onclick="document.getElementById('editModal').classList.add('hidden')" class="px-5 py-2.5 rounded-xl font-medium text-slate-600 bg-slate-100 hover:bg-slate-200 transition-colors">
                             Batal
                         </button>
-                        <button type="submit" class="px-5 py-2.5 rounded-xl font-medium text-white bg-blue-600 hover:bg-blue-700 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
+                        <button type="submit" class="px-5 py-2.5 rounded-xl font-medium text-white bg-red-600 hover:bg-red-700 shadow-md hover:shadow-lg transition-all hover:-translate-y-0.5">
                             Simpan Perubahan
                         </button>
                     </div>
@@ -203,3 +203,5 @@
         </div>
     </div>
 </x-admin-layout>
+
+
