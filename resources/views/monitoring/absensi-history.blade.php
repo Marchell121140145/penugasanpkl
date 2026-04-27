@@ -7,7 +7,7 @@
             </a>
             <h1 class="text-slate-800 text-3xl font-bold">Riwayat Absensi Mahasiswa</h1>
         </div>
-        <p class="text-slate-600">Detail kehadiran dan riwayat absensi</p>
+        <p class="text-slate-600">Detail kehadiran, check-in & check-out</p>
     </div>
 
     <!-- Student Info Card -->
@@ -44,7 +44,7 @@
     </div>
 
     <!-- Statistics Cards -->
-    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+    <div class="grid grid-cols-1 md:grid-cols-5 gap-4 mb-6">
         <div class="bg-white rounded-xl p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
@@ -66,7 +66,16 @@
         <div class="bg-white rounded-xl p-5 shadow-sm">
             <div class="flex items-center justify-between">
                 <div>
-                    <div class="text-sm text-slate-500 mb-1">Izin</div>
+                    <div class="text-sm text-slate-500 mb-1">Selesai (Check-Out)</div>
+                    <div class="text-2xl font-bold text-blue-600">{{ $stats['selesai'] }}</div>
+                </div>
+                <div class="text-3xl">🏁</div>
+            </div>
+        </div>
+        <div class="bg-white rounded-xl p-5 shadow-sm">
+            <div class="flex items-center justify-between">
+                <div>
+                    <div class="text-sm text-slate-500 mb-1">Izin / Sakit</div>
                     <div class="text-2xl font-bold text-red-600">{{ $stats['izinSakit'] }}</div>
                 </div>
                 <div class="text-3xl">📝</div>
@@ -98,6 +107,8 @@
                     <tr class="bg-slate-50 text-left">
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm w-16">No</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Hari dan Tanggal</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-In</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-Out</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Status</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Keterangan</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Bukti</th>
@@ -107,8 +118,8 @@
                     @forelse($assignees as $index => $assignee)
                         @php
                             $statusColor = 'bg-slate-100 text-slate-600 border-slate-200';
-                            if ($assignee->status == 'Hadir') $statusColor = 'bg-emerald-100 text-emerald-600 border-emerald-200';
-                            elseif ($assignee->status == 'Terlambat') $statusColor = 'bg-amber-100 text-amber-600 border-amber-200';
+                            if (in_array($assignee->status, ['Hadir', 'Hadir - Selesai'])) $statusColor = 'bg-emerald-100 text-emerald-600 border-emerald-200';
+                            elseif (in_array($assignee->status, ['Terlambat', 'Terlambat - Selesai'])) $statusColor = 'bg-amber-100 text-amber-600 border-amber-200';
                             elseif ($assignee->status == 'Alpha') $statusColor = 'bg-red-100 text-red-600 border-red-200';
                             elseif ($assignee->status == 'Izin' || $assignee->status == 'Sakit') $statusColor = 'bg-red-100 text-red-600 border-red-200';
                         @endphp
@@ -116,14 +127,30 @@
                             <td class="p-4 text-sm text-slate-800 text-center">{{ $index + 1 }}</td>
                             <td class="p-4 text-sm text-slate-800">
                                 <div class="font-medium">{{ $assignee->attendance->deadline->locale('id')->isoFormat('dddd, D MMMM Y') }}</div>
-                                <div class="text-xs text-slate-500">Batas: {{ $assignee->attendance->deadline->format('H:i') }} WIB | Masuk: {{ $assignee->check_in_time ? $assignee->check_in_time->format('H:i') : '--' }} WIB</div>
                                 <div class="text-xs text-slate-400 mt-1">{{ $assignee->attendance->title ?? 'Absensi' }}</div>
+                            </td>
+                            <td class="p-4 text-sm text-slate-800">
+                                @if($assignee->check_in_time)
+                                    <div class="font-mono text-emerald-600 font-medium">{{ $assignee->check_in_time->format('H:i') }} <span class="text-xs text-slate-400">WIB</span></div>
+                                    <div class="text-xs text-slate-400">Batas: {{ $assignee->attendance->deadline->format('H:i') }} WIB</div>
+                                @else
+                                    <span class="text-slate-400">--:-- WIB</span>
+                                @endif
+                            </td>
+                            <td class="p-4 text-sm text-slate-800">
+                                @if($assignee->check_out_time)
+                                    <div class="font-mono text-blue-600 font-medium">{{ $assignee->check_out_time->format('H:i') }} <span class="text-xs text-slate-400">WIB</span></div>
+                                @else
+                                    <span class="text-slate-400">--:-- WIB</span>
+                                @endif
                             </td>
                             <td class="p-4 text-sm">
                                 <select class="px-3 py-1.5 rounded-md text-xs font-medium border-2 focus:outline-none focus:border-red-500 {{ $statusColor }}" onchange="updateStatus(this, {{ $assignee->id }})">
                                     <option value="Belum Mengisi" {{ $assignee->status == 'Belum Mengisi' ? 'selected' : '' }}>Belum Mengisi</option>
-                                    <option value="Hadir" {{ $assignee->status == 'Hadir' ? 'selected' : '' }}>Hadir</option>
-                                    <option value="Terlambat" {{ $assignee->status == 'Terlambat' ? 'selected' : '' }}>Terlambat</option>
+                                    <option value="Hadir" {{ $assignee->status == 'Hadir' ? 'selected' : '' }}>Hadir (Check-In)</option>
+                                    <option value="Terlambat" {{ $assignee->status == 'Terlambat' ? 'selected' : '' }}>Terlambat (Check-In)</option>
+                                    <option value="Hadir - Selesai" {{ $assignee->status == 'Hadir - Selesai' ? 'selected' : '' }}>Hadir - Selesai</option>
+                                    <option value="Terlambat - Selesai" {{ $assignee->status == 'Terlambat - Selesai' ? 'selected' : '' }}>Terlambat - Selesai</option>
                                     <option value="Izin" {{ $assignee->status == 'Izin' ? 'selected' : '' }}>Izin/Sakit</option>
                                     <option value="Alpha" {{ $assignee->status == 'Alpha' ? 'selected' : '' }}>Alpha</option>
                                 </select>
@@ -132,18 +159,26 @@
                                 <input type="text" value="{{ $assignee->keterangan ?? '-' }}" class="px-2 py-1 border border-slate-200 rounded text-sm w-full focus:outline-none focus:border-red-500" readonly />
                             </td>
                             <td class="p-4 text-sm">
-                                @if($assignee->photo_path)
-                                    <button onclick="viewPhoto('{{ url('storage/' . $assignee->photo_path) }}')" class="px-3 py-1.5 rounded-md bg-red-100 text-red-600 text-xs font-medium hover:bg-red-200 transition-colors whitespace-nowrap">
-                                        Lihat Foto
-                                    </button>
-                                @else
-                                    <span class="text-xs text-slate-400 italic">Tidak ada foto</span>
-                                @endif
+                                <div class="flex gap-1 flex-col">
+                                    @if($assignee->photo_path)
+                                        <button onclick="viewPhoto('{{ url('storage/' . $assignee->photo_path) }}')" class="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-600 text-xs font-medium hover:bg-emerald-200 transition-colors whitespace-nowrap">
+                                            📷 Check-In
+                                        </button>
+                                    @endif
+                                    @if($assignee->checkout_photo_path)
+                                        <button onclick="viewPhoto('{{ url('storage/' . $assignee->checkout_photo_path) }}')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors whitespace-nowrap">
+                                            📷 Check-Out
+                                        </button>
+                                    @endif
+                                    @if(!$assignee->photo_path && !$assignee->checkout_photo_path)
+                                        <span class="text-xs text-slate-400 italic">Tidak ada foto</span>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="p-8 text-center text-slate-500 font-medium">Belum ada riwayat kehadiran.</td>
+                            <td colspan="7" class="p-8 text-center text-slate-500 font-medium">Belum ada riwayat kehadiran.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -183,9 +218,11 @@
             // Add appropriate class based on status
             switch(status) {
                 case 'Hadir':
+                case 'Hadir - Selesai':
                     selectElement.classList.add('bg-emerald-100', 'text-emerald-600', 'border-emerald-200');
                     break;
                 case 'Terlambat':
+                case 'Terlambat - Selesai':
                     selectElement.classList.add('bg-amber-100', 'text-amber-600', 'border-amber-200');
                     break;
                 case 'Izin':
@@ -258,5 +295,3 @@
         });
     </script>
 </x-admin-layout>
-
-

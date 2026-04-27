@@ -73,8 +73,8 @@ class ReportController extends Controller
             // Attendance Stats
             $attendances = $student->assignedAttendances;
             $totalSessions = $attendances->count();
-            $hadirCount = $attendances->where('status', 'Hadir')->count();
-            $terlambatCount = $attendances->where('status', 'Terlambat')->count();
+            $hadirCount = $attendances->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count();
+            $terlambatCount = $attendances->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count();
             $izinCount = $attendances->where('status', 'Izin')->count();
             $sakitCount = $attendances->where('status', 'Sakit')->count();
             $alphaCount = $attendances->where('status', 'Alpha')->count();
@@ -150,8 +150,8 @@ class ReportController extends Controller
 
         // Prepare chart data: Attendance Status Distro
         $attStats = [
-            'Hadir' => $attendances->where('status', 'Hadir')->count(),
-            'Terlambat' => $attendances->where('status', 'Terlambat')->count(),
+            'Hadir' => $attendances->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count(),
+            'Terlambat' => $attendances->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count(),
             'Izin/Sakit' => $attendances->whereIn('status', ['Izin', 'Sakit'])->count(),
             'Alpha' => $attendances->where('status', 'Alpha')->count(),
             'Belum Mengisi' => $attendances->where('status', 'Belum Mengisi')->count(),
@@ -218,7 +218,7 @@ class ReportController extends Controller
                 
                 $att = $student->assignedAttendances;
                 $total = $att->count();
-                $present = $att->whereIn('status', ['Hadir', 'Terlambat'])->count();
+                $present = $att->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
                 $pct = $total > 0 ? round(($present / $total) * 100, 1) : 0;
 
                 fputcsv($file, [
@@ -226,8 +226,8 @@ class ReportController extends Controller
                     $student->divisi->nama ?? 'Umum',
                     $avg,
                     $pct,
-                    $att->where('status', 'Hadir')->count(),
-                    $att->where('status', 'Terlambat')->count(),
+                    $att->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count(),
+                    $att->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count(),
                     $att->whereIn('status', ['Izin', 'Sakit'])->count(),
                     $att->where('status', 'Alpha')->count(),
                     $att->where('status', 'Belum Mengisi')->count(),

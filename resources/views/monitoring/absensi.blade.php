@@ -41,6 +41,8 @@
                 <option value="">Semua Status</option>
                 <option value="Hadir">Hadir</option>
                 <option value="Terlambat">Terlambat</option>
+                <option value="Hadir - Selesai">Hadir - Selesai</option>
+                <option value="Terlambat - Selesai">Terlambat - Selesai</option>
                 <option value="Alpha">Alpha</option>
                 <option value="Izin">Izin</option>
             </select>
@@ -64,23 +66,28 @@
     </div>
 
     <!-- Stats Cards -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-6 mb-8">
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-slate-400">
-            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Penugasan Sesi</h3>
+            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Sesi</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ count($attendances) }}</div>
             <div class="text-xs text-slate-500">Sesi terdata</div>
         </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
-            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Hadir Hari Terpilih</h3>
-            <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->where('status', 'Hadir')->count() }}</div>
-            <div class="text-xs text-red-500">Dari {{ count($assignees) }} daftar hadir</div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-emerald-500">
+            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Sudah Check-In</h3>
+            <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count() }}</div>
+            <div class="text-xs text-emerald-500">Dari {{ count($assignees) }} daftar hadir</div>
+        </div>
+        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
+            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Sudah Check-Out</h3>
+            <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->whereIn('status', ['Hadir - Selesai', 'Terlambat - Selesai'])->count() }}</div>
+            <div class="text-xs text-blue-500">Selesai hari ini</div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-amber-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Terlambat</h3>
-            <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->where('status', 'Terlambat')->count() }}</div>
+            <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count() }}</div>
         </div>
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
-            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Tidak Hadir (Alpha/Izin)</h3>
+            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Tidak Hadir</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $assignees->whereIn('status', ['Alpha', 'Izin', 'Sakit'])->count() }}</div>
         </div>
     </div>
@@ -96,9 +103,11 @@
                 <thead>
                     <tr class="bg-slate-50 text-left">
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Judul Sesi</th>
-                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Batas Waktu</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Batas Check-In</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Mulai Check-Out</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Pembuat</th>
-                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Progress (Hadir / Total)</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-In</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-Out</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -108,14 +117,24 @@
                             <td class="p-4 text-sm text-slate-800 font-medium {{ $att->deadline < now() ? 'text-red-500' : 'text-emerald-500' }}">
                                 {{ $att->deadline->format('d M Y, H:i') }}
                             </td>
+                            <td class="p-4 text-sm text-slate-800">
+                                @if($att->checkout_start)
+                                    <span class="font-medium {{ $att->checkout_start < now() ? 'text-blue-500' : 'text-slate-400' }}">{{ $att->checkout_start->format('d M Y, H:i') }}</span>
+                                @else
+                                    <span class="text-slate-400 italic text-xs">Bebas</span>
+                                @endif
+                            </td>
                             <td class="p-4 text-sm text-slate-600">{{ $att->creator->name ?? 'Admin' }}</td>
                             <td class="p-4 text-sm text-slate-600">
-                                {{ $att->hadir_count }} / {{ $att->total_assignees }} Pelaksana absen
+                                <span class="px-2 py-1 bg-emerald-50 text-emerald-600 rounded text-xs font-medium">{{ $att->hadir_count }} / {{ $att->total_assignees }}</span>
+                            </td>
+                            <td class="p-4 text-sm text-slate-600">
+                                <span class="px-2 py-1 bg-blue-50 text-blue-600 rounded text-xs font-medium">{{ $att->checkout_count }} / {{ $att->total_assignees }}</span>
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="p-8 text-center text-slate-500 font-medium">Belum ada sesi absensi yang dibuat.</td>
+                            <td colspan="6" class="p-8 text-center text-slate-500 font-medium">Belum ada sesi absensi yang dibuat.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -136,7 +155,8 @@
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">NIM</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Nama Mahasiswa</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Divisi</th>
-                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Waktu Check-in</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-In</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-Out</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Status</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Lokasi</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Keterangan</th>
@@ -149,8 +169,8 @@
                             $user = $assignee->user;
                             
                             $statusColor = 'bg-slate-100 text-slate-600';
-                            if ($assignee->status == 'Hadir') $statusColor = 'bg-emerald-100 text-emerald-600';
-                            elseif ($assignee->status == 'Terlambat') $statusColor = 'bg-amber-100 text-amber-600';
+                            if (in_array($assignee->status, ['Hadir', 'Hadir - Selesai'])) $statusColor = 'bg-emerald-100 text-emerald-600';
+                            elseif (in_array($assignee->status, ['Terlambat', 'Terlambat - Selesai'])) $statusColor = 'bg-amber-100 text-amber-600';
                             elseif ($assignee->status == 'Alpha') $statusColor = 'bg-red-100 text-red-600';
                             elseif ($assignee->status == 'Izin') $statusColor = 'bg-red-100 text-red-600';
 
@@ -170,8 +190,23 @@
                             <td class="p-4 text-sm text-slate-800">{{ $user->nim ?? 'NIM-'.$user->id }}</td>
                             <td class="p-4 text-sm text-slate-800">{{ $user->name }}</td>
                             <td class="p-4 text-sm text-slate-600"><span class="px-2 py-1 rounded-md {{ $divisionColor }} text-xs font-medium">{{ $divName }}</span></td>
-                            <td class="p-4 text-sm text-slate-800">{{ $assignee->check_in_time ? $assignee->check_in_time->format('H:i') . ' WIB' : '-' }}</td>
-                            <td class="p-4 text-sm"><span class="px-3 py-1.5 rounded-full text-xs font-medium {{ $statusColor }} block w-fit text-center">{{ $assignee->status }}</span></td>
+                            <td class="p-4 text-sm text-slate-800">
+                                @if($assignee->check_in_time)
+                                    <span class="font-mono text-emerald-600 font-medium">{{ $assignee->check_in_time->format('H:i') }}</span>
+                                    <span class="text-xs text-slate-400">WIB</span>
+                                @else
+                                    <span class="text-slate-400">-</span>
+                                @endif
+                            </td>
+                            <td class="p-4 text-sm text-slate-800">
+                                @if($assignee->check_out_time)
+                                    <span class="font-mono text-blue-600 font-medium">{{ $assignee->check_out_time->format('H:i') }}</span>
+                                    <span class="text-xs text-slate-400">WIB</span>
+                                @else
+                                    <span class="text-slate-400">-</span>
+                                @endif
+                            </td>
+                            <td class="p-4 text-sm"><span class="px-3 py-1.5 rounded-full text-xs font-medium {{ $statusColor }} block w-fit text-center whitespace-nowrap">{{ $assignee->status }}</span></td>
                             <td class="p-4 text-sm text-slate-800">{{ $assignee->lokasi ?? '-' }}</td>
                             <td class="p-4 text-sm text-slate-800">{{ $assignee->keterangan ?? '-' }}</td>
                             <td class="p-4 text-sm">
@@ -182,7 +217,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="8" class="p-8 text-center text-slate-500 font-medium">Belum ada data absensi untuk saat ini.</td>
+                            <td colspan="9" class="p-8 text-center text-slate-500 font-medium">Belum ada data absensi untuk saat ini.</td>
                         </tr>
                     @endforelse
                 </tbody>
@@ -266,5 +301,3 @@
         };
     </script>
 </x-admin-layout>
-
-

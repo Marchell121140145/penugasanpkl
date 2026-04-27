@@ -13,11 +13,13 @@ class Attendance extends Model
         'title',
         'description',
         'deadline',
+        'checkout_start',
         'created_by',
     ];
 
     protected $casts = [
         'deadline' => 'datetime',
+        'checkout_start' => 'datetime',
     ];
 
     public function creator()

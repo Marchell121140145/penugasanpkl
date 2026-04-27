@@ -40,8 +40,14 @@
                     </div>
 
                     <div class="col-span-2 md:col-span-1">
-                        <label for="deadline" class="block text-sm font-semibold text-slate-700 mb-2">Batas Waktu (Deadline) <span class="text-red-500">*</span></label>
+                        <label for="deadline" class="block text-sm font-semibold text-slate-700 mb-2">Batas Waktu Check-In (Deadline) <span class="text-red-500">*</span></label>
                         <input type="datetime-local" name="deadline" id="deadline" class="w-full rounded-lg border-slate-300 focus:border-red-500 focus:ring focus:ring-red-200 transition-all shadow-sm bg-slate-50 p-2.5" value="{{ old('deadline') }}" required>
+                    </div>
+
+                    <div class="col-span-2 md:col-span-1">
+                        <label for="checkout_start" class="block text-sm font-semibold text-slate-700 mb-2">Waktu Mulai Check-Out</label>
+                        <input type="datetime-local" name="checkout_start" id="checkout_start" class="w-full rounded-lg border-slate-300 focus:border-red-500 focus:ring focus:ring-red-200 transition-all shadow-sm bg-slate-50 p-2.5" value="{{ old('checkout_start') }}">
+                        <p class="text-xs text-slate-500 mt-1">Pelaksana bisa check-out setelah waktu ini. Kosongkan jika bisa check-out kapan saja setelah check-in.</p>
                     </div>
 
                     <div class="col-span-2">

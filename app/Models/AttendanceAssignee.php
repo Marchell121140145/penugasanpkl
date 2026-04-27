@@ -14,13 +14,17 @@ class AttendanceAssignee extends Model
         'user_id',
         'status',
         'check_in_time',
+        'check_out_time',
         'lokasi',
+        'checkout_lokasi',
         'keterangan',
         'photo_path',
+        'checkout_photo_path',
     ];
 
     protected $casts = [
         'check_in_time' => 'datetime',
+        'check_out_time' => 'datetime',
     ];
 
     public function attendance()

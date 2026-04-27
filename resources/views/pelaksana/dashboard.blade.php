@@ -158,12 +158,12 @@
                 $subTextClass = 'text-slate-500';
                 $icon = '✓';
 
-                if ($attendance->status == 'Hadir') {
+                if (in_array($attendance->status, ['Hadir', 'Hadir - Selesai'])) {
                     $statusColor = 'bg-emerald-50 border-emerald-100';
                     $iconColor = 'bg-emerald-500';
                     $textClass = 'text-emerald-800';
                     $subTextClass = 'text-emerald-600';
-                } elseif ($attendance->status == 'Terlambat') {
+                } elseif (in_array($attendance->status, ['Terlambat', 'Terlambat - Selesai'])) {
                     $statusColor = 'bg-amber-50 border-amber-100';
                     $iconColor = 'bg-amber-500';
                     $textClass = 'text-amber-800';

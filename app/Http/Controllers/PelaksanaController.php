@@ -186,7 +186,7 @@ class PelaksanaController extends Controller
         // 2. Attendance Statistics
         $attendances = AttendanceAssignee::where('user_id', $user->id)->get();
         $totalAttendanceSessions = $attendances->count();
-        $presentCount = $attendances->whereIn('status', ['Hadir', 'Terlambat'])->count();
+        $presentCount = $attendances->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
         $attendanceRate = $totalAttendanceSessions > 0 ? round(($presentCount / $totalAttendanceSessions) * 100) : 0;
         
         // 3. PKL Duration

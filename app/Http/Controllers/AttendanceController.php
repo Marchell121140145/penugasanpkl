@@ -23,7 +23,10 @@ class AttendanceController extends Controller
         // 1. Dapatkan daftar "Sesi Absensi" 
         $attendancesQuery = Attendance::withCount([
             'assignees as hadir_count' => function($q) {
-                $q->whereIn('status', ['Hadir', 'Terlambat']);
+                $q->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai']);
+            },
+            'assignees as checkout_count' => function($q) {
+                $q->whereIn('status', ['Hadir - Selesai', 'Terlambat - Selesai']);
             },
             'assignees as total_assignees'
         ])->latest();
@@ -78,6 +81,7 @@ class AttendanceController extends Controller
         $request->validate([
             'title' => 'required|string|max:255',
             'deadline' => 'required|date',
+            'checkout_start' => 'nullable|date',
             'assign_type' => 'required|in:divisi,pelaksana',
             'divisi_ids' => 'required_if:assign_type,divisi|array',
             'pelaksana_ids' => 'required_if:assign_type,pelaksana|array',
@@ -87,6 +91,7 @@ class AttendanceController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'deadline' => Carbon::parse($request->deadline),
+            'checkout_start' => $request->checkout_start ? Carbon::parse($request->checkout_start) : null,
             'created_by' => auth()->id(),
         ]);
 
@@ -143,10 +148,11 @@ class AttendanceController extends Controller
             ->get();
 
         $stats = [
-            'totalHadir' => $assignees->where('status', 'Hadir')->count(),
-            'terlambat' => $assignees->where('status', 'Terlambat')->count(),
+            'totalHadir' => $assignees->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count(),
+            'terlambat' => $assignees->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count(),
             'izinSakit' => $assignees->whereIn('status', ['Izin', 'Sakit'])->count(),
             'alpha' => $assignees->where('status', 'Alpha')->count(),
+            'selesai' => $assignees->whereIn('status', ['Hadir - Selesai', 'Terlambat - Selesai'])->count(),
         ];
 
         return view('monitoring.absensi-history', compact('pelaksana', 'assignees', 'stats'));
@@ -160,7 +166,7 @@ class AttendanceController extends Controller
         }
 
         $request->validate([
-            'status' => 'required|in:Belum Mengisi,Hadir,Terlambat,Izin,Sakit,Alpha',
+            'status' => 'required|in:Belum Mengisi,Hadir,Terlambat,Hadir - Selesai,Terlambat - Selesai,Izin,Sakit,Alpha',
         ]);
 
         $assignee = AttendanceAssignee::findOrFail($id);
@@ -192,10 +198,11 @@ class AttendanceController extends Controller
 
         // Hitung statistik
         $stats = [
-            'hadirTepatWaktu' => $assignees->where('status', 'Hadir')->count(),
-            'terlambat' => $assignees->where('status', 'Terlambat')->count(),
+            'hadirTepatWaktu' => $assignees->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count(),
+            'terlambat' => $assignees->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count(),
             'izinSakit' => $assignees->whereIn('status', ['Izin', 'Sakit'])->count(),
             'alpha' => $assignees->where('status', 'Alpha')->count(),
+            'selesai' => $assignees->whereIn('status', ['Hadir - Selesai', 'Terlambat - Selesai'])->count(),
         ];
 
         return view('pelaksana.absensi', compact('assignees', 'stats'));
@@ -247,6 +254,68 @@ class AttendanceController extends Controller
             'keterangan' => $request->keterangan
         ]);
 
-        return redirect()->route('pelaksana.absensi')->with('success', 'Berhasil Absen!');
+        return redirect()->route('pelaksana.absensi')->with('success', 'Check-In berhasil!');
+    }
+
+    public function pelaksanaShowCheckout($id)
+    {
+        $assignee = AttendanceAssignee::with('attendance')->where('user_id', auth()->id())->findOrFail($id);
+
+        // Hanya bisa checkout jika sudah check-in (status Hadir/Terlambat) dan belum checkout
+        if (!in_array($assignee->status, ['Hadir', 'Terlambat'])) {
+            return redirect()->route('pelaksana.absensi')->with('error', 'Anda belum bisa melakukan check-out.');
+        }
+
+        // Cek apakah waktu checkout sudah dimulai
+        if ($assignee->attendance->checkout_start && $assignee->attendance->checkout_start > now()) {
+            return redirect()->route('pelaksana.absensi')->with('error', 'Waktu check-out belum dimulai. Silakan tunggu hingga ' . $assignee->attendance->checkout_start->format('H:i') . ' WIB.');
+        }
+
+        return view('pelaksana.checkout-absensi', compact('assignee'));
+    }
+
+    public function pelaksanaSubmitCheckout(Request $request, $id)
+    {
+        $assignee = AttendanceAssignee::with('attendance')->where('user_id', auth()->id())->findOrFail($id);
+
+        // Hanya bisa checkout jika sudah check-in dan belum checkout
+        if (!in_array($assignee->status, ['Hadir', 'Terlambat'])) {
+            return redirect()->route('pelaksana.absensi')->with('error', 'Anda belum bisa melakukan check-out.');
+        }
+
+        // Cek apakah waktu checkout sudah dimulai
+        if ($assignee->attendance->checkout_start && $assignee->attendance->checkout_start > now()) {
+            return redirect()->route('pelaksana.absensi')->with('error', 'Waktu check-out belum dimulai.');
+        }
+
+        $request->validate([
+            'image_data' => 'required|string',
+            'lokasi' => 'required|string',
+            'keterangan' => 'nullable|string'
+        ]);
+
+        $image_parts = explode(";base64,", $request->image_data);
+        if (count($image_parts) != 2) {
+            return back()->with('error', 'Format gambar tidak valid.');
+        }
+
+        $image_base64 = base64_decode($image_parts[1]);
+        $fileName = 'checkout_' . $assignee->id . '_' . time() . '.jpg';
+        $filePath = 'attendances/' . $fileName;
+
+        \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, $image_base64);
+
+        // Update status menjadi Selesai
+        $newStatus = $assignee->status === 'Terlambat' ? 'Terlambat - Selesai' : 'Hadir - Selesai';
+
+        $assignee->update([
+            'checkout_photo_path' => $filePath,
+            'check_out_time' => now(),
+            'status' => $newStatus,
+            'checkout_lokasi' => $request->lokasi,
+            'keterangan' => $request->keterangan ?? $assignee->keterangan,
+        ]);
+
+        return redirect()->route('pelaksana.absensi')->with('success', 'Check-Out berhasil!');
     }
 }

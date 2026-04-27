@@ -94,6 +94,9 @@ Route::prefix('pelaksana')->middleware(['auth', 'verified'])->name('pelaksana.')
     Route::get('/absensi/upload/{id}', [AttendanceController::class, 'pelaksanaShowUpload'])->name('absensi.create');
     Route::post('/absensi/submit/{id}', [AttendanceController::class, 'pelaksanaSubmit'])->name('absensi.submit');
 
+    Route::get('/absensi/checkout/{id}', [AttendanceController::class, 'pelaksanaShowCheckout'])->name('absensi.checkout');
+    Route::post('/absensi/checkout/{id}', [AttendanceController::class, 'pelaksanaSubmitCheckout'])->name('absensi.checkout.submit');
+
     Route::get('/penugasan/detail/{id}', [TaskController::class, 'pelaksanaShow'])->name('penugasan.show');
 
     Route::get('/penugasan', [TaskController::class, 'pelaksanaIndex'])->name('penugasan');

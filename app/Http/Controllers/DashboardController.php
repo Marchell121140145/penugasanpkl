@@ -71,9 +71,9 @@ class DashboardController extends Controller
         $totalStudents = $studentQuery->count();
         
         $totalTodayAssigned = (clone $todayAssigneesQuery)->count();
-        $hadirCount = (clone $todayAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat'])->count();
-        $hadirTepatWaktu = (clone $todayAssigneesQuery)->where('status', 'Hadir')->count();
-        $terlambatCount = (clone $todayAssigneesQuery)->where('status', 'Terlambat')->count();
+        $hadirCount = (clone $todayAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
+        $hadirTepatWaktu = (clone $todayAssigneesQuery)->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count();
+        $terlambatCount = (clone $todayAssigneesQuery)->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count();
         $alphaCount = (clone $todayAssigneesQuery)->where('status', 'Alpha')->count();
         $izinCount = (clone $todayAssigneesQuery)->whereIn('status', ['Izin', 'Sakit'])->count();
         $belumMengisi = (clone $todayAssigneesQuery)->where('status', 'Belum Mengisi')->count();
@@ -135,7 +135,7 @@ class DashboardController extends Controller
             }
             
             $weekTotal = (clone $weekAssigneesQuery)->count();
-            $weekHadir = (clone $weekAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat'])->count();
+            $weekHadir = (clone $weekAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
 
             $attendanceChartData[] = $weekTotal > 0 ? round(($weekHadir / $weekTotal) * 100) : 0;
         }
@@ -153,7 +153,7 @@ class DashboardController extends Controller
         }
         
         $monthTotal = (clone $monthAssigneesQuery)->count();
-        $monthHadir = (clone $monthAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat'])->count();
+        $monthHadir = (clone $monthAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
         $avgAttendanceMonth = $monthTotal > 0 ? round(($monthHadir / $monthTotal) * 100) : 0;
 
         // ============================
@@ -184,7 +184,7 @@ class DashboardController extends Controller
             });
 
         $attendanceActQuery = AttendanceAssignee::with(['user', 'attendance'])
-            ->whereIn('status', ['Hadir', 'Terlambat'])
+            ->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])
             ->whereNotNull('check_in_time');
             
         if ($divisiId) {
@@ -197,7 +197,7 @@ class DashboardController extends Controller
             ->take(5)
             ->get()
             ->map(function ($att) {
-                $statusText = $att->status === 'Hadir' ? 'hadir tepat waktu' : 'hadir terlambat';
+                $statusText = in_array($att->status, ['Hadir', 'Hadir - Selesai']) ? 'hadir tepat waktu' : 'hadir terlambat';
                 return [
                     'icon' => '✅',
                     'title' => ($att->user->name ?? 'Unknown') . ' ' . $statusText,
@@ -273,11 +273,11 @@ class DashboardController extends Controller
             ->take(10)
             ->get()
             ->map(function ($assignee) {
-                if ($assignee->status === 'Hadir') {
-                    $statusLabel = 'Hadir';
+                if (in_array($assignee->status, ['Hadir', 'Hadir - Selesai'])) {
+                    $statusLabel = $assignee->status;
                     $statusClass = 'bg-emerald-100 text-emerald-600';
-                } elseif ($assignee->status === 'Terlambat') {
-                    $statusLabel = 'Terlambat';
+                } elseif (in_array($assignee->status, ['Terlambat', 'Terlambat - Selesai'])) {
+                    $statusLabel = $assignee->status;
                     $statusClass = 'bg-amber-100 text-amber-600';
                 } elseif ($assignee->status === 'Alpha') {
                     $statusLabel = 'Alpha';
