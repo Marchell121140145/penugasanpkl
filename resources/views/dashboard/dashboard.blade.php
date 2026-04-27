@@ -153,6 +153,11 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const gridColor = isDark ? 'rgba(75, 85, 99, 0.5)' : '#f1f5f9';
+            const tickColor = isDark ? '#9ca3af' : '#64748b';
+            const legendColor = isDark ? '#d1d5db' : '#334155';
+
             // Task Completion Chart (Bar Chart) — 7 hari terakhir
             const taskCtx = document.getElementById('taskChart').getContext('2d');
             new Chart(taskCtx, {
@@ -167,7 +172,7 @@
                     }, {
                         label: 'Tugas Baru',
                         data: @json($taskChartCreated),
-                        backgroundColor: '#e2e8f0',
+                        backgroundColor: isDark ? '#4b5563' : '#e2e8f0',
                         borderRadius: 5,
                     }]
                 },
@@ -176,23 +181,19 @@
                     maintainAspectRatio: false,
                     plugins: {
                         legend: {
-                            position: 'bottom'
+                            position: 'bottom',
+                            labels: { color: legendColor }
                         }
                     },
                     scales: {
                         y: {
                             beginAtZero: true,
-                            grid: {
-                                color: '#f1f5f9'
-                            },
-                            ticks: {
-                                stepSize: 1
-                            }
+                            grid: { color: gridColor },
+                            ticks: { stepSize: 1, color: tickColor }
                         },
                         x: {
-                            grid: {
-                                display: false
-                            }
+                            grid: { display: false },
+                            ticks: { color: tickColor }
                         }
                     }
                 }
@@ -208,11 +209,11 @@
                         label: 'Tingkat Kehadiran (%)',
                         data: @json($attendanceChartData),
                         borderColor: '#10b981',
-                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        backgroundColor: isDark ? 'rgba(16, 185, 129, 0.15)' : 'rgba(16, 185, 129, 0.1)',
                         borderWidth: 3,
                         tension: 0.4,
                         fill: true,
-                        pointBackgroundColor: '#ffffff',
+                        pointBackgroundColor: isDark ? '#1f2937' : '#ffffff',
                         pointBorderColor: '#10b981',
                         pointBorderWidth: 2,
                         pointRadius: 4
@@ -230,19 +231,17 @@
                         y: {
                             min: 0,
                             max: 100,
-                            grid: {
-                                color: '#f1f5f9'
-                            },
+                            grid: { color: gridColor },
                             ticks: {
+                                color: tickColor,
                                 callback: function(value) {
                                     return value + '%';
                                 }
                             }
                         },
                         x: {
-                            grid: {
-                                display: false
-                            }
+                            grid: { display: false },
+                            ticks: { color: tickColor }
                         }
                     }
                 }

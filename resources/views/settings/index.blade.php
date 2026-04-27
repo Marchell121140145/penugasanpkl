@@ -46,10 +46,64 @@
             <div class="md:col-span-9">
                 <!-- Tab: Umum -->
                 <div x-show="activeTab === 'umum'" x-cloak class="space-y-6">
-                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60 text-center py-20">
-                        <div class="text-6xl mb-4">🏗️</div>
-                        <h3 class="text-lg font-bold text-slate-800">Konfigurasi Umum</h3>
-                        <p class="text-slate-500 max-w-sm mx-auto">Fitur pengaturan global aplikasi sedang disiapkan.</p>
+                    <div class="bg-white rounded-2xl p-8 shadow-sm border border-slate-200/60" x-data="{ 
+                        theme: localStorage.theme || 'system',
+                        setTheme(val) {
+                            this.theme = val;
+                            if (val === 'dark') {
+                                localStorage.theme = 'dark';
+                                document.documentElement.classList.add('dark');
+                            } else if (val === 'light') {
+                                localStorage.theme = 'light';
+                                document.documentElement.classList.remove('dark');
+                            } else {
+                                localStorage.removeItem('theme');
+                                if (window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                                    document.documentElement.classList.add('dark');
+                                } else {
+                                    document.documentElement.classList.remove('dark');
+                                }
+                            }
+                            // Opsional: Reload chart jika ada
+                            if(typeof Chart !== 'undefined') window.dispatchEvent(new Event('resize'));
+                        }
+                    }">
+                        <h3 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4 mb-6 flex items-center gap-2">
+                            <span>🎨</span> Tampilan Aplikasi
+                        </h3>
+                        
+                        <div class="max-w-xl">
+                            <label class="block text-sm font-semibold text-slate-700 mb-3">Tema Tampilan</label>
+                            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                                <!-- Light Mode -->
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="theme" value="light" class="peer sr-only" x-model="theme" @change="setTheme('light')">
+                                    <div class="rounded-xl border-2 border-slate-200 p-4 hover:bg-slate-50 transition-all peer-checked:border-red-500 peer-checked:bg-red-50">
+                                        <div class="text-2xl mb-2 text-center">☀️</div>
+                                        <div class="text-sm font-bold text-slate-700 text-center">Terang (Light)</div>
+                                    </div>
+                                </label>
+                                
+                                <!-- Dark Mode -->
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="theme" value="dark" class="peer sr-only" x-model="theme" @change="setTheme('dark')">
+                                    <div class="rounded-xl border-2 border-slate-200 p-4 hover:bg-slate-50 transition-all peer-checked:border-red-500 peer-checked:bg-red-50">
+                                        <div class="text-2xl mb-2 text-center">🌙</div>
+                                        <div class="text-sm font-bold text-slate-700 text-center">Gelap (Dark)</div>
+                                    </div>
+                                </label>
+                                
+                                <!-- System Mode -->
+                                <label class="cursor-pointer">
+                                    <input type="radio" name="theme" value="system" class="peer sr-only" x-model="theme" @change="setTheme('system')">
+                                    <div class="rounded-xl border-2 border-slate-200 p-4 hover:bg-slate-50 transition-all peer-checked:border-red-500 peer-checked:bg-red-50">
+                                        <div class="text-2xl mb-2 text-center">💻</div>
+                                        <div class="text-sm font-bold text-slate-700 text-center">Ikuti Sistem</div>
+                                    </div>
+                                </label>
+                            </div>
+                            <p class="text-xs text-slate-500 mt-3">Tema akan tersimpan di perangkat Anda saat ini.</p>
+                        </div>
                     </div>
                 </div>
 

@@ -12,8 +12,15 @@
 
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
+    <script>
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
 </head>
-<body x-data="{ sidebarOpen: true }" class="bg-slate-100 flex min-h-screen font-sans">
+<body x-data="{ sidebarOpen: true }" class="dark-auto bg-slate-100 dark:bg-gray-900 flex min-h-screen font-sans">
     
     <!-- Pelaksana Sidebar -->
     @include('layouts.pelaksana-sidebar')

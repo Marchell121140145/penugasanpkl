@@ -126,6 +126,11 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            const isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const gridColor = isDark ? 'rgba(75, 85, 99, 0.5)' : undefined;
+            const tickColor = isDark ? '#9ca3af' : '#64748b';
+            const legendColor = isDark ? '#d1d5db' : '#334155';
+
             // Grade Trend Line Chart
             const gradeCtx = document.getElementById('gradeTrendChart').getContext('2d');
             new Chart(gradeCtx, {
@@ -140,7 +145,7 @@
                         borderWidth: 4,
                         tension: 0.3,
                         fill: true,
-                        pointBackgroundColor: '#fff',
+                        pointBackgroundColor: isDark ? '#1f2937' : '#fff',
                         pointBorderColor: '#2563eb',
                         pointBorderWidth: 3,
                         pointRadius: 6
@@ -151,8 +156,8 @@
                     maintainAspectRatio: false,
                     plugins: { legend: { display: false } },
                     scales: {
-                        y: { min: 0, max: 100, border: { dash: [5, 5] } },
-                        x: { grid: { display: false } }
+                        y: { min: 0, max: 100, border: { dash: [5, 5] }, grid: { color: gridColor }, ticks: { color: tickColor } },
+                        x: { grid: { display: false }, ticks: { color: tickColor } }
                     }
                 }
             });
@@ -181,7 +186,7 @@
                     maintainAspectRatio: false,
                     cutout: '70%',
                     plugins: {
-                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20 } }
+                        legend: { position: 'bottom', labels: { usePointStyle: true, padding: 20, color: legendColor } }
                     }
                 }
             });
