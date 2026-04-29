@@ -42,7 +42,7 @@ class ExcelEditorController extends Controller
             abort(404, 'Tipe file tidak valid');
         }
 
-        if (!$filePath || !Storage::disk('public')->exists($filePath)) {
+        if (!$filePath || !Storage::disk('local')->exists($filePath)) {
             abort(404, 'File fisik tidak ditemukan di server.');
         }
 
@@ -59,8 +59,12 @@ class ExcelEditorController extends Controller
             }
         }
 
-        // Generate URL full
-        $fileUrl = asset('storage/' . $filePath);
+        // Generate URL via authenticated route
+        if ($type === 'task_file') {
+            $fileUrl = route('file.task', $id);
+        } else {
+            $fileUrl = route('file.submission', $id);
+        }
 
         return view('monitoring.excel-editor', compact('fileUrl', 'fileName', 'task', 'type', 'id'));
     }
@@ -108,7 +112,7 @@ class ExcelEditorController extends Controller
         try {
             $newFile = $request->file('file');
             // Overwrite the existing file
-            Storage::disk('public')->put($filePath, file_get_contents($newFile));
+            Storage::disk('local')->put($filePath, file_get_contents($newFile));
 
             return response()->json([
                 'success' => true, 

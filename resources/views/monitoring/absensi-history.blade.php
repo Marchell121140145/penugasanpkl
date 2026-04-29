@@ -161,12 +161,12 @@
                             <td class="p-4 text-sm">
                                 <div class="flex gap-1 flex-col">
                                     @if($assignee->photo_path)
-                                        <button onclick="viewPhoto('{{ url('storage/' . $assignee->photo_path) }}')" class="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-600 text-xs font-medium hover:bg-emerald-200 transition-colors whitespace-nowrap">
+                                        <button onclick="viewPhoto('{{ route('file.attendance', [$assignee->id, 'checkin']) }}')" class="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-600 text-xs font-medium hover:bg-emerald-200 transition-colors whitespace-nowrap">
                                             📷 Check-In
                                         </button>
                                     @endif
                                     @if($assignee->checkout_photo_path)
-                                        <button onclick="viewPhoto('{{ url('storage/' . $assignee->checkout_photo_path) }}')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors whitespace-nowrap">
+                                        <button onclick="viewPhoto('{{ route('file.attendance', [$assignee->id, 'checkout']) }}')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors whitespace-nowrap">
                                             📷 Check-Out
                                         </button>
                                     @endif

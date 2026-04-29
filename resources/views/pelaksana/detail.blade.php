@@ -848,10 +848,10 @@
                         </div>
                         <div style="display: flex; align-items: center; gap: 8px;">
                             @if(strtolower($file->tipe) === 'pdf')
-                                <button type="button" class="pdf-viewer-toggle view-btn" onclick="togglePdfViewer('pdf-file-{{ $file->id }}', '{{ asset('storage/' . $file->path) }}')">
+                                <button type="button" class="pdf-viewer-toggle view-btn" onclick="togglePdfViewer('pdf-file-{{ $file->id }}', '{{ route('file.task', $file->id) }}')">
                                     <span>👁️</span> Lihat
                                 </button>
-                                <button type="button" class="pdf-viewer-toggle view-btn" onclick="openPdfModal('{{ $file->nama_file }}', '{{ asset('storage/' . $file->path) }}')" style="background: #f0fdf4; color: #16a34a;">
+                                <button type="button" class="pdf-viewer-toggle view-btn" onclick="openPdfModal('{{ $file->nama_file }}', '{{ route('file.task', $file->id) }}')" style="background: #f0fdf4; color: #16a34a;">
                                     <span>🔍</span> Fullscreen
                                 </button>
                             @elseif(in_array(strtolower($file->tipe), ['xls', 'xlsx']))
@@ -859,14 +859,14 @@
                                     <span>✏️</span> Edit di Web
                                 </a>
                             @endif
-                            <a href="{{ url('storage/' . $file->path) }}" target="_blank" class="action-btn download" style="display: flex; align-items: center; gap: 5px; text-decoration: none;">
+                            <a href="{{ route('file.task', $file->id) }}" target="_blank" class="action-btn download" style="display: flex; align-items: center; gap: 5px; text-decoration: none;">
                                 <span>⬇️</span> Download
                             </a>
                         </div>
                     </div>
                     @if(strtolower($file->tipe) === 'pdf')
                         <div class="pdf-viewer-container" id="pdf-file-{{ $file->id }}" style="display: none;">
-                            <iframe data-src="{{ asset('storage/' . $file->path) }}" title="PDF Viewer - {{ $file->nama_file }}"></iframe>
+                            <iframe data-src="{{ route('file.task', $file->id) }}" title="PDF Viewer - {{ $file->nama_file }}"></iframe>
                         </div>
                     @endif
                 </div>
@@ -955,7 +955,7 @@
                                 </div>
                             </div>
                             <div class="file-actions">
-                                <a href="{{ url('storage/' . $submission->file_path) }}" target="_blank" class="action-btn download" style="text-decoration:none">Download</a>
+                                <a href="{{ route('file.submission', $submission->id) }}" target="_blank" class="action-btn download" style="text-decoration:none">Download</a>
                             </div>
                         </div>
                     </div>

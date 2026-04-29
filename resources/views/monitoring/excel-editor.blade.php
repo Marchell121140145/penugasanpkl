@@ -59,7 +59,7 @@
     </header>
 
     <!-- Editor Container -->
-    <main class="flex-1 w-full p-4 overflow-hidden bg-slate-50 relative">
+    <main class="flex-1 w-full flex flex-col bg-slate-50 relative overflow-hidden">
         
         <!-- Loading Overlay -->
         <div id="loadingOverlay" class="absolute inset-0 bg-slate-50 z-50 flex flex-col items-center justify-center">
@@ -67,84 +67,39 @@
             <p class="text-slate-600 font-semibold animate-pulse">Memuat file Excel ke dalam Web Engine...</p>
         </div>
 
-        <div id="spreadsheet" class="w-full h-full"></div>
+        <div id="sheets-container" class="flex-1 w-full relative overflow-auto"></div>
+        
+        <div id="tab-bar" class="h-10 bg-white border-t border-slate-200 flex items-center px-2 gap-1 overflow-x-auto shadow-inner shrink-0">
+             <button id="add-sheet-btn" class="min-w-[32px] h-8 flex items-center justify-center text-slate-500 hover:text-emerald-600 hover:bg-emerald-50 rounded transition-colors" onclick="addNewSheet()" title="Tambah Sheet Baru">
+                 <span class="material-icons text-sm" style="font-size: 18px;">add</span>
+             </button>
+        </div>
     </main>
 
     <script>
-        var spreadsheetInstance = null;
+        var spreadsheetInstances = [];
+        var activeSheetIndex = 0;
 
         document.addEventListener('DOMContentLoaded', function() {
             const url = "{{ $fileUrl }}";
             
-            // Helper for infinite alphabet columns (A, B... Z, AA...)
-            const getColName = (n) => {
-                let str = "";
-                while(n >= 0) { str = String.fromCharCode(n % 26 + 65) + str; n = Math.floor(n / 26) - 1; }
-                return str;
-            };
-
-            // Fetch File and Load to Jspreadsheet using unified ExcelJS loader
             fetch(url)
                 .then(res => res.arrayBuffer())
                 .then(async ab => {
                     const workbook = new ExcelJS.Workbook();
                     await workbook.xlsx.load(ab);
                     
-                    const worksheet = workbook.worksheets[0];
-                    const jsonData = [];
-                    const jexcelStyles = {};
-                    
-                    if (worksheet) {
-                        worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
-                            const rowData = [];
-                            row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
-                                rowData[colNumber - 1] = cell.value !== null && cell.value !== undefined ? cell.value.result ?? cell.value : '';
-                                
-                                let css = [];
-                                if (cell.font) {
-                                    if (cell.font.bold) css.push("font-weight: bold");
-                                    if (cell.font.italic) css.push("font-style: italic");
-                                    if (cell.font.underline) css.push("text-decoration: underline");
-                                    if (cell.font.color && cell.font.color.argb) {
-                                        css.push("color: #" + cell.font.color.argb.substring(2));
-                                    }
-                                }
-                                if (cell.fill && cell.fill.fgColor && cell.fill.fgColor.argb) {
-                                    css.push("background-color: #" + cell.fill.fgColor.argb.substring(2));
-                                }
-                                
-                                if (css.length > 0) {
-                                    const cellId = getColName(colNumber - 1) + rowNumber;
-                                    jexcelStyles[cellId] = css.join("; ");
-                                }
-                            });
-                            for(let i=0; i<rowData.length; i++) if(rowData[i]===undefined) rowData[i]='';
-                            jsonData[rowNumber - 1] = rowData;
-                        });
-                        for(let i=0; i<jsonData.length; i++) if(jsonData[i]===undefined) jsonData[i]=[];
-                    }
-
                     document.getElementById('loadingOverlay').style.display = 'none';
 
-                    // Initialize JSpreadsheet
-                    spreadsheetInstance = jspreadsheet(document.getElementById('spreadsheet'), {
-                        data: jsonData,
-                        style: jexcelStyles,
-                        minDimensions: [20, 50], // Initial grid 20 columns X 50 rows
-                        tableOverflow: true,
-                        tableWidth: '100%',
-                        tableHeight: 'calc(100vh - 180px)',
-                        lazyLoading: true,
-                        // Styling defaults
-                        defaultColWidth: 150,
-                        toolbar: [
-                            { type: 'i', content: 'format_bold', tooltip: 'Bold', k: 'font-weight', v: 'bold' },
-                            { type: 'i', content: 'format_italic', tooltip: 'Italic', k: 'font-style', v: 'italic' },
-                            { type: 'i', content: 'format_underline', tooltip: 'Underline', k: 'text-decoration', v: 'underline' },
-                            { type: 'color', content: 'format_color_text', tooltip: 'Text Color', k: 'color' },
-                            { type: 'color', content: 'format_color_fill', tooltip: 'Background Color', k: 'background-color' },
-                        ]
+                    workbook.eachSheet((worksheet, sheetId) => {
+                        createSheetUI(worksheet.name, worksheet);
                     });
+                    
+                    if (spreadsheetInstances.length > 0) {
+                        switchSheet(0);
+                    } else {
+                        addNewSheet('Sheet1');
+                    }
                 })
                 .catch(err => {
                     console.error(err);
@@ -152,9 +107,161 @@
                 });
         });
 
+        function createSheetUI(sheetName, worksheet = null) {
+            const index = spreadsheetInstances.length;
+            
+            // 1. Create Container
+            const container = document.createElement('div');
+            container.id = 'sheet-container-' + index;
+            container.className = 'w-full h-full absolute inset-0 bg-white';
+            container.style.display = 'none';
+            document.getElementById('sheets-container').appendChild(container);
+            
+            // 2. Create Tab
+            const tabBtn = document.createElement('button');
+            tabBtn.id = 'tab-btn-' + index;
+            tabBtn.className = 'px-4 h-full text-sm font-medium border-b-2 whitespace-nowrap transition-colors flex items-center gap-2 text-slate-500 border-transparent hover:text-emerald-600 hover:bg-emerald-50';
+            tabBtn.innerHTML = `<span>${sheetName}</span> <span class="material-icons text-[14px] cursor-pointer hover:text-red-500 rounded-full hover:bg-red-50" onclick="deleteSheet(event, ${index})" title="Hapus Sheet">close</span>`;
+            tabBtn.onclick = () => switchSheet(index);
+            
+            const tabBar = document.getElementById('tab-bar');
+            const addBtn = document.getElementById('add-sheet-btn');
+            tabBar.insertBefore(tabBtn, addBtn);
+            
+            // 3. Prepare Data
+            let jsonData = [];
+            let jexcelStyles = {};
+            
+            const getColName = (n) => {
+                let str = "";
+                while(n >= 0) { str = String.fromCharCode(n % 26 + 65) + str; n = Math.floor(n / 26) - 1; }
+                return str;
+            };
+
+            if (worksheet) {
+                worksheet.eachRow({ includeEmpty: true }, (row, rowNumber) => {
+                    const rowData = [];
+                    row.eachCell({ includeEmpty: true }, (cell, colNumber) => {
+                        rowData[colNumber - 1] = cell.value !== null && cell.value !== undefined ? (cell.value.result ?? cell.value) : '';
+                        
+                        let css = [];
+                        if (cell.font) {
+                            if (cell.font.bold) css.push("font-weight: bold");
+                            if (cell.font.italic) css.push("font-style: italic");
+                            if (cell.font.underline) css.push("text-decoration: underline");
+                            if (cell.font.color && cell.font.color.argb) {
+                                css.push("color: #" + cell.font.color.argb.substring(2));
+                            }
+                        }
+                        if (cell.fill && cell.fill.fgColor && cell.fill.fgColor.argb) {
+                            css.push("background-color: #" + cell.fill.fgColor.argb.substring(2));
+                        }
+                        
+                        if (css.length > 0) {
+                            const cellId = getColName(colNumber - 1) + rowNumber;
+                            jexcelStyles[cellId] = css.join("; ");
+                        }
+                    });
+                    for(let i=0; i<rowData.length; i++) if(rowData[i]===undefined) rowData[i]='';
+                    jsonData[rowNumber - 1] = rowData;
+                });
+                for(let i=0; i<jsonData.length; i++) if(jsonData[i]===undefined) jsonData[i]=[];
+            }
+
+            // 4. Initialize jSpreadsheet
+            const instance = jspreadsheet(container, {
+                data: jsonData.length > 0 ? jsonData : [[]],
+                style: jexcelStyles,
+                minDimensions: [20, 50],
+                tableOverflow: true,
+                tableWidth: '100%',
+                tableHeight: 'calc(100vh - 120px)', // adjust based on header + tab bar
+                lazyLoading: true,
+                defaultColWidth: 150,
+                toolbar: [
+                    { type: 'i', content: 'format_bold', tooltip: 'Bold', k: 'font-weight', v: 'bold' },
+                    { type: 'i', content: 'format_italic', tooltip: 'Italic', k: 'font-style', v: 'italic' },
+                    { type: 'i', content: 'format_underline', tooltip: 'Underline', k: 'text-decoration', v: 'underline' },
+                    { type: 'color', content: 'format_color_text', tooltip: 'Text Color', k: 'color' },
+                    { type: 'color', content: 'format_color_fill', tooltip: 'Background Color', k: 'background-color' },
+                ]
+            });
+
+            spreadsheetInstances.push({
+                name: sheetName,
+                instance: instance,
+                container: container,
+                tabBtn: tabBtn,
+                deleted: false
+            });
+            
+            return index;
+        }
+
+        function switchSheet(index) {
+            if (spreadsheetInstances[index].deleted) return;
+            
+            activeSheetIndex = index;
+            
+            spreadsheetInstances.forEach((sheet, i) => {
+                if (sheet.deleted) return;
+                
+                if (i === index) {
+                    sheet.container.style.display = 'block';
+                    sheet.tabBtn.classList.remove('text-slate-500', 'border-transparent');
+                    sheet.tabBtn.classList.add('text-emerald-600', 'border-emerald-600', 'bg-emerald-50');
+                } else {
+                    sheet.container.style.display = 'none';
+                    sheet.tabBtn.classList.add('text-slate-500', 'border-transparent');
+                    sheet.tabBtn.classList.remove('text-emerald-600', 'border-emerald-600', 'bg-emerald-50');
+                }
+            });
+        }
+
+        function addNewSheet(defaultName = null) {
+            const sheetName = defaultName || prompt("Masukkan nama Sheet baru:", "Sheet" + (spreadsheetInstances.filter(s => !s.deleted).length + 1));
+            if (!sheetName) return;
+            
+            // Check duplicate name
+            let exists = spreadsheetInstances.some(s => !s.deleted && s.name === sheetName);
+            if (exists) {
+                alert("Nama sheet sudah ada!");
+                return;
+            }
+            
+            const index = createSheetUI(sheetName);
+            switchSheet(index);
+        }
+
+        function deleteSheet(event, index) {
+            event.stopPropagation();
+            const activeSheets = spreadsheetInstances.filter(s => !s.deleted);
+            if (activeSheets.length <= 1) {
+                alert("Minimal harus ada 1 sheet!");
+                return;
+            }
+
+            if (confirm(`Yakin ingin menghapus sheet '${spreadsheetInstances[index].name}'?`)) {
+                spreadsheetInstances[index].deleted = true;
+                spreadsheetInstances[index].container.style.display = 'none';
+                spreadsheetInstances[index].tabBtn.style.display = 'none';
+                
+                // Switch to another active sheet if current was deleted
+                if (activeSheetIndex === index) {
+                    for (let i = 0; i < spreadsheetInstances.length; i++) {
+                        if (!spreadsheetInstances[i].deleted) {
+                            switchSheet(i);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
         // Save Function to Send Blob Overwrite request
         function saveExcel() {
-            if (!spreadsheetInstance) return;
+            const activeSheets = spreadsheetInstances.filter(s => !s.deleted);
+            if (activeSheets.length === 0) return;
 
             const btnSave = document.getElementById('btnSave');
             const saveText = document.getElementById('saveText');
@@ -163,79 +270,86 @@
             btnSave.classList.add('opacity-75', 'cursor-not-allowed');
 
             try {
-                // Get edited data
-                const rawData = spreadsheetInstance.getData();
-                
-                // ExcelJS Compiler for absolute 100% binary styling persistence!
                 const workbook = new ExcelJS.Workbook();
-                const worksheet = workbook.addWorksheet('Sheet1');
-                worksheet.addRows(rawData);
                 
-                // Map Styles reading directly from DOM into ExcelJS standard formats
-                const tbody = document.querySelector('.jexcel tbody');
-                if (tbody) {
-                    const rows = tbody.querySelectorAll('tr');
-                    rows.forEach((row, rowIndex) => {
-                        const cells = row.querySelectorAll('td');
-                        cells.forEach((td, colIndex) => {
-                            if (colIndex === 0) return; // skip row header
-                            const css = td.style.cssText;
-                            if (!css) return; 
-                            
-                            // ExcelJS gets cell directly via row & col (1-indexed)
-                            // rowIndex is 0-based for tbody, so +1
-                            const exCell = worksheet.getCell(rowIndex + 1, colIndex);
-                            
-                            let fontObj = {};
-                            let hasFont = false;
+                activeSheets.forEach((sheetInfo) => {
+                    const rawData = sheetInfo.instance.getData();
+                    
+                    let safeName = sheetInfo.name.replace(/[\[\]\*\?\/\\\:]/g, ''); // exceljs illegal chars
+                    if (!safeName || safeName.length === 0) safeName = 'Sheet';
+                    
+                    let finalName = safeName;
+                    let count = 1;
+                    while(workbook.getWorksheet(finalName)) {
+                        finalName = safeName + " " + count;
+                        count++;
+                    }
+                    
+                    const worksheet = workbook.addWorksheet(finalName);
+                    worksheet.addRows(rawData);
+                    
+                    const tbody = sheetInfo.container.querySelector('.jexcel tbody');
+                    if (tbody) {
+                        const rows = tbody.querySelectorAll('tr');
+                        rows.forEach((row, rowIndex) => {
+                            const cells = row.querySelectorAll('td');
+                            cells.forEach((td, colIndex) => {
+                                if (colIndex === 0) return; // skip row header
+                                const css = td.style.cssText;
+                                if (!css) return; 
+                                
+                                const exCell = worksheet.getCell(rowIndex + 1, colIndex);
+                                
+                                let fontObj = {};
+                                let hasFont = false;
 
-                            if (/font-weight:\s*(bold|700)/i.test(css)) { fontObj.bold = true; hasFont = true; }
-                            if (/font-style:\s*italic/i.test(css)) { fontObj.italic = true; hasFont = true; }
-                            if (/text-decoration(?:-line)?:\s*underline/i.test(css)) { fontObj.underline = true; hasFont = true; }
-                            
-                            // Ensure we match ONLY 'color:' not 'border-color:' or 'background-color:'
-                            let colorMatch = css.match(/(?:^|[\s;])color:\s*(rgb\([^)]+\)|#[0-9A-Fa-f]{3,6})/i);
-                            if (colorMatch) {
-                                let rgb = colorMatch[1];
-                                let hexColor = "";
-                                if(rgb.startsWith('rgb')) {
-                                    let parts = rgb.match(/\d+/g);
-                                    if(parts && parts.length >= 3) {
-                                        hexColor = ((1 << 24) + (parseInt(parts[0]) << 16) + (parseInt(parts[1]) << 8) + parseInt(parts[2])).toString(16).slice(1).toUpperCase();
+                                if (/font-weight:\s*(bold|700)/i.test(css)) { fontObj.bold = true; hasFont = true; }
+                                if (/font-style:\s*italic/i.test(css)) { fontObj.italic = true; hasFont = true; }
+                                if (/text-decoration(?:-line)?:\s*underline/i.test(css)) { fontObj.underline = true; hasFont = true; }
+                                
+                                let colorMatch = css.match(/(?:^|[\s;])color:\s*(rgb\([^)]+\)|#[0-9A-Fa-f]{3,6})/i);
+                                if (colorMatch) {
+                                    let rgb = colorMatch[1];
+                                    let hexColor = "";
+                                    if(rgb.startsWith('rgb')) {
+                                        let parts = rgb.match(/\d+/g);
+                                        if(parts && parts.length >= 3) {
+                                            hexColor = ((1 << 24) + (parseInt(parts[0]) << 16) + (parseInt(parts[1]) << 8) + parseInt(parts[2])).toString(16).slice(1).toUpperCase();
+                                        }
+                                    } else {
+                                        hexColor = rgb.replace('#', '').toUpperCase().padEnd(6, '0');
                                     }
-                                } else {
-                                    hexColor = rgb.replace('#', '').toUpperCase().padEnd(6, '0');
-                                }
-                                if(hexColor) {
-                                    fontObj.color = { argb: 'FF' + hexColor };
-                                    hasFont = true;
-                                }
-                            }
-                            if (hasFont) exCell.font = fontObj;
-                            
-                            let bgMatch = css.match(/(?:^|[\s;])background-color:\s*(rgb\([^)]+\)|#[0-9A-Fa-f]{3,6})/i);
-                            if (bgMatch) {
-                                let rgb = bgMatch[1];
-                                let hexColor = "";
-                                if(rgb.startsWith('rgb')) {
-                                    let parts = rgb.match(/\d+/g);
-                                    if(parts && parts.length >= 3) {
-                                        hexColor = ((1 << 24) + (parseInt(parts[0]) << 16) + (parseInt(parts[1]) << 8) + parseInt(parts[2])).toString(16).slice(1).toUpperCase();
+                                    if(hexColor) {
+                                        fontObj.color = { argb: 'FF' + hexColor };
+                                        hasFont = true;
                                     }
-                                } else {
-                                    hexColor = rgb.replace('#', '').toUpperCase().padEnd(6, '0');
                                 }
-                                if(hexColor) {
-                                    exCell.fill = {
-                                        type: 'pattern',
-                                        pattern: 'solid',
-                                        fgColor: { argb: 'FF' + hexColor }
-                                    };
+                                if (hasFont) exCell.font = fontObj;
+                                
+                                let bgMatch = css.match(/(?:^|[\s;])background-color:\s*(rgb\([^)]+\)|#[0-9A-Fa-f]{3,6})/i);
+                                if (bgMatch) {
+                                    let rgb = bgMatch[1];
+                                    let hexColor = "";
+                                    if(rgb.startsWith('rgb')) {
+                                        let parts = rgb.match(/\d+/g);
+                                        if(parts && parts.length >= 3) {
+                                            hexColor = ((1 << 24) + (parseInt(parts[0]) << 16) + (parseInt(parts[1]) << 8) + parseInt(parts[2])).toString(16).slice(1).toUpperCase();
+                                        }
+                                    } else {
+                                        hexColor = rgb.replace('#', '').toUpperCase().padEnd(6, '0');
+                                    }
+                                    if(hexColor) {
+                                        exCell.fill = {
+                                            type: 'pattern',
+                                            pattern: 'solid',
+                                            fgColor: { argb: 'FF' + hexColor }
+                                        };
+                                    }
                                 }
-                            }
+                            });
                         });
-                    });
-                }
+                    }
+                });
                 
                 // Write to Buffer via ExcelJS
                 workbook.xlsx.writeBuffer().then(buffer => {
@@ -278,7 +392,7 @@
                     if(res.success) {
                         jSuites.notification({
                             title: 'Berhasil!',
-                            message: 'File telah sukses dioverwrite di Server.',
+                            message: 'Semua Sheet telah sukses dioverwrite di Server.',
                             error: false,
                         });
                     } else {

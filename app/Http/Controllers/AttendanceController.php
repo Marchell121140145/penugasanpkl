@@ -238,7 +238,7 @@ class AttendanceController extends Controller
         $fileName = 'attendance_' . $assignee->id . '_' . time() . '.jpg';
         $filePath = 'attendances/' . $fileName;
 
-        \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, $image_base64);
+        \Illuminate\Support\Facades\Storage::disk('local')->put($filePath, $image_base64);
 
         // Cek keterlambatan
         $status = 'Hadir';
@@ -303,7 +303,7 @@ class AttendanceController extends Controller
         $fileName = 'checkout_' . $assignee->id . '_' . time() . '.jpg';
         $filePath = 'attendances/' . $fileName;
 
-        \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, $image_base64);
+        \Illuminate\Support\Facades\Storage::disk('local')->put($filePath, $image_base64);
 
         // Update status menjadi Selesai
         $newStatus = $assignee->status === 'Terlambat' ? 'Terlambat - Selesai' : 'Hadir - Selesai';

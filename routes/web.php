@@ -9,6 +9,7 @@ use App\Http\Controllers\AttendanceController;
 use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ExcelEditorController;
+use App\Http\Controllers\FileServeController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke dashboard jika sudah login
@@ -20,6 +21,11 @@ Route::get('/', function () {
 Route::middleware(['auth', 'verified'])->group(function () {
     
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Private file serving routes (authenticated)
+    Route::get('/file/task/{id}', [FileServeController::class, 'serveTaskFile'])->name('file.task');
+    Route::get('/file/submission/{id}', [FileServeController::class, 'serveSubmissionFile'])->name('file.submission');
+    Route::get('/file/attendance/{id}/{type}', [FileServeController::class, 'serveAttendancePhoto'])->name('file.attendance');
 
     Route::get('/penugasan/create', [TaskController::class, 'create'])->name('penugasan.create');
     Route::post('/penugasan', [TaskController::class, 'store'])->name('penugasan.store');

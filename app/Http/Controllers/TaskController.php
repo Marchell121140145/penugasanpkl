@@ -145,7 +145,7 @@ class TaskController extends Controller
             // 2. Upload file pendukung (jika ada)
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
-                    $path = $file->store('task_files', 'public');
+                    $path = $file->store('task_files', 'local');
 
                     TaskFile::create([
                         'task_id'   => $task->id,
@@ -287,7 +287,7 @@ class TaskController extends Controller
                     ->get();
                 foreach ($filesToDelete as $file) {
                     if ($file->jenis === 'file' && $file->path) {
-                        Storage::disk('public')->delete($file->path);
+                        Storage::disk('local')->delete($file->path);
                     }
                     $file->delete();
                 }
@@ -296,7 +296,7 @@ class TaskController extends Controller
             // 3. Upload new files
             if ($request->hasFile('files')) {
                 foreach ($request->file('files') as $file) {
-                    $path = $file->store('task_files', 'public');
+                    $path = $file->store('task_files', 'local');
 
                     TaskFile::create([
                         'task_id'   => $task->id,
@@ -378,7 +378,7 @@ class TaskController extends Controller
             // Delete associated files from storage
             foreach ($task->files()->where('jenis', 'file')->get() as $file) {
                 if ($file->path) {
-                    Storage::disk('public')->delete($file->path);
+                    Storage::disk('local')->delete($file->path);
                 }
             }
 
@@ -538,12 +538,12 @@ class TaskController extends Controller
 
         if ($request->hasFile('file')) {
             // Jika ada file lama, hapus
-            if ($submission->file_path && Storage::disk('public')->exists($submission->file_path)) {
-                Storage::disk('public')->delete($submission->file_path);
+            if ($submission->file_path && Storage::disk('local')->exists($submission->file_path)) {
+                Storage::disk('local')->delete($submission->file_path);
             }
 
             $file = $request->file('file');
-            $path = $file->store('submissions', 'public');
+            $path = $file->store('submissions', 'local');
             
             $submission->update([
                 'file_nama' => $file->getClientOriginalName(),

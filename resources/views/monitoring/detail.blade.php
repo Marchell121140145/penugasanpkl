@@ -572,10 +572,10 @@
                         </div>
                         <div class="flex items-center gap-2">
                             @if(strtolower($file->tipe) === 'pdf')
-                                <button type="button" class="pdf-viewer-toggle view-btn" onclick="togglePdfViewer('pdf-file-{{ $file->id }}', '{{ asset('storage/' . $file->path) }}')">
+                                <button type="button" class="pdf-viewer-toggle view-btn" onclick="togglePdfViewer('pdf-file-{{ $file->id }}', '{{ route('file.task', $file->id) }}')">
                                     <span>👁️</span> Lihat PDF
                                 </button>
-                                <button type="button" class="pdf-viewer-toggle view-btn" onclick="openPdfModal('{{ $file->nama_file }}', '{{ asset('storage/' . $file->path) }}')" style="background: #f0fdf4; color: #16a34a;">
+                                <button type="button" class="pdf-viewer-toggle view-btn" onclick="openPdfModal('{{ $file->nama_file }}', '{{ route('file.task', $file->id) }}')" style="background: #f0fdf4; color: #16a34a;">
                                     <span>🔍</span> Fullscreen
                                 </button>
                             @elseif(in_array(strtolower($file->tipe), ['xls', 'xlsx']))
@@ -583,14 +583,14 @@
                                     <span>✏️</span> Edit di Web
                                 </a>
                             @endif
-                            <a href="{{ asset('storage/' . $file->path) }}" target="_blank" download class="bg-red-50 text-red-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
+                            <a href="{{ route('file.task', $file->id) }}" target="_blank" download class="bg-red-50 text-red-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
                                 <span>⬇️</span> Download
                             </a>
                         </div>
                     </div>
                     @if(strtolower($file->tipe) === 'pdf')
                         <div class="pdf-viewer-container" id="pdf-file-{{ $file->id }}" style="display: none;">
-                            <iframe data-src="{{ asset('storage/' . $file->path) }}" title="PDF Viewer - {{ $file->nama_file }}"></iframe>
+                            <iframe data-src="{{ route('file.task', $file->id) }}" title="PDF Viewer - {{ $file->nama_file }}"></iframe>
                         </div>
                     @endif
                 </div>
@@ -711,11 +711,11 @@
                                 <td class="p-4 text-sm">
                                     @if($submission->file_path)
                                         <div class="flex items-center gap-2">
-                                        <a href="{{ asset('storage/' . $submission->file_path) }}" target="_blank" class="text-red-600 hover:underline flex items-center gap-1">
+                                        <a href="{{ route('file.submission', $submission->id) }}" target="_blank" class="text-red-600 hover:underline flex items-center gap-1">
                                             <span>📄</span> {{ $submission->file_nama ?? 'Download' }}
                                         </a>
                                         @if(Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.pdf'))
-                                            <button type="button" class="pdf-viewer-toggle view-btn" style="font-size: 0.7rem; padding: 3px 8px;" onclick="openPdfModal('{{ $submission->file_nama ?? 'Submission' }}', '{{ asset('storage/' . $submission->file_path) }}')">
+                                            <button type="button" class="pdf-viewer-toggle view-btn" style="font-size: 0.7rem; padding: 3px 8px;" onclick="openPdfModal('{{ $submission->file_nama ?? 'Submission' }}', '{{ route('file.submission', $submission->id) }}')">
                                                 👁️
                                             </button>
                                         @elseif(Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.xlsx') || Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.xls'))
