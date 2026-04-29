@@ -11,7 +11,11 @@
                 <div class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-[18px] h-[18px] text-[0.7rem] flex items-center justify-center">2</div>
             </div>
             <div class="flex items-center gap-2.5 cursor-pointer relative" x-data="{ open: false }" @click.away="open = false" @click="open = !open">
-                <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'P', 0, 1) }}</div>
+                @if(Auth::user()->avatar)
+                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-10 h-10 rounded-full object-cover">
+                @else
+                    <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'P', 0, 1) }}</div>
+                @endif
                 <div class="hidden md:block text-right">
                     <span class="block font-medium text-slate-700 text-sm leading-none">{{ Auth::user()->name ?? 'Pelaksana' }}</span>
                     <span class="text-xs text-slate-500">Mahasiswa PKL</span>
@@ -60,7 +64,7 @@
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Sisa Hari PKL</h3>
             <div class="flex items-end justify-between">
-                <div class="text-3xl font-bold text-slate-800">{{ $daysLeft }}</div>
+                <div class="text-3xl font-bold text-slate-800">{{ round($daysLeft) }}</div>
                 <span class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded-lg">Hari</span>
             </div>
             <div class="text-xs text-slate-500 mt-2">Berakhir: {{ $endDateFormatted }}</div>

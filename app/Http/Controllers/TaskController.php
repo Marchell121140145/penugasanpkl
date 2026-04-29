@@ -88,8 +88,15 @@ class TaskController extends Controller
      */
     public function create()
     {
-        $divisis = Divisi::orderBy('nama')->get();
-        $mahasiswas = User::where('role_id', 3)->orderBy('name')->get();
+        $user = Auth::user();
+        
+        if ($user->role_id == 2) {
+            $divisis = Divisi::where('id', $user->divisi_id)->get();
+            $mahasiswas = User::where('role_id', 3)->where('divisi_id', $user->divisi_id)->orderBy('name')->get();
+        } else {
+            $divisis = Divisi::orderBy('nama')->get();
+            $mahasiswas = User::where('role_id', 3)->orderBy('name')->get();
+        }
 
         return view('monitoring.create', compact('divisis', 'mahasiswas'));
     }
@@ -215,9 +222,16 @@ class TaskController extends Controller
      */
     public function edit($id)
     {
+        $user = Auth::user();
         $task = Task::with(['assignees', 'files', 'divisi'])->findOrFail($id);
-        $divisis = Divisi::orderBy('nama')->get();
-        $mahasiswas = User::where('role_id', 3)->orderBy('name')->get();
+        
+        if ($user->role_id == 2) {
+            $divisis = Divisi::where('id', $user->divisi_id)->get();
+            $mahasiswas = User::where('role_id', 3)->where('divisi_id', $user->divisi_id)->orderBy('name')->get();
+        } else {
+            $divisis = Divisi::orderBy('nama')->get();
+            $mahasiswas = User::where('role_id', 3)->orderBy('name')->get();
+        }
 
         return view('monitoring.edit', compact('task', 'divisis', 'mahasiswas'));
     }

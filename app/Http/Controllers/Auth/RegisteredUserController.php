@@ -39,12 +39,14 @@ class RegisteredUserController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'role_id' => 3, // Set sebagai Pelaksana secara default
         ]);
 
         event(new Registered($user));
 
-        Auth::login($user);
+        // Mencegah auto-login setelah mendaftar
+        // Auth::login($user);
 
-        return redirect(route('dashboard', absolute: false));
+        return redirect()->route('login')->with('status', 'Registrasi berhasil! Akun Anda sedang menunggu persetujuan admin untuk penempatan divisi.');
     }
 }

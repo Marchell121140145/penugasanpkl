@@ -19,6 +19,7 @@ class PelaksanaController extends Controller
     public function index(Request $request)
     {
         $query = User::where('role_id', 3)
+            ->whereNotNull('divisi_id') // Hanya yang sudah memiliki divisi (di-approve)
             ->with('divisi')
             ->withCount([
                 'assignedTasks',
@@ -67,12 +68,19 @@ class PelaksanaController extends Controller
         // Stats (untuk admin lihat semua, untuk pembimbing lihat sesuai scope)
         if (auth()->check() && auth()->user()->role_id == 2) {
             $totalPelaksana = User::where('role_id', 3)
+                ->whereNotNull('divisi_id')
                 ->where(function ($q) use ($user) {
                     $q->where('divisi_id', $user->divisi_id)
                       ->orWhere('pembimbing_id', $user->id);
                 })->count();
         } else {
-            $totalPelaksana = User::where('role_id', 3)->count();
+            $totalPelaksana = User::where('role_id', 3)->whereNotNull('divisi_id')->count();
+        }
+
+        // Ambil data user yang baru mendaftar (menunggu persetujuan admin)
+        $pendingUsers = collect();
+        if (auth()->check() && auth()->user()->role_id == 1) {
+            $pendingUsers = User::where('role_id', 3)->whereNull('divisi_id')->orderBy('created_at', 'desc')->get();
         }
 
         // Divisi list for filter dropdown
@@ -84,7 +92,7 @@ class PelaksanaController extends Controller
             $roles = Role::all();
         }
 
-        return view('monitoring.pelaksana', compact('pelaksanas', 'totalPelaksana', 'divisis', 'roles'));
+        return view('monitoring.pelaksana', compact('pelaksanas', 'totalPelaksana', 'divisis', 'roles', 'pendingUsers'));
     }
 
     /**
@@ -157,6 +165,43 @@ class PelaksanaController extends Controller
         ]);
 
         return redirect()->route('pelaksana.show', $id)->with('success', 'Data pelaksana berhasil diperbarui.');
+    }
+
+    /**
+     * Approve pendaftaran pelaksana dengan memberikan divisi.
+     */
+    public function approveRegistration(Request $request, $id)
+    {
+        if (auth()->user()->role_id != 1) {
+            abort(403, 'Hanya Admin yang dapat menyetujui pendaftaran.');
+        }
+
+        $user = User::where('role_id', 3)->findOrFail($id);
+
+        $request->validate([
+            'divisi_id' => 'required|exists:divisi,id',
+        ]);
+
+        $user->update([
+            'divisi_id' => $request->divisi_id,
+        ]);
+
+        return back()->with('success', 'Pelaksana berhasil disetujui dan dimasukkan ke divisi.');
+    }
+
+    /**
+     * Tolak dan hapus pendaftaran pelaksana.
+     */
+    public function rejectRegistration($id)
+    {
+        if (auth()->user()->role_id != 1) {
+            abort(403, 'Hanya Admin yang dapat menolak pendaftaran.');
+        }
+
+        $user = User::where('role_id', 3)->whereNull('divisi_id')->findOrFail($id);
+        $user->delete();
+
+        return back()->with('success', 'Pendaftaran berhasil ditolak dan dihapus.');
     }
 
     /**

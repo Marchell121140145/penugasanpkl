@@ -282,6 +282,148 @@
             border: 1px solid #e2e8f0;
             margin-bottom: 16px;
         }
+
+        /* Dark Mode Overrides */
+        .dark {
+            --dark: #f8fafc;
+            --secondary: #94a3b8;
+        }
+
+        .dark .task-detail-card {
+            background: #1f2937;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .dark .description-box {
+            background: #374151;
+            border-left-color: var(--primary);
+        }
+
+        .dark .description-box p {
+            color: #e5e7eb;
+        }
+
+        .dark .monitoring-section {
+            background: #1f2937;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .dark .file-attachment {
+            background: #374151;
+            border-color: #4b5563;
+        }
+
+        .dark .file-attachment:hover {
+            border-color: #3b82f6;
+        }
+
+        .dark .file-attachment .font-semibold {
+            color: #e5e7eb;
+        }
+
+        .dark .dialogue-container {
+            background: #1f2937;
+            border-color: #4b5563;
+        }
+
+        .dark .comment-bubble {
+            background: #374151;
+            color: #e5e7eb;
+        }
+
+        .dark .comment-bubble.admin {
+            background: #1e3a8a;
+            color: #93c5fd;
+        }
+
+        .dark .comment-time {
+            color: #6b7280;
+        }
+
+        .dark .pdf-modal {
+            background: #1f2937;
+        }
+
+        .dark .pdf-modal-header {
+            background: #374151;
+            border-bottom-color: #4b5563;
+        }
+
+        .dark .pdf-modal-header h3 {
+            color: #e5e7eb;
+        }
+
+        .dark .pdf-modal-close {
+            background: #4b5563;
+            color: #d1d5db;
+        }
+
+        .dark .pdf-modal-close:hover {
+            background: #374151;
+            color: #f3f4f6;
+        }
+        
+        .dark .task-section h2 {
+            border-bottom-color: #374151;
+            color: #e5e7eb;
+        }
+        
+        .dark .task-header h1 {
+            color: #f8fafc;
+        }
+        
+        .dark .meta-value {
+            color: #e5e7eb;
+        }
+        
+        .dark .pdf-viewer-container {
+            background: #374151;
+            border-color: #4b5563;
+        }
+        
+        .dark table {
+            color: #e5e7eb;
+        }
+        
+        .dark tr.bg-slate-50 {
+            background: #374151;
+        }
+        
+        .dark th {
+            color: #e5e7eb !important;
+            border-bottom-color: #4b5563 !important;
+        }
+        
+        .dark td {
+            border-bottom-color: #374151;
+            color: #e5e7eb;
+        }
+        
+        .dark tr.hover\:bg-slate-50:hover {
+            background: #374151;
+        }
+        
+        .dark input[type="text"], .dark input[type="number"], .dark select, .dark textarea {
+            background: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+        
+        .dark input[type="text"]::placeholder, .dark textarea::placeholder {
+            color: #9ca3af;
+        }
+
+        .dark .text-slate-800 {
+            color: #f8fafc;
+        }
+
+        .dark .text-slate-600 {
+            color: #cbd5e1;
+        }
+
+        .dark .text-slate-700 {
+            color: #cbd5e1;
+        }
     </style>
 
     <div class="task-detail-content">
@@ -548,7 +690,11 @@
                             <tr class="border-b border-slate-100 hover:bg-slate-50 transition-colors">
                                 <td class="p-4 text-sm font-medium text-slate-800">
                                     <div class="flex items-center gap-3">
-                                        <div class="w-8 h-8 rounded-full {{ $avatarColor }} flex items-center justify-center text-xs font-bold">{{ $initials }}</div>
+                                        @if($user->avatar)
+                                            <img src="{{ asset('storage/' . $user->avatar) }}" class="w-8 h-8 rounded-full object-cover">
+                                        @else
+                                            <div class="w-8 h-8 rounded-full {{ $avatarColor }} flex items-center justify-center text-xs font-bold">{{ $initials }}</div>
+                                        @endif
                                         {{ $user->name ?? 'Unknown' }}
                                     </div>
                                 </td>
@@ -607,6 +753,7 @@
                                                 'comments' => $submission->comments->map(function($c) {
                                                     return [
                                                         'user_name' => $c->user->name,
+                                                        'avatar' => $c->user->avatar ? asset('storage/' . $c->user->avatar) : null,
                                                         'pesan' => $c->pesan,
                                                         'is_admin' => $c->user->role_id != 3,
                                                         'time' => $c->created_at->translatedFormat('d M, H:i')
@@ -765,9 +912,14 @@
                     const avatarColor = c.is_admin ? 'bg-red-100 text-red-600' : 'bg-slate-200 text-slate-600';
                     const bubbleClass = c.is_admin ? 'admin' : '';
                     
+                    let avatarHtml = `<div class="comment-avatar ${avatarColor}">${initials}</div>`;
+                    if (c.avatar) {
+                        avatarHtml = `<img src="${c.avatar}" class="comment-avatar object-cover">`;
+                    }
+                    
                     feed.innerHTML += `
                         <div class="comment-item">
-                            <div class="comment-avatar ${avatarColor}">${initials}</div>
+                            ${avatarHtml}
                             <div class="flex-1">
                                 <div class="comment-bubble ${bubbleClass}">
                                     ${c.pesan}

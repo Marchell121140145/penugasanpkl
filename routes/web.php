@@ -68,6 +68,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/pelaksana-list', [PelaksanaController::class, 'index'])->name('pelaksana.list');
     Route::post('/pelaksana-list', [PelaksanaController::class, 'store'])->name('pelaksana.store');
+    Route::post('/pelaksana-list/{id}/approve', [PelaksanaController::class, 'approveRegistration'])->name('pelaksana.approve');
+    Route::delete('/pelaksana-list/{id}/reject', [PelaksanaController::class, 'rejectRegistration'])->name('pelaksana.reject');
     Route::get('/pelaksana-list/{id}', [PelaksanaController::class, 'show'])->name('pelaksana.show');
     Route::put('/pelaksana-list/{id}', [PelaksanaController::class, 'update'])->name('pelaksana.update');
 

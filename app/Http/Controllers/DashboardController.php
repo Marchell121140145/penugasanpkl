@@ -32,13 +32,23 @@ class DashboardController extends Controller
             $divisiId = $user->divisi_id;
         }
 
+        $timeRange = $request->input('time_range', '7_days');
+        
+        $startDate = match ($timeRange) {
+            'today' => now()->startOfDay(),
+            'this_month' => now()->startOfMonth(),
+            'this_year' => now()->startOfYear(),
+            default => now()->subDays(6)->startOfDay(),
+        };
+        $endDate = now()->endOfDay();
+
         $allDivisi = Divisi::all();
         $selectedDivisi = $divisiId ? Divisi::find($divisiId) : null;
 
         // ============================
         // 1. STATISTIK PENUGASAN
         // ============================
-        $taskQuery = Task::query();
+        $taskQuery = Task::whereBetween('created_at', [$startDate, $endDate]);
         if ($divisiId) {
             $taskQuery->where('divisi_id', $divisiId);
         }
@@ -52,14 +62,21 @@ class DashboardController extends Controller
         $completionRate = $totalTasks > 0 ? round(($completedTasks / $totalTasks) * 100) : 0;
 
         // ============================
-        // 2. STATISTIK ABSENSI HARI INI
+        // 2. STATISTIK ABSENSI
         // ============================
-        // Filter attendance by those assigned to users in the selected division
-        $todayAttendances = Attendance::whereDate('deadline', today())->pluck('id');
-        $todayAssigneesQuery = AttendanceAssignee::whereIn('attendance_id', $todayAttendances);
+        $attendancePanelTitle = match ($timeRange) {
+            'today' => 'Absensi Hari Ini',
+            'this_month' => 'Absensi Bulan Ini',
+            'this_year' => 'Absensi Tahun Ini',
+            default => 'Absensi 7 Hari Terakhir',
+        };
+
+        // Filter attendance by those assigned to users in the selected division and within time range
+        $attendances = Attendance::whereBetween('deadline', [$startDate, $endDate])->pluck('id');
+        $assigneesQuery = AttendanceAssignee::whereIn('attendance_id', $attendances);
         
         if ($divisiId) {
-            $todayAssigneesQuery->whereHas('user', function($q) use ($divisiId) {
+            $assigneesQuery->whereHas('user', function($q) use ($divisiId) {
                 $q->where('divisi_id', $divisiId);
             });
         }
@@ -70,47 +87,113 @@ class DashboardController extends Controller
         }
         $totalStudents = $studentQuery->count();
         
-        $totalTodayAssigned = (clone $todayAssigneesQuery)->count();
-        $hadirCount = (clone $todayAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
-        $hadirTepatWaktu = (clone $todayAssigneesQuery)->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count();
-        $terlambatCount = (clone $todayAssigneesQuery)->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count();
-        $alphaCount = (clone $todayAssigneesQuery)->where('status', 'Alpha')->count();
-        $izinCount = (clone $todayAssigneesQuery)->whereIn('status', ['Izin', 'Sakit'])->count();
-        $belumMengisi = (clone $todayAssigneesQuery)->where('status', 'Belum Mengisi')->count();
+        $totalTodayAssigned = (clone $assigneesQuery)->count();
+        $hadirCount = (clone $assigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
+        $hadirTepatWaktu = (clone $assigneesQuery)->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count();
+        $terlambatCount = (clone $assigneesQuery)->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count();
+        $alphaCount = (clone $assigneesQuery)->where('status', 'Alpha')->count();
+        $izinCount = (clone $assigneesQuery)->whereIn('status', ['Izin', 'Sakit'])->count();
+        $belumMengisi = (clone $assigneesQuery)->where('status', 'Belum Mengisi')->count();
         $tidakHadir = $alphaCount + $izinCount + $belumMengisi;
 
         $attendanceRate = $totalTodayAssigned > 0 ? round(($hadirCount / $totalTodayAssigned) * 100) : 0;
         $onTimeRate = $hadirCount > 0 ? round(($hadirTepatWaktu / $hadirCount) * 100) : 0;
 
         // ============================
-        // 3. CHART: Statistik Penyelesaian Tugas per Hari (7 hari terakhir)
+        // 3. CHART: Statistik Penyelesaian Tugas
         // ============================
         $taskChartLabels = [];
         $taskChartSubmitted = [];
         $taskChartCreated = [];
 
-        for ($i = 6; $i >= 0; $i--) {
-            $date = now()->subDays($i);
-            $dayName = $date->translatedFormat('D d/m');
-            $taskChartLabels[] = $dayName;
+        if ($timeRange == 'today') {
+            for ($i = 0; $i < 24; $i++) {
+                $startHour = now()->startOfDay()->addHours($i);
+                $endHour = (clone $startHour)->endOfHour();
+                $taskChartLabels[] = $startHour->format('H:00');
+                
+                $submittedQuery = TaskSubmission::whereNotNull('submitted_at')
+                    ->whereBetween('submitted_at', [$startHour, $endHour]);
+                if ($request->filled('divisi_id') && $divisiId) {
+                    $submittedQuery->whereHas('user', function($q) use ($divisiId) {
+                        $q->where('divisi_id', $divisiId);
+                    });
+                }
+                $taskChartSubmitted[] = $submittedQuery->count();
 
-            // Tugas yang di-submit pada hari ini
-            $submittedQuery = TaskSubmission::whereIn('status', ['submitted', 'graded'])
-                ->whereDate('submitted_at', $date->toDateString());
-            
-            if ($divisiId) {
-                $submittedQuery->whereHas('user', function($q) use ($divisiId) {
-                    $q->where('divisi_id', $divisiId);
-                });
+                $createdQuery = Task::whereBetween('created_at', [$startHour, $endHour]);
+                if ($request->filled('divisi_id') && $divisiId) {
+                    $createdQuery->where('divisi_id', $divisiId);
+                }
+                $taskChartCreated[] = $createdQuery->count();
             }
-            $taskChartSubmitted[] = $submittedQuery->count();
+        } elseif ($timeRange == 'this_month') {
+            $daysInMonth = now()->daysInMonth;
+            for ($i = 1; $i <= $daysInMonth; $i++) {
+                $date = now()->startOfMonth()->addDays($i - 1);
+                $taskChartLabels[] = $date->format('d/m');
 
-            // Tugas baru dibuat pada hari ini
-            $createdQuery = Task::whereDate('created_at', $date->toDateString());
-            if ($divisiId) {
-                $createdQuery->where('divisi_id', $divisiId);
+                $submittedQuery = TaskSubmission::whereNotNull('submitted_at')
+                    ->whereDate('submitted_at', $date->toDateString());
+                if ($request->filled('divisi_id') && $divisiId) {
+                    $submittedQuery->whereHas('user', function($q) use ($divisiId) {
+                        $q->where('divisi_id', $divisiId);
+                    });
+                }
+                $taskChartSubmitted[] = $submittedQuery->count();
+
+                $createdQuery = Task::whereDate('created_at', $date->toDateString());
+                if ($request->filled('divisi_id') && $divisiId) {
+                    $createdQuery->where('divisi_id', $divisiId);
+                }
+                $taskChartCreated[] = $createdQuery->count();
             }
-            $taskChartCreated[] = $createdQuery->count();
+        } elseif ($timeRange == 'this_year') {
+            for ($i = 1; $i <= 12; $i++) {
+                $date = now()->startOfYear()->addMonths($i - 1);
+                $taskChartLabels[] = $date->translatedFormat('M');
+                
+                $startMonth = (clone $date)->startOfMonth();
+                $endMonth = (clone $date)->endOfMonth();
+
+                $submittedQuery = TaskSubmission::whereNotNull('submitted_at')
+                    ->whereBetween('submitted_at', [$startMonth, $endMonth]);
+                if ($request->filled('divisi_id') && $divisiId) {
+                    $submittedQuery->whereHas('user', function($q) use ($divisiId) {
+                        $q->where('divisi_id', $divisiId);
+                    });
+                }
+                $taskChartSubmitted[] = $submittedQuery->count();
+
+                $createdQuery = Task::whereBetween('created_at', [$startMonth, $endMonth]);
+                if ($request->filled('divisi_id') && $divisiId) {
+                    $createdQuery->where('divisi_id', $divisiId);
+                }
+                $taskChartCreated[] = $createdQuery->count();
+            }
+        } else {
+            // 7 days
+            for ($i = 6; $i >= 0; $i--) {
+                $date = now()->subDays($i);
+                $dayName = $date->translatedFormat('D d/m');
+                $taskChartLabels[] = $dayName;
+
+                $submittedQuery = TaskSubmission::whereNotNull('submitted_at')
+                    ->whereDate('submitted_at', $date->toDateString());
+                
+                if ($request->filled('divisi_id') && $divisiId) {
+                    $submittedQuery->whereHas('user', function($q) use ($divisiId) {
+                        $q->where('divisi_id', $divisiId);
+                    });
+                }
+                $taskChartSubmitted[] = $submittedQuery->count();
+
+                $createdQuery = Task::whereDate('created_at', $date->toDateString());
+                if ($request->filled('divisi_id') && $divisiId) {
+                    $createdQuery->where('divisi_id', $divisiId);
+                }
+                $taskChartCreated[] = $createdQuery->count();
+            }
         }
 
         // ============================
@@ -160,8 +243,8 @@ class DashboardController extends Controller
         // 5. AKTIVITAS TERKINI
         // ============================
         $submissionQuery = TaskSubmission::with(['user', 'task'])
-            ->whereIn('status', ['submitted', 'graded'])
-            ->whereNotNull('submitted_at');
+            ->whereNotNull('submitted_at')
+            ->whereBetween('submitted_at', [$startDate, $endDate]);
         
         if ($divisiId) {
             $submissionQuery->whereHas('user', function($q) use ($divisiId) {
@@ -185,7 +268,8 @@ class DashboardController extends Controller
 
         $attendanceActQuery = AttendanceAssignee::with(['user', 'attendance'])
             ->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])
-            ->whereNotNull('check_in_time');
+            ->whereNotNull('check_in_time')
+            ->whereBetween('check_in_time', [$startDate, $endDate]);
             
         if ($divisiId) {
             $attendanceActQuery->whereHas('user', function($q) use ($divisiId) {
@@ -215,7 +299,7 @@ class DashboardController extends Controller
         // ============================
         // 6. PENUGASAN TERBARU
         // ============================
-        $recentTaskQuery = Task::withCount([
+        $recentTaskQuery = Task::whereBetween('created_at', [$startDate, $endDate])->withCount([
             'submissions',
             'submissions as graded_count' => function ($q) {
                 $q->where('status', 'graded');
@@ -258,10 +342,10 @@ class DashboardController extends Controller
             });
 
         // ============================
-        // 7. ABSENSI HARI INI (Detail per mahasiswa)
+        // 7. ABSENSI (Detail per mahasiswa)
         // ============================
         $todayAttendanceDetailQuery = AttendanceAssignee::with(['user', 'attendance'])
-            ->whereIn('attendance_id', $todayAttendances);
+            ->whereIn('attendance_id', $attendances);
             
         if ($divisiId) {
             $todayAttendanceDetailQuery->whereHas('user', function($q) use ($divisiId) {
@@ -305,7 +389,6 @@ class DashboardController extends Controller
         // ============================
         $avgCompletionDays = 0;
         $gradedSubmissionsQuery = TaskSubmission::whereNotNull('submitted_at')
-            ->whereIn('status', ['submitted', 'graded'])
             ->with('task');
             
         if ($divisiId) {

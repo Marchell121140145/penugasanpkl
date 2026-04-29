@@ -14,7 +14,11 @@
         <div class="flex items-center gap-4">
             <div class="flex items-center gap-2.5 cursor-pointer relative" x-data="{ open: false }" @click.away="open = false" @click="open = !open">
                 <!-- Gunakan inisial nama jika ada -->
-                <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</div>
+                @if(Auth::user()->avatar)
+                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-10 h-10 rounded-full object-cover">
+                @else
+                    <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</div>
+                @endif
                 <span class="font-medium text-slate-700">{{ Auth::user()->name ?? 'Guest' }}</span>
                 <span class="ml-2 text-xs text-slate-500">▼</span>
 
@@ -56,8 +60,14 @@
                 <p class="text-xs text-slate-500">Pilih divisi untuk melihat data spesifik</p>
             </div>
         </div>
-        <form action="{{ route('dashboard') }}" method="GET" id="filterForm" class="flex items-center gap-2">
-            <select name="divisi_id" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block w-full p-2.5 min-w-[200px]">
+        <form action="{{ route('dashboard') }}" method="GET" id="filterForm" class="flex items-center gap-2 flex-wrap">
+            <select name="time_range" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 min-w-[150px]">
+                <option value="today" {{ request('time_range') == 'today' ? 'selected' : '' }}>Hari Ini</option>
+                <option value="7_days" {{ request('time_range', '7_days') == '7_days' ? 'selected' : '' }}>7 Hari Terakhir</option>
+                <option value="this_month" {{ request('time_range') == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
+                <option value="this_year" {{ request('time_range') == 'this_year' ? 'selected' : '' }}>Tahun Ini</option>
+            </select>
+            <select name="divisi_id" onchange="this.form.submit()" class="bg-slate-50 border border-slate-200 text-slate-700 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 min-w-[180px]">
                 <option value="">Seluruh Divisi</option>
                 @foreach($allDivisi as $divisi)
                     <option value="{{ $divisi->id }}" {{ $divisiId == $divisi->id ? 'selected' : '' }}>
@@ -65,7 +75,7 @@
                     </option>
                 @endforeach
             </select>
-            @if($divisiId)
+            @if($divisiId || (request('time_range') && request('time_range') != '7_days'))
                 <a href="{{ route('dashboard') }}" class="p-2.5 text-slate-400 hover:text-red-500 transition-colors" title="Clear Filter">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="12"></line></svg>
                 </a>
@@ -73,7 +83,7 @@
         </form>
     </div>
     @elseif(Auth::user()->role_id == 2)
-    <div class="bg-red-50 border border-red-100 p-4 rounded-xl mb-8 flex items-center justify-between">
+    <div class="bg-red-50 border border-red-100 p-4 rounded-xl mb-8 flex items-center justify-between flex-wrap gap-4">
         <div class="flex items-center gap-3">
             <div class="p-2 bg-red-100 text-red-600 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
@@ -83,6 +93,14 @@
                 <p class="text-xs text-red-600">Menampilkan statistik untuk divisi anda.</p>
             </div>
         </div>
+        <form action="{{ route('dashboard') }}" method="GET" class="flex items-center gap-2">
+            <select name="time_range" onchange="this.form.submit()" class="bg-white border border-red-200 text-red-800 text-sm rounded-lg focus:ring-red-500 focus:border-red-500 block p-2.5 min-w-[150px]">
+                <option value="today" {{ request('time_range') == 'today' ? 'selected' : '' }}>Hari Ini</option>
+                <option value="7_days" {{ request('time_range', '7_days') == '7_days' ? 'selected' : '' }}>7 Hari Terakhir</option>
+                <option value="this_month" {{ request('time_range') == 'this_month' ? 'selected' : '' }}>Bulan Ini</option>
+                <option value="this_year" {{ request('time_range') == 'this_year' ? 'selected' : '' }}>Tahun Ini</option>
+            </select>
+        </form>
     </div>
     @endif
 
@@ -113,7 +131,7 @@
         
         <!-- Statistik Absensi -->
         <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-l-violet-500">
-            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Kehadiran Hari Ini</h3>
+            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">{{ $attendancePanelTitle ?? 'Kehadiran' }}</h3>
             <div class="text-3xl font-bold text-slate-800 mb-1">{{ $attendanceRate }}%</div>
             <div class="text-xs {{ $hadirCount > 0 ? 'text-emerald-500' : 'text-slate-400' }}">{{ $hadirCount }}/{{ $totalTodayAssigned }} mahasiswa</div>
         </div>

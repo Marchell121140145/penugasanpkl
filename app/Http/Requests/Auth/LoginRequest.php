@@ -49,6 +49,14 @@ class LoginRequest extends FormRequest
             ]);
         }
 
+        // Cek apakah user adalah pelaksana namun belum memiliki divisi
+        if (Auth::user()->role_id == 3 && Auth::user()->divisi_id == null) {
+            Auth::logout();
+            throw ValidationException::withMessages([
+                'email' => 'Akun Anda sedang menunggu persetujuan admin untuk penempatan divisi. Silakan coba lagi nanti.',
+            ]);
+        }
+
         RateLimiter::clear($this->throttleKey());
     }
 

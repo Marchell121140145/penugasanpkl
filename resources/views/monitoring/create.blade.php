@@ -291,6 +291,111 @@
         .student-counter strong {
             color: #3b82f6;
         }
+
+        /* Dark Mode Overrides */
+        .dark #create-task-container .container-custom {
+            background: #1f2937;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .dark #create-task-container .form-group label {
+            color: #e5e7eb;
+        }
+
+        .dark #create-task-container .form-control-custom {
+            background: #374151;
+            border-color: #4b5563;
+            color: #f3f4f6;
+        }
+
+        .dark #create-task-container .form-control-custom:focus {
+            border-color: #3b82f6;
+        }
+
+        .dark #create-task-container .student-list {
+            border-color: #4b5563;
+            background: #1f2937;
+        }
+
+        .dark #create-task-container .student-item {
+            border-bottom-color: #374151;
+        }
+        
+        .dark #create-task-container .student-item label {
+            color: #d1d5db;
+        }
+
+        .dark #create-task-container .file-upload {
+            border-color: #4b5563;
+            background: #1f2937;
+        }
+
+        .dark #create-task-container .file-upload:hover {
+            background: #374151;
+            border-color: #3b82f6;
+        }
+
+        .dark #create-task-container .file-item {
+            background: #374151;
+            border-color: #4b5563;
+        }
+
+        .dark #create-task-container .file-item .file-info {
+            color: #e5e7eb;
+        }
+
+        .dark #create-task-container .btn-outline-custom {
+            background: #374151;
+            border-color: #4b5563;
+            color: #d1d5db;
+        }
+
+        .dark #create-task-container .btn-outline-custom:hover {
+            background: #4b5563;
+            color: white;
+        }
+
+        .dark #create-task-container .add-link-btn {
+            background: #1f2937;
+            border-color: #4b5563;
+            color: #60a5fa;
+        }
+
+        .dark #create-task-container .add-link-btn:hover {
+            background: #374151;
+            border-color: #3b82f6;
+        }
+
+        .dark .nav-back {
+            color: #9ca3af;
+        }
+
+        .dark .nav-back:hover {
+            color: #60a5fa;
+        }
+        
+        .dark #create-task-container textarea.form-control-custom {
+            background: #374151;
+            color: #f3f4f6;
+        }
+        
+        .dark #create-task-container .form-actions {
+            border-top-color: #374151;
+        }
+
+        .dark #create-task-container select.form-control-custom option {
+            background: #1f2937;
+            color: #f3f4f6;
+        }
+        
+        .dark #create-task-container .student-counter {
+            color: #9ca3af;
+        }
+
+        .dark #create-task-container select[readonly] {
+            background-color: #374151 !important;
+            color: #9ca3af;
+        }
     </style>
 
     <div id="create-task-container">
@@ -357,10 +462,10 @@
                     <!-- Divisi (Dynamic from DB) -->
                     <div class="form-group">
                         <label for="taskDivisi">Divisi *</label>
-                        <select id="taskDivisi" name="divisi_id" class="form-control-custom @error('divisi_id') input-error @enderror" required>
-                            <option value="" disabled {{ old('divisi_id') ? '' : 'selected' }}>-- Pilih Divisi --</option>
+                        <select id="taskDivisi" name="divisi_id" class="form-control-custom @error('divisi_id') input-error @enderror" required {{ auth()->user()->role_id == 2 ? 'readonly style=pointer-events:none;background-color:#f8fafc;' : '' }}>
+                            <option value="" disabled {{ old('divisi_id') || auth()->user()->role_id == 2 ? '' : 'selected' }}>-- Pilih Divisi --</option>
                             @foreach($divisis as $divisi)
-                                <option value="{{ $divisi->id }}" {{ old('divisi_id') == $divisi->id ? 'selected' : '' }}>
+                                <option value="{{ $divisi->id }}" {{ old('divisi_id', auth()->user()->role_id == 2 ? auth()->user()->divisi_id : '') == $divisi->id ? 'selected' : '' }}>
                                     {{ $divisi->nama }}
                                 </option>
                             @endforeach
@@ -393,7 +498,7 @@
                         @enderror
                         <div class="student-list">
                             @forelse($mahasiswas as $mhs)
-                                <div class="student-item">
+                                <div class="student-item" data-divisi="{{ $mhs->divisi_id }}">
                                     <input type="checkbox" 
                                            class="student-checkbox" 
                                            name="assignees[]" 
@@ -411,7 +516,7 @@
                         <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
                             <button type="button" class="btn-custom btn-outline-custom" style="padding: 8px 12px; font-size: 0.9rem;" onclick="selectAllStudents()">Pilih Semua</button>
                             <button type="button" class="btn-custom btn-outline-custom" style="padding: 8px 12px; font-size: 0.9rem;" onclick="deselectAllStudents()">Hapus Semua</button>
-                            <span class="student-counter">Dipilih: <strong id="selectedCount">0</strong> dari {{ count($mahasiswas) }} mahasiswa</span>
+                            <span class="student-counter">Dipilih: <strong id="selectedCount">0</strong> dari <span id="totalVisibleCount">{{ count($mahasiswas) }}</span> mahasiswa</span>
                         </div>
                     </div>
 
@@ -472,14 +577,48 @@
             deadlineInput.value = nextWeek.toISOString().split('T')[0];
         }
 
-        // --- Student selection ---
+        // --- Student selection & Filtering ---
+        const taskDivisiSelect = document.getElementById('taskDivisi');
+        const studentItems = document.querySelectorAll('.student-item');
+        const totalVisibleCountSpan = document.getElementById('totalVisibleCount');
+
+        function filterStudentsByDivisi() {
+            const selectedDivisi = taskDivisiSelect.value;
+            let visibleCount = 0;
+            
+            studentItems.forEach(item => {
+                // Remove unchecked checkboxes when hiding to prevent accidental submissions of hidden students if they were checked
+                const cb = item.querySelector('.student-checkbox');
+                
+                if (!selectedDivisi || item.dataset.divisi === selectedDivisi) {
+                    item.style.display = 'flex';
+                    visibleCount++;
+                } else {
+                    item.style.display = 'none';
+                    cb.checked = false; // uncheck hidden items
+                }
+            });
+            
+            totalVisibleCountSpan.textContent = visibleCount;
+            updateStudentCount();
+        }
+
+        taskDivisiSelect.addEventListener('change', filterStudentsByDivisi);
+        
+        // Initial filter run (in case old value is set or Pembimbing)
+        filterStudentsByDivisi();
+
         function updateStudentCount() {
             const checked = document.querySelectorAll('.student-checkbox:checked').length;
             document.getElementById('selectedCount').textContent = checked;
         }
 
         function selectAllStudents() {
-            document.querySelectorAll('.student-checkbox').forEach(cb => cb.checked = true);
+            document.querySelectorAll('.student-item').forEach(item => {
+                if(item.style.display !== 'none') {
+                    item.querySelector('.student-checkbox').checked = true;
+                }
+            });
             updateStudentCount();
         }
 

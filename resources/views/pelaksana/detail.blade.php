@@ -535,6 +535,151 @@
             border: 1px solid #e2e8f0;
             margin-bottom: 20px;
         }
+
+        /* Dark Mode Overrides */
+        .dark {
+            --dark: #f8fafc;
+            --secondary: #94a3b8;
+        }
+
+        .dark .task-detail-card {
+            background: #1f2937;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .dark .description-box {
+            background: #374151;
+            border-left-color: var(--primary);
+        }
+
+        .dark .description-box p {
+            color: #e5e7eb;
+        }
+
+        .dark .upload-section {
+            background: #1f2937;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
+        }
+
+        .dark .upload-area {
+            border-color: #4b5563;
+        }
+
+        .dark .upload-area:hover {
+            background: #374151;
+            border-color: var(--primary);
+        }
+
+        .dark .file-item {
+            background: #374151;
+            border-color: #4b5563;
+        }
+
+        .dark .file-name {
+            color: #e5e7eb;
+        }
+
+        .dark .dialogue-container {
+            background: #1f2937;
+            border-color: #4b5563;
+        }
+
+        .dark .comment-bubble {
+            background: #374151;
+            color: #e5e7eb;
+        }
+
+        .dark .comment-bubble.admin {
+            background: #1e3a8a;
+            color: #93c5fd;
+        }
+
+        .dark .comment-time {
+            color: #6b7280;
+        }
+
+        .dark .btn-cancel {
+            background: #1f2937;
+            color: #d1d5db;
+            border-color: #4b5563;
+        }
+
+        .dark .btn-cancel:hover {
+            border-color: var(--primary);
+            color: var(--primary);
+        }
+
+        .dark .pdf-modal {
+            background: #1f2937;
+        }
+
+        .dark .pdf-modal-header {
+            background: #374151;
+            border-bottom-color: #4b5563;
+        }
+
+        .dark .pdf-modal-header h3 {
+            color: #e5e7eb;
+        }
+
+        .dark .pdf-modal-close {
+            background: #4b5563;
+            color: #d1d5db;
+        }
+
+        .dark .pdf-modal-close:hover {
+            background: #374151;
+            color: #f3f4f6;
+        }
+        
+        .dark .task-section h2 {
+            border-bottom-color: #374151;
+            color: #e5e7eb;
+        }
+        
+        .dark .deadline-section {
+            background: rgba(251, 146, 60, 0.1);
+            border-left-color: var(--warning);
+        }
+        
+        .dark .deadline-header h2 {
+            color: #e5e7eb;
+        }
+        
+        .dark input[type="text"] {
+            background: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563 !important;
+        }
+        
+        .dark input[type="text"]::placeholder {
+            color: #9ca3af;
+        }
+        
+        .dark .pdf-viewer-container {
+            background: #374151;
+            border-color: #4b5563;
+        }
+        
+        .dark .task-header h1 {
+            color: #f8fafc;
+        }
+        
+        .dark .meta-value {
+            color: #e5e7eb;
+        }
+        
+        .dark select {
+            background: #374151;
+            color: #f3f4f6;
+            border-color: #4b5563;
+        }
+
+        .dark .file-attachment-item {
+            background: #374151 !important;
+            border-color: #4b5563 !important;
+            color: #e5e7eb;
+        }
     </style>
 
     <div class="task-detail-content">
@@ -605,7 +750,11 @@
                         $bubbleClass = $isAdmin ? 'admin' : '';
                     @endphp
                     <div class="comment-item">
-                        <div class="comment-avatar {{ $avatarColor }}">{{ $initials }}</div>
+                        @if($comment->user->avatar)
+                            <img src="{{ asset('storage/' . $comment->user->avatar) }}" class="comment-avatar object-cover">
+                        @else
+                            <div class="comment-avatar {{ $avatarColor }}">{{ $initials }}</div>
+                        @endif
                         <div class="flex-1">
                             <div class="comment-bubble {{ $bubbleClass }}">
                                 {{ $comment->pesan }}
@@ -689,7 +838,7 @@
                 
                 @foreach($taskFiles as $file)
                 <div class="mb-4">
-                    <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
+                    <div class="file-attachment-item" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 15px;">
                             <span style="font-size: 1.5rem;">{{ strtolower($file->tipe) === 'pdf' ? '📄' : '📎' }}</span>
                             <div>
@@ -724,7 +873,7 @@
                 @endforeach
 
                 @foreach($taskLinks as $link)
-                <div style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                <div class="file-attachment-item" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <span style="font-size: 1.5rem;">🔗</span>
                         <div>

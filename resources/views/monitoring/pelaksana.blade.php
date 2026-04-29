@@ -51,6 +51,67 @@
         </div>
     </div>
 
+    <!-- Panel Persetujuan Pendaftaran (Khusus Admin) -->
+    @if(auth()->check() && auth()->user()->role_id == 1 && isset($pendingUsers) && $pendingUsers->count() > 0)
+    <div class="bg-amber-50 border-l-4 border-amber-500 rounded-xl p-6 shadow-sm mb-8">
+        <div class="flex items-start gap-4">
+            <div class="text-3xl">⚠️</div>
+            <div class="flex-1">
+                <h2 class="text-amber-800 text-lg font-bold mb-1">Pendaftaran Menunggu Persetujuan ({{ $pendingUsers->count() }})</h2>
+                <p class="text-amber-700 text-sm mb-4">Pelaksana berikut telah mendaftar namun belum memiliki divisi. Mereka tidak dapat login sebelum Anda menempatkannya di suatu divisi.</p>
+                
+                <div class="bg-white rounded-lg border border-amber-200 overflow-hidden">
+                    <table class="w-full text-left text-sm">
+                        <thead class="bg-amber-100/50 text-amber-800">
+                            <tr>
+                                <th class="p-3 font-semibold">Nama & Email</th>
+                                <th class="p-3 font-semibold">Waktu Daftar</th>
+                                <th class="p-3 font-semibold w-[350px]">Pilih Divisi & Setujui</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-amber-100">
+                            @foreach($pendingUsers as $pendingUser)
+                            <tr>
+                                <td class="p-3">
+                                    <div class="font-bold text-slate-800">{{ $pendingUser->name }}</div>
+                                    <div class="text-slate-500 text-xs">{{ $pendingUser->email }}</div>
+                                </td>
+                                <td class="p-3 text-slate-600">
+                                    {{ $pendingUser->created_at->diffForHumans() }}
+                                </td>
+                                <td class="p-3 bg-amber-50/30">
+                                    <div class="flex gap-2">
+                                        <form action="{{ route('pelaksana.approve', $pendingUser->id) }}" method="POST" class="flex flex-1 gap-2">
+                                            @csrf
+                                            <select name="divisi_id" required class="flex-1 px-3 py-1.5 border border-amber-300 rounded-md text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 bg-white">
+                                                <option value="">Pilih Divisi...</option>
+                                                @foreach($divisis as $divisi)
+                                                    <option value="{{ $divisi->id }}">{{ $divisi->nama }}</option>
+                                                @endforeach
+                                            </select>
+                                            <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-md font-semibold text-sm transition-colors shadow-sm whitespace-nowrap">
+                                                Terima
+                                            </button>
+                                        </form>
+                                        <form action="{{ route('pelaksana.reject', $pendingUser->id) }}" method="POST" onsubmit="return confirm('Yakin ingin menolak dan menghapus pendaftaran ini?')">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="bg-rose-500 hover:bg-rose-600 text-white px-4 py-1.5 rounded-md font-semibold text-sm transition-colors shadow-sm">
+                                                Tolak
+                                            </button>
+                                        </form>
+                                    </div>
+                                </td>
+                            </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+    @endif
+
     <!-- Action Bar with Filters -->
     <form method="GET" action="{{ route('pelaksana.list') }}" id="filterForm">
         <input type="hidden" name="sort_by" value="{{ request('sort_by', 'name') }}">
@@ -123,6 +184,7 @@
                             </a>
                         </th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Divisi</th>
+                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm w-32">Durasi PKL</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">
                             <a href="{{ pelaksanaSortUrl('assigned_tasks_count') }}" class="flex items-center hover:text-red-600 transition-colors">
                                 Total Tugas {!! pelaksanaSortIcon('assigned_tasks_count') !!}
@@ -160,7 +222,11 @@
                             <td class="p-4 text-sm text-slate-800 text-center">{{ $pelaksanas->firstItem() + $index }}</td>
                             <td class="p-4 text-sm">
                                 <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-full {{ $avatarColors[$colorIndex] }} flex items-center justify-center text-xs font-bold">{{ $initials }}</div>
+                                    @if($pelaksana->avatar)
+                                        <img src="{{ asset('storage/' . $pelaksana->avatar) }}" class="w-9 h-9 rounded-full object-cover">
+                                    @else
+                                        <div class="w-9 h-9 rounded-full {{ $avatarColors[$colorIndex] }} flex items-center justify-center text-xs font-bold">{{ $initials }}</div>
+                                    @endif
                                     <div class="font-semibold text-slate-800">{{ $pelaksana->name }}</div>
                                 </div>
                             </td>
@@ -170,6 +236,25 @@
                                     <span class="px-2 py-1 rounded-md bg-purple-50 text-purple-600 text-xs font-medium">{{ $pelaksana->divisi->nama }}</span>
                                 @else
                                     <span class="text-slate-400 italic text-xs">Belum ditentukan</span>
+                                @endif
+                            </td>
+                            <td class="p-4 text-sm">
+                                @if($pelaksana->pkl_start && $pelaksana->pkl_end)
+                                    <div class="font-medium text-slate-700 text-[11px] whitespace-nowrap">
+                                        {{ \Carbon\Carbon::parse($pelaksana->pkl_start)->format('d M') }} - {{ \Carbon\Carbon::parse($pelaksana->pkl_end)->format('d M y') }}
+                                    </div>
+                                    @php
+                                        $end = \Carbon\Carbon::parse($pelaksana->pkl_end)->endOfDay();
+                                        $isOverdue = $end->isPast();
+                                        $daysLeft = now()->startOfDay()->diffInDays($end->startOfDay(), false);
+                                    @endphp
+                                    @if($isOverdue)
+                                        <div class="text-[10px] text-red-500 font-bold mt-0.5">Berakhir</div>
+                                    @else
+                                        <div class="text-[10px] text-emerald-600 font-bold mt-0.5">Sisa {{ ceil($daysLeft) }} hari</div>
+                                    @endif
+                                @else
+                                    <span class="text-slate-400 italic text-[11px]">Belum diatur</span>
                                 @endif
                             </td>
                             <td class="p-4 text-sm text-center">
