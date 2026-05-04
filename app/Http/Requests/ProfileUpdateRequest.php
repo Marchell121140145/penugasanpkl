@@ -16,7 +16,7 @@ class ProfileUpdateRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s]+$/'],
             'email' => [
                 'required',
                 'string',
@@ -26,6 +26,19 @@ class ProfileUpdateRequest extends FormRequest
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
             'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+        ];
+    }
+
+    /**
+     * Get the error messages for the defined validation rules.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'name.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
+            'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
         ];
     }
 }

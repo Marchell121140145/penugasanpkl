@@ -236,6 +236,11 @@
                                 <div class="flex gap-2">
                                     <a href="{{ route('penugasan.show', $task->id) }}" class="px-3 py-1.5 rounded-md bg-slate-100 text-slate-800 text-xs font-medium hover:bg-slate-200 transition-colors hover:-translate-y-px text-center">Lihat</a>
                                     <a href="{{ route('penugasan.edit', $task->id) }}" class="px-3 py-1.5 rounded-md bg-red-100 text-red-600 text-xs font-medium hover:bg-red-200 transition-colors hover:-translate-y-px">Edit</a>
+                                    <form action="{{ route('penugasan.destroy', $task->id) }}" method="POST" class="inline-block" onsubmit="return confirm('Yakin ingin menghapus tugas ini secara permanen beserta semua filenya?')">
+                                        @csrf
+                                        @method('DELETE')
+                                        <button type="submit" class="px-3 py-1.5 rounded-md bg-rose-100 text-rose-600 text-xs font-medium hover:bg-rose-200 transition-colors hover:-translate-y-px">Hapus</button>
+                                    </form>
                                 </div>
                             </td>
                         </tr>

@@ -39,8 +39,45 @@
         </div>
     </div>
 
+    <!-- User Info Banner -->
+    <div class="flex flex-col md:flex-row gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
+        <div class="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg flex-1">
+            <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl shrink-0">
+                🏢
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 uppercase font-semibold tracking-wider">Divisi</p>
+                <p class="font-bold text-slate-800">{{ Auth::user()->divisi->nama ?? 'Belum Ditentukan' }}</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg flex-1">
+            <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
+                👨‍🏫
+            </div>
+            <div>
+                <p class="text-xs text-slate-500 uppercase font-semibold tracking-wider">Pembimbing</p>
+                <p class="font-bold text-slate-800">{{ Auth::user()->pembimbing->name ?? 'Belum Ditentukan' }}</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-3 px-4 py-2 bg-red-50 border border-red-100 rounded-lg flex-1">
+            <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xl shrink-0">
+                ⏳
+            </div>
+            <div>
+                <p class="text-xs text-red-500 uppercase font-semibold tracking-wider">Sisa Masa PKL</p>
+                <p class="font-bold text-red-700">
+                    @if(round($daysLeft) > 0)
+                        {{ round($daysLeft) }} Hari Lagi
+                    @else
+                        Berakhir Hari Ini / Selesai
+                    @endif
+                </p>
+            </div>
+        </div>
+    </div>
+
     <!-- Stats Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-6 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 mb-8">
         <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Tugas Saya</h3>
             <div class="flex items-end justify-between">
@@ -60,14 +97,6 @@
                 <span class="text-xs px-2 py-1 {{ $statusColor }} rounded-lg">{{ $statusText }}</span>
             </div>
             <div class="text-xs text-slate-500 mt-2">Hadir {{ $presentCount }} dari {{ $totalAttendanceSessions }} hari</div>
-        </div>
-        <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
-            <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Sisa Hari PKL</h3>
-            <div class="flex items-end justify-between">
-                <div class="text-3xl font-bold text-slate-800">{{ round($daysLeft) }}</div>
-                <span class="text-xs px-2 py-1 bg-red-100 text-red-600 rounded-lg">Hari</span>
-            </div>
-            <div class="text-xs text-slate-500 mt-2">Berakhir: {{ $endDateFormatted }}</div>
         </div>
     </div>
 

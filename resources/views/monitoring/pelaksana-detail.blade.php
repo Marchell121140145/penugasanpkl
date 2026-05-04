@@ -157,7 +157,7 @@
                     <div class="space-y-5">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1.5">Nama Lengkap</label>
-                            <input type="text" name="name" value="{{ old('name', $pelaksana->name) }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-sm transition-all text-sm outline-none" required>
+                            <input type="text" name="name" value="{{ old('name', $pelaksana->name) }}" class="w-full px-4 py-2.5 rounded-xl border border-slate-200 focus:ring-2 focus:ring-red-500 focus:border-red-500 shadow-sm transition-all text-sm outline-none" required maxlength="60" pattern="^[a-zA-Z\s]+$" title="Nama hanya boleh berisi huruf dan spasi.">
                         </div>
                         
                         <div>

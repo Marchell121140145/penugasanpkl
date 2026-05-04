@@ -87,9 +87,12 @@ class PembimbingController extends Controller
         $pembimbing = User::where('role_id', 2)->findOrFail($id);
         
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s]+$/'],
             'email' => 'required|email|max:255|unique:users,email,'.$id,
             'divisi_id' => 'nullable|exists:divisi,id',
+        ], [
+            'name.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
+            'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
         ]);
 
         $pembimbing->update([
@@ -111,10 +114,13 @@ class PembimbingController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s]+$/'],
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'divisi_id' => 'nullable|exists:divisi,id',
+        ], [
+            'name.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
+            'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
         ]);
 
         User::create([

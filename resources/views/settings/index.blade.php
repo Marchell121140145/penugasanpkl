@@ -1,5 +1,14 @@
 <x-admin-layout>
-    <div x-data="{ activeTab: 'umum' }">
+    <div x-data="{ 
+        activeTab: 'umum',
+        isEditModalOpen: false,
+        editUser: {},
+        isPurgeModalOpen: false,
+        openEditModal(user) {
+            this.editUser = user;
+            this.isEditModalOpen = true;
+        }
+    }">
         <!-- Header -->
         <div class="flex justify-between items-center mb-8">
             <div>
@@ -26,6 +35,7 @@
                     <span class="text-xl">🛠️</span>
                     <span>Umum</span>
                 </button>
+                @if(auth()->user()->role_id == 1)
                 <button @click="activeTab = 'users'" :class="activeTab === 'users' ? 'bg-blue-600 text-white shadow-blue-100' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-200'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all shadow-md border">
                     <span class="text-xl">👥</span>
                     <span>Manajemen User</span>
@@ -34,6 +44,7 @@
                     <span class="text-xl">💾</span>
                     <span>Database</span>
                 </button>
+                @endif
                 <div class="pt-4 border-t border-slate-200">
                     <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 bg-white text-slate-600 hover:bg-slate-50 rounded-xl font-semibold transition-all border border-slate-200/60">
                         <span class="text-xl">👤</span>
@@ -107,6 +118,7 @@
                     </div>
                 </div>
 
+                @if(auth()->user()->role_id == 1)
                 <!-- Tab: Manajemen User -->
                 <div x-show="activeTab === 'users'" x-cloak class="space-y-6">
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
@@ -115,7 +127,12 @@
                                 <span class="p-2 bg-blue-50 text-blue-600 rounded-lg text-sm">👥</span>
                                 Semua Pengguna Sistem
                             </h2>
-                            <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">{{ $users->total() }} User</span>
+                            <div class="flex items-center gap-3">
+                                <button @click="isPurgeModalOpen = true" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
+                                    <span>🧹</span> Purge Pelaksana
+                                </button>
+                                <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">{{ $users->total() }} User</span>
+                            </div>
                         </div>
                         
                         <div class="overflow-x-auto">
@@ -146,11 +163,14 @@
                                         </td>
                                         <td class="px-6 py-5 text-right">
                                             @if($user->id !== auth()->id())
-                                            <form action="{{ route('settings.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini secara permanen? Kamu tidak bisa membatalkan aksi ini.')">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="text-rose-500 hover:text-rose-700 font-bold text-xs uppercase underline">Hapus</button>
-                                            </form>
+                                            <div class="flex items-center justify-end gap-3">
+                                                <button @click="openEditModal({{ json_encode($user) }})" class="text-blue-500 hover:text-blue-700 font-bold text-xs uppercase underline">Edit</button>
+                                                <form action="{{ route('settings.user.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Hapus user ini secara permanen? Kamu tidak bisa membatalkan aksi ini.')">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="text-rose-500 hover:text-rose-700 font-bold text-xs uppercase underline">Hapus</button>
+                                                </form>
+                                            </div>
                                             @else
                                             <span class="text-slate-400 text-xs italic">Akun Anda</span>
                                             @endif
@@ -162,6 +182,148 @@
                         </div>
                         <div class="p-4 bg-slate-50">
                             {{ $users->links() }}
+                        </div>
+
+                        <!-- Edit User Modal -->
+                        <div x-show="isEditModalOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto">
+                            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+                                <div x-show="isEditModalOpen" class="fixed inset-0 transition-opacity bg-slate-900 bg-opacity-75" @click="isEditModalOpen = false"></div>
+
+                                <div x-show="isEditModalOpen" class="relative inline-block w-full max-w-2xl px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:p-6"
+                                     x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                                    <div class="flex justify-between items-center mb-5 pb-4 border-b border-slate-100">
+                                        <h3 class="text-lg font-bold leading-6 text-slate-800" x-text="`Edit User: ${editUser.name}`"></h3>
+                                        <button @click="isEditModalOpen = false" class="text-slate-400 hover:text-slate-500">
+                                            <span class="text-2xl">&times;</span>
+                                        </button>
+                                    </div>
+                                    <form :action="`/settings/user/${editUser.id}`" method="POST">
+                                        @csrf
+                                        @method('PUT')
+                                        <div class="grid grid-cols-1 gap-y-4 sm:grid-cols-2 sm:gap-x-6">
+                                            <div class="sm:col-span-2">
+                                                <label class="block text-sm font-medium text-slate-700">Nama</label>
+                                                <input type="text" name="name" x-model="editUser.name" required class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                            </div>
+                                            <div class="sm:col-span-2">
+                                                <label class="block text-sm font-medium text-slate-700">Email</label>
+                                                <input type="email" name="email" x-model="editUser.email" required class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Role</label>
+                                                <select name="role_id" x-model="editUser.role_id" required class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                                    @foreach($roles as $role)
+                                                    <option value="{{ $role->id }}">{{ $role->role }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-medium text-slate-700">Divisi</label>
+                                                <select name="divisi_id" x-model="editUser.divisi_id" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                                    <option value="">-- Pilih Divisi --</option>
+                                                    @foreach($divisis as $divisi)
+                                                    <option value="{{ $divisi->id }}">{{ $divisi->nama }}</option>
+                                                    @endforeach
+                                                </select>
+                                            </div>
+                                            
+                                            <!-- Khusus Pelaksana -->
+                                            <div x-show="editUser.role_id == 3" class="sm:col-span-2 grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2 p-4 bg-slate-50 rounded-lg border border-slate-200">
+                                                <div class="sm:col-span-2">
+                                                    <label class="block text-sm font-medium text-slate-700">Pembimbing</label>
+                                                    <select name="pembimbing_id" x-model="editUser.pembimbing_id" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                                        <option value="">-- Pilih Pembimbing --</option>
+                                                        @foreach($pembimbings as $p)
+                                                        <option value="{{ $p->id }}">{{ $p->name }}</option>
+                                                        @endforeach
+                                                    </select>
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700">Tgl Mulai PKL</label>
+                                                    <input type="date" name="pkl_start" x-model="editUser.pkl_start" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-medium text-slate-700">Tgl Selesai PKL</label>
+                                                    <input type="date" name="pkl_end" x-model="editUser.pkl_end" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                                </div>
+                                            </div>
+
+                                            <div class="sm:col-span-2 mt-2">
+                                                <label class="block text-sm font-medium text-slate-700">Password Baru (Kosongkan jika tidak diubah)</label>
+                                                <input type="password" name="password" class="mt-1 block w-full rounded-md border-slate-300 shadow-sm focus:border-blue-500 focus:ring-blue-500 sm:text-sm">
+                                            </div>
+                                        </div>
+                                        <div class="mt-6 flex justify-end gap-3">
+                                            <button type="button" @click="isEditModalOpen = false" class="px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 font-medium text-sm">Batal</button>
+                                            <button type="submit" class="px-4 py-2 bg-blue-600 text-white rounded-md shadow-sm hover:bg-blue-700 font-medium text-sm">Simpan Perubahan</button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Purge Modal -->
+                        <div x-show="isPurgeModalOpen" style="display: none;" class="fixed inset-0 z-50 overflow-y-auto">
+                            <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
+                                <div x-show="isPurgeModalOpen" class="fixed inset-0 transition-opacity bg-slate-900 bg-opacity-75" @click="isPurgeModalOpen = false"></div>
+
+                                <div x-show="isPurgeModalOpen" class="relative inline-block w-full max-w-lg px-4 pt-5 pb-4 overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-xl sm:my-8 sm:align-middle sm:p-6"
+                                     x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                     x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
+                                    <div class="flex justify-between items-center mb-4">
+                                        <h3 class="text-xl font-bold leading-6 text-rose-600 flex items-center gap-2">
+                                            <span>🧹</span> Purge Pelaksana Kadaluarsa
+                                        </h3>
+                                        <button @click="isPurgeModalOpen = false" class="text-slate-400 hover:text-slate-500">
+                                            <span class="text-2xl">&times;</span>
+                                        </button>
+                                    </div>
+                                    <div class="bg-rose-50 border border-rose-200 rounded-lg p-4 mb-5">
+                                        <p class="text-sm text-rose-700 font-medium">Fitur ini digunakan untuk membersihkan secara massal akun pelaksana yang masa PKL-nya sudah berakhir dalam rentang waktu tertentu.</p>
+                                    </div>
+                                    <form action="{{ route('settings.purge') }}" method="POST">
+                                        @csrf
+                                        <div class="space-y-4">
+                                            <div class="grid grid-cols-2 gap-4">
+                                                <div>
+                                                    <label class="block text-sm font-bold text-slate-700 mb-1">Masa Berakhir Dari</label>
+                                                    <input type="date" name="start_date" required class="block w-full rounded-md border-slate-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm">
+                                                </div>
+                                                <div>
+                                                    <label class="block text-sm font-bold text-slate-700 mb-1">Hingga Tanggal</label>
+                                                    <input type="date" name="end_date" required class="block w-full rounded-md border-slate-300 shadow-sm focus:border-rose-500 focus:ring-rose-500 sm:text-sm">
+                                                </div>
+                                            </div>
+                                            <div>
+                                                <label class="block text-sm font-bold text-slate-700 mb-2">Tipe Penghapusan</label>
+                                                <div class="space-y-2">
+                                                    <label class="flex items-start p-3 border border-emerald-200 rounded-lg bg-emerald-50 cursor-pointer">
+                                                        <input type="radio" name="type" value="soft" checked class="mt-1 h-4 w-4 text-emerald-600 border-slate-300 focus:ring-emerald-500">
+                                                        <div class="ml-3">
+                                                            <span class="block text-sm font-bold text-emerald-800">Soft Delete (Aman)</span>
+                                                            <span class="block text-xs text-emerald-600">Akun tidak bisa login, tapi data riwayat tugas dan absensi tetap tersimpan.</span>
+                                                        </div>
+                                                    </label>
+                                                    <label class="flex items-start p-3 border border-rose-200 rounded-lg bg-white cursor-pointer hover:bg-rose-50">
+                                                        <input type="radio" name="type" value="hard" class="mt-1 h-4 w-4 text-rose-600 border-slate-300 focus:ring-rose-500">
+                                                        <div class="ml-3">
+                                                            <span class="block text-sm font-bold text-rose-800">Hard Delete (Permanen)</span>
+                                                            <span class="block text-xs text-rose-600">Akun terhapus total beserta <b>seluruh data tugas dan absensi</b> miliknya.</span>
+                                                        </div>
+                                                    </label>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="mt-6 flex justify-end gap-3">
+                                            <button type="button" @click="isPurgeModalOpen = false" class="px-4 py-2 bg-white text-slate-700 border border-slate-300 rounded-md shadow-sm hover:bg-slate-50 font-medium text-sm">Batal</button>
+                                            <button type="submit" onclick="return confirm('Apakah Anda yakin ingin mengeksekusi purge ini? Pastikan rentang tanggal sudah benar.')" class="px-4 py-2 bg-rose-600 text-white rounded-md shadow-sm hover:bg-rose-700 font-bold text-sm flex items-center gap-2">
+                                                Eksekusi Purge
+                                            </button>
+                                        </div>
+                                    </form>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -218,6 +380,7 @@
                         </div>
                     </div>
                 </div>
+                @endif
             </div>
         </div>
     </div>

@@ -22,8 +22,8 @@
                     <div class="text-lg font-semibold text-slate-800">{{ $pelaksana->name }}</div>
                 </div>
                 <div>
-                    <div class="text-sm text-slate-500 mb-1">NIM</div>
-                    <div class="text-lg font-semibold text-slate-800">{{ $pelaksana->nim ?? 'NIM-'.$pelaksana->id }}</div>
+                    <div class="text-sm text-slate-500 mb-1">ID</div>
+                    <div class="text-lg font-semibold text-slate-800">{{ $pelaksana->id }}</div>
                 </div>
                 <div>
                     <div class="text-sm text-slate-500 mb-1">Divisi</div>

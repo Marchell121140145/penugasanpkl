@@ -18,9 +18,7 @@ class AttendanceController extends Controller
             return redirect()->route('pelaksana.absensi');
         }
 
-        $selectedDate = $request->input('date') ? Carbon::parse($request->input('date')) : Carbon::today();
-        
-        // 1. Dapatkan daftar "Sesi Absensi" 
+        // Dapatkan daftar "Sesi Absensi" 
         $attendancesQuery = Attendance::withCount([
             'assignees as hadir_count' => function($q) {
                 $q->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai']);
@@ -39,12 +37,21 @@ class AttendanceController extends Controller
         }
         $attendances = $attendancesQuery->take(15)->get();
 
-        // 2. Dapatkan daftar detail "Assignee" pada hari yang dipilih
-        $assigneesQuery = AttendanceAssignee::with(['user.divisi', 'attendance'])
-            ->whereHas('attendance', function($q) use ($selectedDate) {
-                $q->whereDate('deadline', $selectedDate);
-            });
-            
+        return view('monitoring.absensi', compact('attendances'));
+    }
+
+    public function sessionDetail($id)
+    {
+        $user = auth()->user();
+        if ($user->role_id == 3) {
+            return redirect()->route('pelaksana.absensi');
+        }
+
+        $attendance = Attendance::with('creator')->findOrFail($id);
+
+        $assigneesQuery = AttendanceAssignee::with(['user.divisi'])
+            ->where('attendance_id', $id);
+
         if ($user->role_id == 2) {
             $assigneesQuery->whereHas('user', function($q) use ($user) {
                 $q->where('pembimbing_id', $user->id)
@@ -52,9 +59,18 @@ class AttendanceController extends Controller
             });
         }
 
-        $assignees = $assigneesQuery->latest()->get();
+        $assignees = $assigneesQuery->get();
 
-        return view('monitoring.absensi', compact('assignees', 'attendances', 'selectedDate'));
+        $stats = [
+            'hadir' => $assignees->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count(),
+            'terlambat' => $assignees->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count(),
+            'selesai' => $assignees->whereIn('status', ['Hadir - Selesai', 'Terlambat - Selesai'])->count(),
+            'tidakHadir' => $assignees->whereIn('status', ['Alpha', 'Izin', 'Sakit', 'Belum Mengisi'])->count(),
+        ];
+
+        $divisis = Divisi::orderBy('nama')->get();
+
+        return view('monitoring.absensi-detail', compact('attendance', 'assignees', 'stats', 'divisis'));
     }
 
     public function create()

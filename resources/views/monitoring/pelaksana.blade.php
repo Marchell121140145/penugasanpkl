@@ -65,6 +65,7 @@
                         <thead class="bg-amber-100/50 text-amber-800">
                             <tr>
                                 <th class="p-3 font-semibold">Nama & Email</th>
+                                <th class="p-3 font-semibold">Durasi PKL</th>
                                 <th class="p-3 font-semibold">Waktu Daftar</th>
                                 <th class="p-3 font-semibold w-[350px]">Pilih Divisi & Setujui</th>
                             </tr>
@@ -75,6 +76,18 @@
                                 <td class="p-3">
                                     <div class="font-bold text-slate-800">{{ $pendingUser->name }}</div>
                                     <div class="text-slate-500 text-xs">{{ $pendingUser->email }}</div>
+                                </td>
+                                <td class="p-3">
+                                    @if($pendingUser->pkl_start && $pendingUser->pkl_end)
+                                        <div class="text-slate-700 text-xs font-medium">
+                                            {{ \Carbon\Carbon::parse($pendingUser->pkl_start)->format('d M Y') }}
+                                        </div>
+                                        <div class="text-slate-500 text-xs">
+                                            s/d {{ \Carbon\Carbon::parse($pendingUser->pkl_end)->format('d M Y') }}
+                                        </div>
+                                    @else
+                                        <span class="text-slate-400 italic text-xs">Belum diatur</span>
+                                    @endif
                                 </td>
                                 <td class="p-3 text-slate-600">
                                     {{ $pendingUser->created_at->diffForHumans() }}
@@ -361,7 +374,7 @@
                     <div class="p-6 space-y-4">
                         <div>
                             <label class="block text-sm font-semibold text-slate-700 mb-1">Nama Lengkap</label>
-                            <input type="text" name="name" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Masukkan nama lengkap">
+                            <input type="text" name="name" required class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors" placeholder="Masukkan nama lengkap" maxlength="60" pattern="^[a-zA-Z\s]+$" title="Nama hanya boleh berisi huruf dan spasi.">
                         </div>
 
                         <div>

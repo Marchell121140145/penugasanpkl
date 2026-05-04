@@ -20,7 +20,7 @@
         }
     </script>
 </head>
-<body x-data="{ sidebarOpen: true }" class="dark-auto bg-slate-100 dark:bg-gray-900 flex min-h-screen font-sans">
+<body x-data="{ sidebarOpen: true, isDark: localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches) }" class="dark-auto bg-slate-100 dark:bg-gray-900 flex min-h-screen font-sans">
     
     <!-- Pelaksana Sidebar -->
     @include('layouts.pelaksana-sidebar')

@@ -434,9 +434,18 @@
         @endif
 
         <div class="container-custom">
-            <div class="header-custom">
-                <h1>✏️ Edit Tugas</h1>
-                <p>Perbarui informasi tugas "{{ $task->judul }}"</p>
+            <div class="header-custom" style="display: flex; justify-content: space-between; align-items: center;">
+                <div>
+                    <h1>✏️ Edit Tugas</h1>
+                    <p>Perbarui informasi tugas "{{ $task->judul }}"</p>
+                </div>
+                <form action="{{ route('penugasan.destroy', $task->id) }}" method="POST" onsubmit="return confirm('PERINGATAN: Yakin ingin menghapus tugas ini secara permanen beserta semua filenya? Semua progress mahasiswa juga akan hilang.')">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.5); padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#ef4444';this.style.borderColor='#ef4444'" onmouseout="this.style.background='rgba(255,255,255,0.2)';this.style.borderColor='rgba(255,255,255,0.5)'">
+                        🗑️ Hapus Tugas
+                    </button>
+                </form>
             </div>
 
             <div class="form-section">

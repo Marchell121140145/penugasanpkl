@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\User;
 use App\Models\Divisi;
 use App\Models\Role;
+use App\Models\PendingRegistration;
 use App\Models\TaskSubmission;
 use App\Models\AttendanceAssignee;
 use Illuminate\Http\Request;
@@ -77,10 +78,10 @@ class PelaksanaController extends Controller
             $totalPelaksana = User::where('role_id', 3)->whereNotNull('divisi_id')->count();
         }
 
-        // Ambil data user yang baru mendaftar (menunggu persetujuan admin)
+        // Ambil data pendaftaran yang menunggu persetujuan admin
         $pendingUsers = collect();
         if (auth()->check() && auth()->user()->role_id == 1) {
-            $pendingUsers = User::where('role_id', 3)->whereNull('divisi_id')->orderBy('created_at', 'desc')->get();
+            $pendingUsers = PendingRegistration::orderBy('created_at', 'desc')->get();
         }
 
         // Divisi list for filter dropdown
@@ -151,10 +152,13 @@ class PelaksanaController extends Controller
         $pelaksana = $query->findOrFail($id);
         
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s]+$/'],
             'email' => 'required|email|max:255|unique:users,email,'.$id,
             'divisi_id' => 'nullable|exists:divisi,id',
             'pembimbing_id' => 'nullable|exists:users,id',
+        ], [
+            'name.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
+            'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
         ]);
 
         $pelaksana->update([
@@ -169,6 +173,7 @@ class PelaksanaController extends Controller
 
     /**
      * Approve pendaftaran pelaksana dengan memberikan divisi.
+     * Data dipindahkan dari pending_registrations ke users.
      */
     public function approveRegistration(Request $request, $id)
     {
@@ -176,21 +181,36 @@ class PelaksanaController extends Controller
             abort(403, 'Hanya Admin yang dapat menyetujui pendaftaran.');
         }
 
-        $user = User::where('role_id', 3)->findOrFail($id);
+        $pending = PendingRegistration::findOrFail($id);
 
         $request->validate([
             'divisi_id' => 'required|exists:divisi,id',
         ]);
 
-        $user->update([
-            'divisi_id' => $request->divisi_id,
-        ]);
+        // Pindahkan data dari pending ke tabel users
+        // Gunakan forceFill agar password tidak di-hash ulang oleh cast 'hashed'
+        $user = new User();
+        $user->name = $pending->name;
+        $user->email = $pending->email;
+        $user->role_id = 3;
+        $user->divisi_id = $request->divisi_id;
+        $user->pkl_start = $pending->pkl_start;
+        $user->pkl_end = $pending->pkl_end;
+        $user->save();
 
-        return back()->with('success', 'Pelaksana berhasil disetujui dan dimasukkan ke divisi.');
+        // Set password langsung via DB agar tidak di-hash ulang
+        \Illuminate\Support\Facades\DB::table('users')
+            ->where('id', $user->id)
+            ->update(['password' => $pending->getRawOriginal('password')]);
+
+        // Hapus dari tabel pending
+        $pending->delete();
+
+        return back()->with('success', 'Pelaksana "' . $pending->name . '" berhasil disetujui dan dimasukkan ke divisi.');
     }
 
     /**
-     * Tolak dan hapus pendaftaran pelaksana.
+     * Tolak dan hapus pendaftaran pelaksana dari tabel pending.
      */
     public function rejectRegistration($id)
     {
@@ -198,10 +218,11 @@ class PelaksanaController extends Controller
             abort(403, 'Hanya Admin yang dapat menolak pendaftaran.');
         }
 
-        $user = User::where('role_id', 3)->whereNull('divisi_id')->findOrFail($id);
-        $user->delete();
+        $pending = PendingRegistration::findOrFail($id);
+        $name = $pending->name;
+        $pending->delete();
 
-        return back()->with('success', 'Pendaftaran berhasil ditolak dan dihapus.');
+        return back()->with('success', 'Pendaftaran "' . $name . '" berhasil ditolak dan dihapus.');
     }
 
     /**
@@ -292,10 +313,13 @@ class PelaksanaController extends Controller
         }
 
         $request->validate([
-            'name' => 'required|string|max:255',
+            'name' => ['required', 'string', 'max:60', 'regex:/^[a-zA-Z\s]+$/'],
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'divisi_id' => 'nullable|exists:divisi,id',
+        ], [
+            'name.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
+            'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
         ]);
 
         User::create([

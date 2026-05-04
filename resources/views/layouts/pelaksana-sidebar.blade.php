@@ -50,6 +50,22 @@
             </a>
         </li>
         
+        <li class="mb-1">
+            <button @click="isDark = !isDark; if (isDark) { localStorage.theme = 'dark'; document.documentElement.classList.add('dark'); } else { localStorage.theme = 'light'; document.documentElement.classList.remove('dark'); }" 
+               class="w-full flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap"
+               :class="{ 'justify-center px-0': !sidebarOpen }"
+            >
+                <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">
+                    <span x-show="!isDark">🌙</span>
+                    <span x-show="isDark">☀️</span>
+                </span> 
+                <span x-show="sidebarOpen">
+                    <span x-show="!isDark">Dark Mode</span>
+                    <span x-show="isDark">Light Mode</span>
+                </span>
+            </button>
+        </li>
+
         <li class="mt-auto mb-1 pt-5 border-t border-slate-700">
              <form method="POST" action="{{ route('logout') }}" class="w-full">
                 @csrf

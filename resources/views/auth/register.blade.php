@@ -5,7 +5,7 @@
         <!-- Name -->
         <div>
             <x-input-label for="name" :value="__('Name')" />
-            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" />
+            <x-text-input id="name" class="block mt-1 w-full" type="text" name="name" :value="old('name')" required autofocus autocomplete="name" maxlength="60" pattern="^[a-zA-Z\s]+$" title="Nama hanya boleh berisi huruf dan spasi." />
             <x-input-error :messages="$errors->get('name')" class="mt-2" />
         </div>
 
@@ -37,6 +37,20 @@
                             name="password_confirmation" required autocomplete="new-password" />
 
             <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
+        </div>
+
+        <!-- PKL Start Date -->
+        <div class="mt-4">
+            <x-input-label for="pkl_start" :value="__('Tanggal Mulai PKL')" />
+            <x-text-input id="pkl_start" class="block mt-1 w-full" type="date" name="pkl_start" :value="old('pkl_start')" required />
+            <x-input-error :messages="$errors->get('pkl_start')" class="mt-2" />
+        </div>
+
+        <!-- PKL End Date -->
+        <div class="mt-4">
+            <x-input-label for="pkl_end" :value="__('Tanggal Selesai PKL')" />
+            <x-text-input id="pkl_end" class="block mt-1 w-full" type="date" name="pkl_end" :value="old('pkl_end')" required />
+            <x-input-error :messages="$errors->get('pkl_end')" class="mt-2" />
         </div>
 
         <div class="flex items-center justify-end mt-4">

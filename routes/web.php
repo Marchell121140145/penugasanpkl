@@ -64,6 +64,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('/absensi', [AttendanceController::class, 'store'])->name('absensi.store');
 
     Route::get('/absensi', [AttendanceController::class, 'index'])->name('absensi');
+    Route::get('/absensi/detail/{id}', [AttendanceController::class, 'sessionDetail'])->name('absensi.detail');
 
     Route::get('/absensi/history/{id}', [AttendanceController::class, 'adminHistory'])->name('absensi.history');
     Route::patch('/absensi/status/{id}', [AttendanceController::class, 'updateStatus'])->name('absensi.updateStatus');
@@ -88,6 +89,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::delete('/settings/user/{id}', [SettingsController::class, 'destroyUser'])->name('settings.user.destroy');
+    Route::put('/settings/user/{id}', [SettingsController::class, 'updateUser'])->name('settings.user.update');
+    Route::post('/settings/purge-pelaksana', [SettingsController::class, 'purgePelaksana'])->name('settings.purge');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
