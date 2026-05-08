@@ -32,6 +32,7 @@
                 <span x-show="sidebarOpen">Pelaksana</span>
             </a>
         </li>
+        @if(Auth::check() && Auth::user()->role_id == 1)
         <li class="mb-1">
             <a href="{{ route('pembimbing.list') }}" 
                class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap {{ request()->routeIs('pembimbing.list') ? 'bg-blue-600 text-white' : '' }}"
@@ -41,6 +42,7 @@
                 <span x-show="sidebarOpen">Pembimbing</span>
             </a>
         </li>
+        @endif
         <li class="mb-1">
             <a href="{{ route('penugasan') }}" 
                class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap {{ request()->routeIs('penugasan') ? 'bg-blue-600 text-white' : '' }}"
