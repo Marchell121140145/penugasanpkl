@@ -59,6 +59,7 @@ Route::middleware(['auth', 'verified', 'role:1,2'])->group(function () {
 
     // --- Absensi ---
     Route::get('/absensi', [AttendanceController::class, 'index'])->name('absensi');
+    Route::post('/absensi/settings', [AttendanceController::class, 'updateAutoSettings'])->name('absensi.settings.update');
     Route::get('/absensi/create', [AttendanceController::class, 'create'])->name('absensi.create');
     Route::post('/absensi', [AttendanceController::class, 'store'])->name('absensi.store');
     Route::get('/absensi/detail/{id}', [AttendanceController::class, 'sessionDetail'])->name('absensi.detail');

@@ -81,11 +81,19 @@
                 <div id="divisi-selection" class="mb-6 hidden">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Divisi <span class="text-red-500">*</span></label>
                     <p class="text-xs text-slate-500 mb-3">Pilih satu atau lebih divisi. Semua akun ber-role Pelaksana dari divisi terpilih akan ditugaskan.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div class="mb-3">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                <i class="fi fi-rr-search"></i>
+                            </span>
+                            <input type="text" id="searchDivisi" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-red-500 text-sm" placeholder="Cari divisi...">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-3 max-h-[300px] overflow-y-auto p-4 bg-slate-50 border border-slate-200 rounded-xl" id="divisiContainer">
                         @foreach($divisis as $divisi)
                             <label class="flex items-center p-3 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-red-50 transition-colors">
                                 <input type="checkbox" name="divisi_ids[]" value="{{ $divisi->id }}" class="w-4 h-4 text-red-600 rounded focus:ring-red-500 mr-3" {{ (is_array(old('divisi_ids')) && in_array($divisi->id, old('divisi_ids'))) ? 'checked' : '' }}>
-                                <span class="font-medium text-slate-700">{{ $divisi->nama }}</span>
+                                <span class="font-medium text-slate-700 divisi-name">{{ $divisi->nama }}</span>
                             </label>
                         @endforeach
                     </div>
@@ -95,7 +103,15 @@
                 <div id="pelaksana-selection" class="mb-6 hidden">
                     <label class="block text-sm font-semibold text-slate-700 mb-2">Pilih Pelaksana <span class="text-red-500">*</span></label>
                     <p class="text-xs text-slate-500 mb-3">Pilih satu atau lebih mahasiswa/pelaksana.</p>
-                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto p-4 bg-slate-50 border border-slate-200 rounded-xl">
+                    <div class="mb-3">
+                        <div class="relative">
+                            <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                <i class="fi fi-rr-search"></i>
+                            </span>
+                            <input type="text" id="searchPelaksana" class="w-full pl-10 pr-3 py-2 border border-slate-300 rounded-lg focus:outline-none focus:border-red-500 text-sm" placeholder="Cari nama atau divisi pelaksana...">
+                        </div>
+                    </div>
+                    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[400px] overflow-y-auto p-4 bg-slate-50 border border-slate-200 rounded-xl" id="pelaksanaContainer">
                         @foreach($pelaksanas as $pelaksana)
                             <label class="flex items-center p-3 rounded-lg border border-slate-200 bg-white cursor-pointer hover:bg-red-50 transition-colors">
                                 <input type="checkbox" name="pelaksana_ids[]" value="{{ $pelaksana->id }}" class="w-4 h-4 text-red-600 rounded focus:ring-red-500 mr-3" {{ (is_array(old('pelaksana_ids')) && in_array($pelaksana->id, old('pelaksana_ids'))) ? 'checked' : '' }}>
@@ -108,8 +124,8 @@
                                         @endif
                                     </div>
                                     <div class="overflow-hidden">
-                                        <div class="font-medium text-slate-800 text-sm truncate">{{ $pelaksana->name }}</div>
-                                        <div class="text-xs text-slate-500 truncate">{{ $pelaksana->divisi?->nama ?? 'Tanpa Divisi' }}</div>
+                                        <div class="font-medium text-slate-800 text-sm truncate pelaksana-name">{{ $pelaksana->name }}</div>
+                                        <div class="text-xs text-slate-500 truncate pelaksana-divisi">{{ $pelaksana->divisi?->nama ?? 'Tanpa Divisi' }}</div>
                                     </div>
                                 </div>
                             </label>
@@ -149,6 +165,41 @@
                 toggleAssignType(checkedRadio.value);
             } else {
                 toggleAssignType('pelaksana'); // Default
+            }
+
+            // Search Filter for Divisi
+            const searchDivisiInput = document.getElementById('searchDivisi');
+            if (searchDivisiInput) {
+                searchDivisiInput.addEventListener('input', function() {
+                    const filter = this.value.toLowerCase();
+                    const labels = document.querySelectorAll('#divisiContainer label');
+                    labels.forEach(label => {
+                        const name = label.querySelector('.divisi-name').textContent.toLowerCase();
+                        if (name.includes(filter)) {
+                            label.style.display = 'flex';
+                        } else {
+                            label.style.display = 'none';
+                        }
+                    });
+                });
+            }
+
+            // Search Filter for Pelaksana
+            const searchPelaksanaInput = document.getElementById('searchPelaksana');
+            if (searchPelaksanaInput) {
+                searchPelaksanaInput.addEventListener('input', function() {
+                    const filter = this.value.toLowerCase();
+                    const labels = document.querySelectorAll('#pelaksanaContainer label');
+                    labels.forEach(label => {
+                        const name = label.querySelector('.pelaksana-name').textContent.toLowerCase();
+                        const divisi = label.querySelector('.pelaksana-divisi').textContent.toLowerCase();
+                        if (name.includes(filter) || divisi.includes(filter)) {
+                            label.style.display = 'flex';
+                        } else {
+                            label.style.display = 'none';
+                        }
+                    });
+                });
             }
         });
     </script>

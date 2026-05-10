@@ -87,13 +87,16 @@ class PelaksanaController extends Controller
         // Divisi list for filter dropdown
         $divisis = Divisi::orderBy('nama')->get();
         
+        // Pembimbing list for pending registration assignment
+        $pembimbings = User::where('role_id', 2)->with('divisi')->orderBy('name')->get();
+        
         // Role list for admin to create new users
         $roles = [];
         if (auth()->user()->role_id == 1) {
             $roles = Role::all();
         }
 
-        return view('monitoring.pelaksana', compact('pelaksanas', 'totalPelaksana', 'divisis', 'roles', 'pendingUsers'));
+        return view('monitoring.pelaksana', compact('pelaksanas', 'totalPelaksana', 'divisis', 'pembimbings', 'roles', 'pendingUsers'));
     }
 
     /**
@@ -184,24 +187,25 @@ class PelaksanaController extends Controller
         $pending = PendingRegistration::findOrFail($id);
 
         $request->validate([
-            'divisi_id' => 'required|exists:divisi,id',
+            'pembimbing_id' => 'required|exists:users,id',
         ]);
 
-        // Pindahkan data dari pending ke tabel users
-        // Gunakan forceFill agar password tidak di-hash ulang oleh cast 'hashed'
-        $user = new User();
-        $user->name = $pending->name;
-        $user->email = $pending->email;
-        $user->role_id = 3;
-        $user->divisi_id = $request->divisi_id;
-        $user->pkl_start = $pending->pkl_start;
-        $user->pkl_end = $pending->pkl_end;
-        $user->save();
+        $pembimbing = User::where('role_id', 2)->findOrFail($request->pembimbing_id);
 
-        // Set password langsung via DB agar tidak di-hash ulang
-        \Illuminate\Support\Facades\DB::table('users')
-            ->where('id', $user->id)
-            ->update(['password' => $pending->getRawOriginal('password')]);
+        // Pindahkan data dari pending ke tabel users menggunakan DB insert agar tidak terkena double hashing password
+        $now = now();
+        $userId = \Illuminate\Support\Facades\DB::table('users')->insertGetId([
+            'name' => $pending->name,
+            'email' => $pending->email,
+            'password' => $pending->getRawOriginal('password'),
+            'role_id' => 3,
+            'pembimbing_id' => $pembimbing->id,
+            'divisi_id' => $pembimbing->divisi_id,
+            'pkl_start' => $pending->pkl_start,
+            'pkl_end' => $pending->pkl_end,
+            'created_at' => $now,
+            'updated_at' => $now,
+        ]);
 
         // Hapus dari tabel pending
         $pending->delete();

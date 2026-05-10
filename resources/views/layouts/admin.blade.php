@@ -13,6 +13,9 @@
     <!-- Flaticon -->
     <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
 
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="{{ asset('img/favicon.png') }}">
+
     <!-- Scripts -->
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <script>

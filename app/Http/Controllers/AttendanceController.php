@@ -37,7 +37,40 @@ class AttendanceController extends Controller
         }
         $attendances = $attendancesQuery->take(15)->get();
 
-        return view('monitoring.absensi', compact('attendances'));
+        // Ambil pengaturan auto-generate
+        $autoSettings = [
+            'enabled' => \App\Models\Setting::get('auto_absensi_enabled', 'false') === 'true',
+            'checkin_start' => \App\Models\Setting::get('auto_absensi_checkin_start', '06:00'),
+            'checkin_deadline' => \App\Models\Setting::get('auto_absensi_checkin_deadline', '08:00'),
+            'checkout_start' => \App\Models\Setting::get('auto_absensi_checkout_start', '17:00'),
+            'days' => json_decode(\App\Models\Setting::get('auto_absensi_days', '["Senin","Selasa","Rabu","Kamis","Jumat"]'), true)
+        ];
+
+        return view('monitoring.absensi', compact('attendances', 'autoSettings'));
+    }
+
+    public function updateAutoSettings(Request $request)
+    {
+        if (auth()->user()->role_id != 1) {
+            return back()->with('error', 'Hanya Admin yang dapat mengubah pengaturan ini.');
+        }
+
+        $request->validate([
+            'enabled' => 'nullable|in:on',
+            'checkin_start' => 'required|date_format:H:i',
+            'checkin_deadline' => 'required|date_format:H:i',
+            'checkout_start' => 'required|date_format:H:i',
+            'days' => 'required|array',
+        ]);
+
+        \App\Models\Setting::set('auto_absensi_enabled', $request->has('enabled') ? 'true' : 'false');
+        \App\Models\Setting::set('auto_absensi_checkin_start', $request->checkin_start);
+        \App\Models\Setting::set('auto_absensi_checkin_deadline', $request->checkin_deadline);
+        \App\Models\Setting::set('auto_absensi_checkout_start', $request->checkout_start);
+        \App\Models\Setting::set('auto_absensi_days', json_encode($request->days));
+
+        $statusStr = $request->has('enabled') ? 'diaktifkan' : 'dinonaktifkan';
+        return back()->with('success', "Pengaturan auto-generate absensi berhasil $statusStr dan disimpan.");
     }
 
     public function sessionDetail($id)

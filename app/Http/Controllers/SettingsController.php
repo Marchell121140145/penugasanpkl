@@ -12,7 +12,7 @@ class SettingsController extends Controller
     /**
      * Tampilkan halaman pengaturan umum.
      */
-    public function index()
+    public function index(Request $request)
     {
         if (!in_array(auth()->user()->role_id, [1, 2])) {
             abort(403, 'Akses terbatas untuk Admin dan Pembimbing.');
@@ -26,7 +26,23 @@ class SettingsController extends Controller
         $dbSize = 0;
 
         if (auth()->user()->role_id == 1) {
-            $users = User::with(['role', 'divisi'])->orderBy('role_id')->paginate(20);
+            $query = User::with(['role', 'divisi']);
+            
+            if ($request->filled('search')) {
+                $search = $request->search;
+                $query->where(function($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                      ->orWhere('email', 'like', "%{$search}%")
+                      ->orWhereHas('role', function($sq) use ($search) {
+                          $sq->where('role', 'like', "%{$search}%");
+                      })
+                      ->orWhereHas('divisi', function($sq) use ($search) {
+                          $sq->where('nama', 'like', "%{$search}%");
+                      });
+                });
+            }
+            
+            $users = $query->orderBy('role_id')->paginate(20)->appends($request->query());
             $roles = Role::all();
             $divisis = \App\Models\Divisi::all();
             $pembimbings = User::where('role_id', 2)->get();

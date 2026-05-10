@@ -58,14 +58,14 @@
                 <h2 class="text-amber-800 text-lg font-bold mb-1">Pendaftaran Menunggu Persetujuan ({{ $pendingUsers->count() }})</h2>
                 <p class="text-amber-700 text-sm mb-4">Pelaksana berikut telah mendaftar namun belum memiliki divisi. Mereka tidak dapat login sebelum Anda menempatkannya di suatu divisi.</p>
                 
-                <div class="bg-white rounded-lg border border-amber-200 overflow-hidden">
+                <div class="bg-white rounded-lg border border-amber-200">
                     <table class="w-full text-left text-sm">
                         <thead class="bg-amber-100/50 text-amber-800">
                             <tr>
                                 <th class="p-3 font-semibold">Nama & Email</th>
                                 <th class="p-3 font-semibold">Durasi PKL</th>
                                 <th class="p-3 font-semibold">Waktu Daftar</th>
-                                <th class="p-3 font-semibold w-[350px]">Pilih Divisi & Setujui</th>
+                                <th class="p-3 font-semibold w-[350px]">Pilih Pembimbing & Setujui</th>
                             </tr>
                         </thead>
                         <tbody class="divide-y divide-amber-100">
@@ -94,12 +94,47 @@
                                     <div class="flex gap-2">
                                         <form action="{{ route('pelaksana.approve', $pendingUser->id) }}" method="POST" class="flex flex-1 gap-2">
                                             @csrf
-                                            <select name="divisi_id" required class="flex-1 px-3 py-1.5 border border-amber-300 rounded-md text-sm focus:outline-none focus:border-amber-500 focus:ring-1 focus:ring-amber-500 bg-white">
-                                                <option value="">Pilih Divisi...</option>
-                                                @foreach($divisis as $divisi)
-                                                    <option value="{{ $divisi->id }}">{{ $divisi->nama }}</option>
-                                                @endforeach
-                                            </select>
+                                            <div x-data="{ 
+                                                open: false, 
+                                                search: '', 
+                                                selectedId: '', 
+                                                selectedName: 'Pilih Pembimbing...',
+                                                pembimbings: [
+                                                    @foreach($pembimbings as $pemb)
+                                                    { id: '{{ $pemb->id }}', name: '{{ addslashes($pemb->name) }} ({{ addslashes($pemb->divisi?->nama ?? 'Tanpa Divisi') }})' },
+                                                    @endforeach
+                                                ],
+                                                get filteredPembimbings() {
+                                                    return this.pembimbings.filter(i => i.name.toLowerCase().includes(this.search.toLowerCase()))
+                                                }
+                                            }" class="relative flex-1">
+                                                <input type="hidden" name="pembimbing_id" :value="selectedId">
+                                                <div @click="open = !open" class="cursor-pointer px-3 py-1.5 border border-amber-300 rounded-md text-sm bg-white flex justify-between items-center h-full">
+                                                    <span x-text="selectedName" class="truncate"></span>
+                                                    <i class="fi fi-rr-angle-small-down ml-2"></i>
+                                                </div>
+                                                
+                                                <div x-show="open" 
+                                                     x-transition:enter="transition ease-out duration-100"
+                                                     x-transition:enter-start="opacity-0 scale-95"
+                                                     x-transition:enter-end="opacity-100 scale-100"
+                                                     @click.away="open = false" 
+                                                     class="absolute z-50 w-[280px] mt-1 bg-white border border-amber-200 rounded-md shadow-xl max-h-60 overflow-y-auto right-0"
+                                                     x-cloak>
+                                                    <div class="sticky top-0 bg-white p-2 border-b border-amber-100">
+                                                        <input type="text" x-model="search" placeholder="Cari nama/divisi..." 
+                                                               class="w-full px-2 py-1 text-xs border border-amber-200 rounded focus:outline-none focus:border-amber-500">
+                                                    </div>
+                                                    <div class="py-1">
+                                                        <template x-for="pemb in filteredPembimbings" :key="pemb.id">
+                                                            <div @click="selectedId = pemb.id; selectedName = pemb.name; open = false; search = ''" 
+                                                                 class="px-3 py-2 text-xs hover:bg-amber-50 cursor-pointer text-slate-700 font-medium border-b border-slate-50 last:border-0"
+                                                                 x-text="pemb.name"></div>
+                                                        </template>
+                                                        <div x-show="filteredPembimbings.length === 0" class="px-3 py-2 text-xs text-slate-500 italic">Tidak ditemukan</div>
+                                                    </div>
+                                                </div>
+                                            </div>
                                             <button type="submit" class="bg-emerald-500 hover:bg-emerald-600 text-white px-4 py-1.5 rounded-md font-semibold text-sm transition-colors shadow-sm whitespace-nowrap">
                                                 Terima
                                             </button>
