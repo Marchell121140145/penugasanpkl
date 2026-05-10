@@ -3,7 +3,7 @@
     <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
             <a href="{{ route('absensi') }}" class="text-red-500 hover:text-red-700 transition-colors">
-                <span class="text-2xl">←</span>
+                <span class="text-2xl"><i class="fi fi-rr-arrow-left"></i></span>
             </a>
             <h1 class="text-slate-800 text-3xl font-bold">Detail Sesi Absensi</h1>
         </div>
@@ -12,7 +12,7 @@
 
     @if (session('success'))
         <div class="mb-6 bg-emerald-50 text-emerald-700 p-4 rounded-xl border border-emerald-200 flex items-start gap-3">
-            <span class="text-xl">✅</span>
+            <span class="text-xl"><i class="fi fi-rr-check-circle"></i></span>
             <div>
                 <h4 class="font-bold text-sm">Berhasil!</h4>
                 <p class="text-sm mt-1">{{ session('success') }}</p>
@@ -169,12 +169,12 @@
                                 <div class="flex gap-1 flex-col">
                                     @if($assignee->photo_path)
                                         <button onclick="viewPhoto('{{ route('file.attendance', [$assignee->id, 'checkin']) }}')" class="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-600 text-xs font-medium hover:bg-emerald-200 transition-colors whitespace-nowrap">
-                                            📷 Check-In
+                                            <i class="fi fi-rr-camera"></i> Check-In
                                         </button>
                                     @endif
                                     @if($assignee->checkout_photo_path)
                                         <button onclick="viewPhoto('{{ route('file.attendance', [$assignee->id, 'checkout']) }}')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors whitespace-nowrap">
-                                            📷 Check-Out
+                                            <i class="fi fi-rr-camera"></i> Check-Out
                                         </button>
                                     @endif
                                     @if(!$assignee->photo_path && !$assignee->checkout_photo_path)

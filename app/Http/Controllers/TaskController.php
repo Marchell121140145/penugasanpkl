@@ -242,6 +242,14 @@ class TaskController extends Controller
     public function update(Request $request, $id)
     {
         $task = Task::findOrFail($id);
+        $user = Auth::user();
+
+        // Otorisasi Pembimbing
+        if ($user->role_id == 2) {
+            if ($task->created_by != $user->id && $task->divisi_id != $user->divisi_id) {
+                abort(403, 'Akses Ditolak: Anda tidak dapat mengubah tugas yang bukan milik divisi Anda.');
+            }
+        }
 
         $validated = $request->validate([
             'judul'         => 'required|string|max:255',
@@ -372,6 +380,14 @@ class TaskController extends Controller
     public function destroy($id)
     {
         $task = Task::findOrFail($id);
+        $user = Auth::user();
+
+        // Otorisasi Pembimbing
+        if ($user->role_id == 2) {
+            if ($task->created_by != $user->id && $task->divisi_id != $user->divisi_id) {
+                return redirect()->back()->with('error', 'Akses Ditolak: Anda tidak dapat menghapus tugas yang bukan milik divisi Anda.');
+            }
+        }
 
         DB::beginTransaction();
         try {
@@ -594,7 +610,16 @@ class TaskController extends Controller
             'komentar' => 'nullable|string',
         ]);
 
-        $submission = TaskSubmission::findOrFail($submissionId);
+        $submission = TaskSubmission::with('task')->findOrFail($submissionId);
+        $task = $submission->task;
+        $user = Auth::user();
+
+        // Otorisasi Pembimbing
+        if ($user->role_id == 2) {
+            if ($task->created_by != $user->id && $task->divisi_id != $user->divisi_id) {
+                return redirect()->back()->with('error', 'Akses Ditolak: Anda tidak dapat menilai tugas yang bukan milik divisi Anda.');
+            }
+        }
         
         $submission->update([
             'nilai' => $request->nilai,

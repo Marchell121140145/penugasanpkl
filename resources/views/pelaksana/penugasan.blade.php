@@ -88,7 +88,7 @@
         <!-- Total Tasks -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4">
             <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-600">
-                <span class="text-xl">📋</span>
+                <span class="text-xl"><i class="fi fi-rr-clipboard-list"></i></span>
             </div>
             <div>
                 <p class="text-slate-500 text-sm font-medium uppercase tracking-wider">Total Tugas</p>
@@ -99,7 +99,7 @@
         <!-- Completed Tasks -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4">
             <div class="w-12 h-12 bg-emerald-50 rounded-full flex items-center justify-center text-emerald-600">
-                <span class="text-xl">✅</span>
+                <span class="text-xl"><i class="fi fi-rr-check"></i></span>
             </div>
             <div>
                 <p class="text-slate-500 text-sm font-medium uppercase tracking-wider">Selesai</p>
@@ -110,7 +110,7 @@
         <!-- Pending Tasks -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4">
             <div class="w-12 h-12 bg-amber-50 rounded-full flex items-center justify-center text-amber-600">
-                <span class="text-xl">⏳</span>
+                <span class="text-xl"><i class="fi fi-rr-hourglass-end"></i></span>
             </div>
             <div>
                 <p class="text-slate-500 text-sm font-medium uppercase tracking-wider">Belum Selesai</p>
@@ -121,7 +121,7 @@
         <!-- Late Tasks -->
         <div class="bg-white p-6 rounded-xl shadow-sm border border-slate-100 flex items-center gap-4">
             <div class="w-12 h-12 bg-red-50 rounded-full flex items-center justify-center text-red-600">
-                <span class="text-xl">⚠️</span>
+                <span class="text-xl"><i class="fi fi-rr-triangle-warning"></i></span>
             </div>
             <div>
                 <p class="text-slate-500 text-sm font-medium uppercase tracking-wider">Terlambat</p>
@@ -209,7 +209,7 @@
                     <div class="task-footer flex justify-between items-center pt-4 border-t border-slate-100">
                         <div class="flex items-center gap-3">
                             <div class="flex items-center gap-1 text-slate-400" title="Diskusi">
-                                <span class="text-sm">💬</span>
+                                <span class="text-sm"><i class="fi fi-rr-comment-alt"></i></span>
                                 <span class="text-xs font-medium">{{ $submission->comments_count ?? 0 }}</span>
                             </div>
                             @if($submission && $submission->status == 'graded')

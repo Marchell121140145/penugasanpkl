@@ -251,6 +251,12 @@ class AttendanceController extends Controller
         }
         
         $image_base64 = base64_decode($image_parts[1]);
+        
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($image_base64);
+        if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
+            return back()->with('error', 'Format gambar tidak valid. Harap gunakan JPEG, PNG, GIF, atau WebP.');
+        }
         $fileName = 'attendance_' . $assignee->id . '_' . time() . '.jpg';
         $filePath = 'attendances/' . $fileName;
 
@@ -316,6 +322,12 @@ class AttendanceController extends Controller
         }
 
         $image_base64 = base64_decode($image_parts[1]);
+
+        $finfo = new \finfo(FILEINFO_MIME_TYPE);
+        $mimeType = $finfo->buffer($image_base64);
+        if (!in_array($mimeType, ['image/jpeg', 'image/png', 'image/gif', 'image/webp'])) {
+            return back()->with('error', 'Format gambar tidak valid. Harap gunakan JPEG, PNG, GIF, atau WebP.');
+        }
         $fileName = 'checkout_' . $assignee->id . '_' . time() . '.jpg';
         $filePath = 'attendances/' . $fileName;
 

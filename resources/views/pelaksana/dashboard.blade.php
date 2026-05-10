@@ -2,17 +2,14 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div class="welcome">
-            <h1 class="text-slate-800 text-3xl font-bold mb-1">Halo, {{ Auth::user()->name ?? 'Mahasiswa' }}! 👋</h1>
+            <h1 class="text-slate-800 text-3xl font-bold mb-1 flex items-center gap-3">Halo, {{ Auth::user()->name ?? 'Mahasiswa' }}! <i class="fi fi-rr-hand-wave text-amber-400"></i></h1>
             <p class="text-slate-600">Selamat datang di portal Pelaksana PKL</p>
         </div>
         <div class="flex items-center gap-4">
-            <div class="relative cursor-pointer">
-                <span class="text-xl">🔔</span>
-                <div class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-[18px] h-[18px] text-[0.7rem] flex items-center justify-center">2</div>
-            </div>
+
             <div class="flex items-center gap-2.5 cursor-pointer relative" x-data="{ open: false }" @click.away="open = false" @click="open = !open">
                 @if(Auth::user()->avatar)
-                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-10 h-10 rounded-full object-cover">
+                    <img src="{{ route('file.avatar', Auth::user()->id) }}" class="w-10 h-10 rounded-full object-cover">
                 @else
                     <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'P', 0, 1) }}</div>
                 @endif
@@ -43,7 +40,7 @@
     <div class="flex flex-col md:flex-row gap-4 mb-8 bg-white p-4 rounded-xl shadow-sm border border-slate-100">
         <div class="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg flex-1">
             <div class="w-10 h-10 rounded-full bg-indigo-100 text-indigo-600 flex items-center justify-center text-xl shrink-0">
-                🏢
+                <i class="fi fi-rr-building"></i>
             </div>
             <div>
                 <p class="text-xs text-slate-500 uppercase font-semibold tracking-wider">Divisi</p>
@@ -52,7 +49,7 @@
         </div>
         <div class="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-lg flex-1">
             <div class="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center text-xl shrink-0">
-                👨‍🏫
+                <i class="fi fi-rr-chalkboard-user"></i>
             </div>
             <div>
                 <p class="text-xs text-slate-500 uppercase font-semibold tracking-wider">Pembimbing</p>
@@ -61,7 +58,7 @@
         </div>
         <div class="flex items-center gap-3 px-4 py-2 bg-red-50 border border-red-100 rounded-lg flex-1">
             <div class="w-10 h-10 rounded-full bg-red-100 text-red-600 flex items-center justify-center text-xl shrink-0">
-                ⏳
+                <i class="fi fi-rr-hourglass-end"></i>
             </div>
             <div>
                 <p class="text-xs text-red-500 uppercase font-semibold tracking-wider">Sisa Masa PKL</p>
@@ -113,11 +110,11 @@
                     $hasSubmission = $task->submissions->isNotEmpty();
                     $isPending = !$hasSubmission;
                     $statusColor = $isPending ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600';
-                    $icon = $isPending ? '⚠️' : '✓';
+                    $icon = $isPending ? '<i class="fi fi-rr-triangle-warning"></i>' : '<i class="fi fi-rr-check"></i>';
                 @endphp
                 <a href="{{ route('pelaksana.penugasan.show', $task->id) }}" class="flex items-start p-4 bg-slate-50 rounded-lg border border-slate-100 block hover:bg-slate-100 transition-colors">
                     <div class="{{ $statusColor }} p-3 rounded-lg mr-4">
-                        <span class="text-xl">{{ $icon }}</span>
+                        <span class="text-xl">{!! $icon !!}</span>
                     </div>
                     <div class="flex-1">
                         <h4 class="font-semibold text-slate-800 mb-1">{{ $task->judul }}</h4>
@@ -144,8 +141,8 @@
             
             <div class="flex-1 flex flex-col justify-center items-center text-center p-4 border-2 border-dashed border-slate-200 rounded-xl bg-slate-50/50">
                 @if($priorityTask)
-                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-3xl">
-                        📊
+                    <div class="w-16 h-16 bg-white rounded-full flex items-center justify-center shadow-sm mb-4 text-3xl text-slate-700">
+                        <i class="fi fi-rr-chart-histogram"></i>
                     </div>
                     <h3 class="text-xl font-bold text-slate-800 mb-2">{{ $priorityTask->judul }}</h3>
                     <p class="text-slate-500 text-sm max-w-xs mb-6">
@@ -169,7 +166,7 @@
                 @else
                     <div class="text-slate-400">
                         <p>Tidak ada tugas pending saat ini.</p>
-                        <p class="text-xs">Kerja bagus! 🎉</p>
+                        <p class="text-xs mt-2">Kerja bagus! <i class="fi fi-rr-party-horn text-lg"></i></p>
                     </div>
                 @endif
             </div>
@@ -189,7 +186,7 @@
                 $iconColor = 'bg-slate-400';
                 $textClass = 'text-slate-700';
                 $subTextClass = 'text-slate-500';
-                $icon = '✓';
+                $icon = '<i class="fi fi-rr-check"></i>';
 
                 if (in_array($attendance->status, ['Hadir', 'Hadir - Selesai'])) {
                     $statusColor = 'bg-emerald-50 border-emerald-100';
@@ -201,13 +198,13 @@
                     $iconColor = 'bg-amber-500';
                     $textClass = 'text-amber-800';
                     $subTextClass = 'text-amber-600';
-                    $icon = '!';
+                    $icon = '<i class="fi fi-rr-info"></i>';
                 }
             @endphp
             <div class="relative pl-4 md:pl-0">
                 <div class="flex items-center gap-4 {{ $statusColor }} p-4 rounded-xl border">
                     <div class="{{ $iconColor }} h-10 w-10 rounded-full flex items-center justify-center text-white shadow-sm shrink-0">
-                        {{ $icon }}
+                        {!! $icon !!}
                     </div>
                     <div>
                         <h4 class="font-semibold {{ $textClass }} text-sm">{{ $attendance->status }}</h4>

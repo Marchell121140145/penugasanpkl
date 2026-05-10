@@ -6,24 +6,19 @@
             <p class="text-slate-600">Monitoring penugasan PKL</p>
         </div>
         <div class="flex items-center gap-4">
-            <div class="relative cursor-pointer">
-                <span class="text-xl">🔔</span>
-                @if($lateTasks > 0)
-                <div class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-[18px] h-[18px] text-[0.7rem] flex items-center justify-center">{{ $lateTasks }}</div>
-                @endif
-            </div>
+
         </div>
     </div>
 
     <!-- Flash Messages -->
     @if(session('success'))
         <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-3 rounded-xl mb-6 text-sm">
-            ✅ {{ session('success') }}
+            <i class="fi fi-rr-check-circle mr-1"></i> {{ session('success') }}
         </div>
     @endif
     @if(session('error'))
         <div class="bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-xl mb-6 text-sm">
-            ❌ {{ session('error') }}
+            <i class="fi fi-rr-cross-circle mr-1"></i> {{ session('error') }}
         </div>
     @endif
 
@@ -65,7 +60,7 @@
 
         <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-5 rounded-xl shadow-sm gap-4">
             <a href="{{ route('penugasan.create') }}" class="bg-red-500 text-white px-6 py-3 rounded-lg font-semibold flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm">
-                <span>📝</span> Buat Penugasan
+                <span><i class="fi fi-rr-edit"></i></span> Buat Penugasan
             </a>
             <div class="flex flex-col md:flex-row gap-3 items-center w-full md:w-auto">
                 <select name="status" onchange="document.getElementById('filterForm').submit()" class="p-2.5 border-2 border-slate-200 rounded-lg bg-white cursor-pointer text-sm min-w-[140px] focus:outline-none focus:border-red-500">
@@ -248,7 +243,7 @@
                         <tr>
                             <td colspan="8" class="p-8 text-center text-slate-400">
                                 <div class="flex flex-col items-center gap-3">
-                                    <span class="text-4xl">📋</span>
+                                    <span class="text-4xl"><i class="fi fi-rr-clipboard-list"></i></span>
                                     <div>
                                         @if(request()->hasAny(['status', 'prioritas', 'divisi_id', 'search']))
                                             <p class="font-medium text-slate-600">Tidak ada tugas yang cocok</p>

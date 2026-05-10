@@ -2,8 +2,8 @@
     <div class="py-6 px-4 sm:px-6 lg:px-8">
         <!-- Breadcrumbs / Back Button -->
         <div class="mb-6">
-            <a href="{{ route('laporan.index') }}" class="inline-flex items-center text-sm font-medium text-slate-500 hover:text-red-600 transition-colors">
-                <span class="mr-2">←</span> Kembali ke Rekap Laporan
+            <a href="{{ route('laporan.index') }}" class="inline-flex items-center text-slate-500 hover:text-slate-800 transition-colors font-medium">
+                <span class="mr-2"><i class="fi fi-rr-arrow-left"></i></span> Kembali ke Rekap Laporan
             </a>
         </div>
 
@@ -16,7 +16,7 @@
                 <!-- Avatar -->
                 <div class="w-32 h-32 rounded-3xl overflow-hidden shadow-xl border-4 border-white shrink-0">
                     @if($pelaksana->avatar)
-                        <img src="{{ asset('storage/' . $pelaksana->avatar) }}" alt="{{ $pelaksana->name }}" class="w-full h-full object-cover">
+                        <img src="{{ route('file.avatar', $pelaksana->id) }}" alt="{{ $pelaksana->name }}" class="w-full h-full object-cover">
                     @else
                         <div class="w-full h-full flex items-center justify-center bg-red-600 text-white text-4xl font-bold">
                             {{ substr($pelaksana->name, 0, 1) }}
@@ -60,7 +60,7 @@
             <!-- Grade Trend -->
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                 <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    📈 Tren Nilai Tugas
+                    <i class="fi fi-rr-chart-line-up"></i> Tren Nilai Tugas
                 </h3>
                 <div class="h-[300px]">
                     <canvas id="gradeTrendChart"></canvas>
@@ -70,7 +70,7 @@
             <!-- Attendance Distribution -->
             <div class="bg-white p-8 rounded-3xl shadow-sm border border-slate-100">
                 <h3 class="text-lg font-bold text-slate-800 mb-6 flex items-center gap-2">
-                    📊 Distribusi Kehadiran
+                    <i class="fi fi-rr-chart-histogram"></i> Distribusi Kehadiran
                 </h3>
                 <div class="h-[300px] flex items-center justify-center">
                     <canvas id="attendanceDistroChart"></canvas>

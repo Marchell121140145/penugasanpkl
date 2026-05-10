@@ -1,7 +1,7 @@
 <x-admin-layout>
     <div class="mb-6">
         <a href="{{ route('pelaksana.list') }}" class="text-red-500 hover:text-red-700 hover:underline flex items-center gap-2 text-sm font-medium transition-colors w-max">
-            &larr; Kembali ke Data Pelaksana
+            <i class="fi fi-rr-arrow-left"></i> Kembali ke Data Pelaksana
         </a>
     </div>
 
@@ -37,21 +37,21 @@
             <div>
                 <h1 class="text-3xl font-bold text-slate-800 mb-1">{{ $pelaksana->name }}</h1>
                 <div class="flex items-center gap-3 text-sm text-slate-500 flex-wrap mt-2">
-                    <span>📧 {{ $pelaksana->email }}</span>
+                    <span><i class="fi fi-rr-envelope"></i> {{ $pelaksana->email }}</span>
                     <span>•</span>
                     <span class="px-2 py-0.5 rounded bg-slate-100 text-slate-700 font-medium">
                         {{ $pelaksana->divisi->nama ?? 'Belum ada Divisi' }}
                     </span>
                     <span>•</span>
                     <span class="px-2 py-0.5 rounded bg-red-50 text-red-700 font-medium">
-                        🧑‍🏫 Pembimbing: <strong class="ml-1">{{ $pelaksana->pembimbing->name ?? 'Belum ditugaskan' }}</strong>
+                        <i class="fi fi-rr-chalkboard-user"></i> Pembimbing: <strong class="ml-1">{{ $pelaksana->pembimbing->name ?? 'Belum ditugaskan' }}</strong>
                     </span>
                 </div>
             </div>
         </div>
         <div>
-            <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl shadow-md transition-all hover:-translate-y-0.5 mt-4 md:mt-0">
-                ✏️ Edit Profil
+            <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl shadow-md transition-all hover:-translate-y-0.5 mt-4 md:mt-0 flex items-center gap-2">
+                <i class="fi fi-rr-edit"></i> Edit Profil
             </button>
         </div>
     </div>
@@ -63,21 +63,21 @@
                 <p class="text-red-600/80 text-sm font-bold uppercase tracking-wider mb-1">Total Tugas</p>
                 <p class="text-4xl font-extrabold text-indigo-900">{{ $pelaksana->assigned_tasks_count }}</p>
             </div>
-            <div class="absolute -right-4 -bottom-4 text-8xl opacity-10">📋</div>
+            <div class="absolute -right-4 -bottom-4 text-8xl opacity-10"><i class="fi fi-rr-clipboard-list"></i></div>
         </div>
         <div class="bg-gradient-to-br from-emerald-50 to-white p-6 rounded-2xl shadow-sm border border-emerald-100 relative overflow-hidden">
             <div class="relative z-10">
                 <p class="text-emerald-600/80 text-sm font-bold uppercase tracking-wider mb-1">Tugas Selesai</p>
                 <p class="text-4xl font-extrabold text-emerald-900">{{ $pelaksana->tugas_selesai_count }}</p>
             </div>
-            <div class="absolute -right-4 -bottom-4 text-8xl opacity-10">✅</div>
+            <div class="absolute -right-4 -bottom-4 text-8xl opacity-10"><i class="fi fi-rr-check-circle"></i></div>
         </div>
         <div class="bg-gradient-to-br from-amber-50 to-white p-6 rounded-2xl shadow-sm border border-amber-100 relative overflow-hidden">
             <div class="relative z-10">
                 <p class="text-amber-600/80 text-sm font-bold uppercase tracking-wider mb-1">Tugas Aktif</p>
                 <p class="text-4xl font-extrabold text-amber-900">{{ $pelaksana->tugas_aktif_count }}</p>
             </div>
-            <div class="absolute -right-4 -bottom-4 text-8xl opacity-10">⏳</div>
+            <div class="absolute -right-4 -bottom-4 text-8xl opacity-10"><i class="fi fi-rr-hourglass"></i></div>
         </div>
     </div>
 
@@ -124,7 +124,7 @@
                     <tr>
                         <td colspan="4" class="px-6 py-12 text-center text-slate-500">
                             <div class="flex flex-col items-center justify-center">
-                                <span class="text-4xl mb-3">📭</span>
+                                <span class="text-4xl mb-3"><i class="fi fi-rr-box-open"></i></span>
                                 <p class="text-sm">Belum ada tugas yang ditugaskan ke pelaksana ini.</p>
                             </div>
                         </td>

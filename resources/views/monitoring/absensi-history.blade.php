@@ -3,7 +3,7 @@
     <div class="mb-6">
         <div class="flex items-center gap-3 mb-2">
             <a href="{{ route('absensi') }}" class="text-red-500 hover:text-red-700 transition-colors">
-                <span class="text-2xl">←</span>
+                <span class="text-2xl"><i class="fi fi-rr-arrow-left"></i></span>
             </a>
             <h1 class="text-slate-800 text-3xl font-bold">Riwayat Absensi Mahasiswa</h1>
         </div>
@@ -13,8 +13,8 @@
     <!-- Student Info Card -->
     <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
         <div class="flex items-center gap-6">
-            <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-3xl">
-                👤
+            <div class="w-20 h-20 rounded-full bg-red-100 flex items-center justify-center text-3xl text-red-600">
+                <i class="fi fi-rr-user"></i>
             </div>
             <div class="flex-1 grid grid-cols-1 md:grid-cols-3 gap-4">
                 <div>
@@ -51,7 +51,7 @@
                     <div class="text-sm text-slate-500 mb-1">Total Hadir</div>
                     <div class="text-2xl font-bold text-emerald-600">{{ $stats['totalHadir'] }}</div>
                 </div>
-                <div class="text-3xl">✅</div>
+                <div class="text-3xl text-emerald-500"><i class="fi fi-rr-check-circle"></i></div>
             </div>
         </div>
         <div class="bg-white rounded-xl p-5 shadow-sm">
@@ -60,7 +60,7 @@
                     <div class="text-sm text-slate-500 mb-1">Terlambat</div>
                     <div class="text-2xl font-bold text-amber-600">{{ $stats['terlambat'] }}</div>
                 </div>
-                <div class="text-3xl">⏰</div>
+                <div class="text-3xl text-amber-500"><i class="fi fi-rr-alarm-clock"></i></div>
             </div>
         </div>
         <div class="bg-white rounded-xl p-5 shadow-sm">
@@ -69,7 +69,7 @@
                     <div class="text-sm text-slate-500 mb-1">Selesai (Check-Out)</div>
                     <div class="text-2xl font-bold text-blue-600">{{ $stats['selesai'] }}</div>
                 </div>
-                <div class="text-3xl">🏁</div>
+                <div class="text-3xl text-blue-500"><i class="fi fi-rr-flag"></i></div>
             </div>
         </div>
         <div class="bg-white rounded-xl p-5 shadow-sm">
@@ -78,7 +78,7 @@
                     <div class="text-sm text-slate-500 mb-1">Izin / Sakit</div>
                     <div class="text-2xl font-bold text-red-600">{{ $stats['izinSakit'] }}</div>
                 </div>
-                <div class="text-3xl">📝</div>
+                <div class="text-3xl text-red-400"><i class="fi fi-rr-document"></i></div>
             </div>
         </div>
         <div class="bg-white rounded-xl p-5 shadow-sm">
@@ -87,7 +87,7 @@
                     <div class="text-sm text-slate-500 mb-1">Alpha</div>
                     <div class="text-2xl font-bold text-red-600">{{ $stats['alpha'] }}</div>
                 </div>
-                <div class="text-3xl">❌</div>
+                <div class="text-3xl text-red-500"><i class="fi fi-rr-cross-circle"></i></div>
             </div>
         </div>
     </div>
@@ -162,12 +162,12 @@
                                 <div class="flex gap-1 flex-col">
                                     @if($assignee->photo_path)
                                         <button onclick="viewPhoto('{{ route('file.attendance', [$assignee->id, 'checkin']) }}')" class="px-3 py-1.5 rounded-md bg-emerald-100 text-emerald-600 text-xs font-medium hover:bg-emerald-200 transition-colors whitespace-nowrap">
-                                            📷 Check-In
+                                            <i class="fi fi-rr-camera"></i> Check-In
                                         </button>
                                     @endif
                                     @if($assignee->checkout_photo_path)
                                         <button onclick="viewPhoto('{{ route('file.attendance', [$assignee->id, 'checkout']) }}')" class="px-3 py-1.5 rounded-md bg-blue-100 text-blue-600 text-xs font-medium hover:bg-blue-200 transition-colors whitespace-nowrap">
-                                            📷 Check-Out
+                                            <i class="fi fi-rr-camera"></i> Check-Out
                                         </button>
                                     @endif
                                     @if(!$assignee->photo_path && !$assignee->checkout_photo_path)

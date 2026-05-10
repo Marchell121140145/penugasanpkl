@@ -322,13 +322,14 @@ class PelaksanaController extends Controller
             'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => 3, // Fixed for Pelaksana
             'divisi_id' => $request->divisi_id,
         ]);
+        $user->role_id = 3;
+        $user->save();
 
         return redirect()->route('pelaksana.list')->with('success', 'Pelaksana baru berhasil ditambahkan.');
     }

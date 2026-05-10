@@ -431,7 +431,7 @@
         <div class="flex justify-between items-center mb-8">
             <div>
                 <a href="{{ route('penugasan') }}" class="text-slate-500 hover:text-red-600 mb-2 inline-block flex items-center gap-1">
-                    <span>←</span> Kembali ke Daftar Tugas
+                    <span><i class="fi fi-rr-arrow-left"></i></span> Kembali ke Daftar Tugas
                 </a>
                 <h1 class="text-slate-800 text-3xl font-bold mb-1">Detail Penugasan</h1>
                 <p class="text-slate-600">Monitoring progres tugas mahasiswa</p>
@@ -449,12 +449,12 @@
         <!-- Flash Messages -->
         @if(session('success'))
             <div class="bg-emerald-50 border border-emerald-200 text-emerald-700 px-5 py-3 rounded-xl mb-6 text-sm">
-                ✅ {{ session('success') }}
+                <i class="fi fi-rr-check-circle mr-1"></i> {{ session('success') }}
             </div>
         @endif
         @if(session('error'))
             <div class="bg-red-50 border border-red-200 text-red-700 px-5 py-3 rounded-xl mb-6 text-sm">
-                ❌ {{ session('error') }}
+                <i class="fi fi-rr-cross-circle mr-1"></i> {{ session('error') }}
             </div>
         @endif
 
@@ -555,7 +555,7 @@
                 <div>
                     <div class="file-attachment">
                         <div class="flex items-center gap-4">
-                            <span class="text-2xl">{{ strtolower($file->tipe) === 'pdf' ? '📄' : '📎' }}</span>
+                            <span class="text-2xl">{!! strtolower($file->tipe) === 'pdf' ? '<i class="fi fi-rr-document"></i>' : '<i class="fi fi-rr-clip"></i>' !!}</span>
                             <div>
                                 <div class="font-semibold text-slate-800">{{ $file->nama_file }}</div>
                                 <div class="text-xs text-slate-500">
@@ -573,18 +573,18 @@
                         <div class="flex items-center gap-2">
                             @if(strtolower($file->tipe) === 'pdf')
                                 <button type="button" class="pdf-viewer-toggle view-btn" onclick="togglePdfViewer('pdf-file-{{ $file->id }}', '{{ route('file.task', $file->id) }}')">
-                                    <span>👁️</span> Lihat PDF
+                                    <span><i class="fi fi-rr-eye"></i></span> Lihat PDF
                                 </button>
                                 <button type="button" class="pdf-viewer-toggle view-btn" onclick="openPdfModal('{{ $file->nama_file }}', '{{ route('file.task', $file->id) }}')" style="background: #f0fdf4; color: #16a34a;">
-                                    <span>🔍</span> Fullscreen
+                                    <span><i class="fi fi-rr-search"></i></span> Fullscreen
                                 </button>
                             @elseif(in_array(strtolower($file->tipe), ['xls', 'xlsx']))
                                 <a href="{{ route('excel.editor', ['type' => 'task_file', 'id' => $file->id]) }}" class="pdf-viewer-toggle view-btn" style="background: #ecfdf5; color: #059669; text-decoration: none;">
-                                    <span>✏️</span> Edit di Web
+                                    <span><i class="fi fi-rr-edit"></i></span> Edit di Web
                                 </a>
                             @endif
                             <a href="{{ route('file.task', $file->id) }}" target="_blank" download class="bg-red-50 text-red-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
-                                <span>⬇️</span> Download
+                                <span><i class="fi fi-rr-download"></i></span> Download
                             </a>
                         </div>
                     </div>
@@ -599,7 +599,7 @@
                 @foreach($taskLinks as $link)
                 <div class="file-attachment">
                     <div class="flex items-center gap-4">
-                        <span class="text-2xl">🔗</span>
+                        <span class="text-2xl"><i class="fi fi-rr-link"></i></span>
                         <div>
                             <div class="font-semibold text-slate-800">{{ $link->nama_file }}</div>
                             <div class="text-xs text-slate-500">{{ $link->url }}</div>
@@ -609,11 +609,11 @@
                         @if(str_contains(strtolower($link->url), 'docs.google.com/spreadsheets'))
                             <!-- Append ?rm=minimal to gsheets URL for embedding if not present, though normal URL works too -->
                             <button type="button" onclick="openPdfModal('{{ $link->nama_file }}', '{{ $link->url }}')" class="bg-emerald-50 text-emerald-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-emerald-100 transition-colors flex items-center gap-2">
-                                <span>📊</span> Live Sheet
+                                <span><i class="fi fi-rr-chart-histogram"></i></span> Live Sheet
                             </button>
                         @endif
                         <a href="{{ $link->url }}" target="_blank" class="bg-red-50 text-red-600 px-3 py-1.5 rounded-md text-sm font-medium hover:bg-red-100 transition-colors flex items-center gap-2">
-                            <span>🔗</span> Kunjungi
+                            <span><i class="fi fi-rr-link-alt"></i></span> Kunjungi
                         </a>
                     </div>
                 </div>
@@ -634,7 +634,7 @@
             <!-- Info Pembuat -->
             <div class="task-section" style="margin-bottom: 0;">
                 <div class="flex items-center gap-2 text-sm text-slate-500">
-                    <span>📅</span>
+                    <span><i class="fi fi-rr-calendar"></i></span>
                     <span>Dibuat {{ $task->created_at->translatedFormat('d M Y, H:i') }}
                         @if($task->creator)
                             oleh <strong class="text-slate-700">{{ $task->creator->name }}</strong>
@@ -691,7 +691,7 @@
                                 <td class="p-4 text-sm font-medium text-slate-800">
                                     <div class="flex items-center gap-3">
                                         @if($user->avatar)
-                                            <img src="{{ asset('storage/' . $user->avatar) }}" class="w-8 h-8 rounded-full object-cover">
+                                            <img src="{{ route('file.avatar', $user->id) }}" class="w-8 h-8 rounded-full object-cover">
                                         @else
                                             <div class="w-8 h-8 rounded-full {{ $avatarColor }} flex items-center justify-center text-xs font-bold">{{ $initials }}</div>
                                         @endif
@@ -712,15 +712,15 @@
                                     @if($submission->file_path)
                                         <div class="flex items-center gap-2">
                                         <a href="{{ route('file.submission', $submission->id) }}" target="_blank" class="text-red-600 hover:underline flex items-center gap-1">
-                                            <span>📄</span> {{ $submission->file_nama ?? 'Download' }}
+                                            <span><i class="fi fi-rr-document"></i></span> {{ $submission->file_nama ?? 'Download' }}
                                         </a>
                                         @if(Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.pdf'))
                                             <button type="button" class="pdf-viewer-toggle view-btn" style="font-size: 0.7rem; padding: 3px 8px;" onclick="openPdfModal('{{ $submission->file_nama ?? 'Submission' }}', '{{ route('file.submission', $submission->id) }}')">
-                                                👁️
+                                                <i class="fi fi-rr-eye"></i>
                                             </button>
                                         @elseif(Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.xlsx') || Str::endsWith(strtolower($submission->file_nama ?? $submission->file_path), '.xls'))
                                             <a href="{{ route('excel.editor', ['type' => 'submission', 'id' => $submission->id]) }}" class="pdf-viewer-toggle view-btn" style="font-size: 0.7rem; padding: 3px 8px; background: #ecfdf5; color: #059669; text-decoration: none;" title="Edit di Web">
-                                                ✏️
+                                                <i class="fi fi-rr-edit"></i>
                                             </a>
                                         @endif
                                         </div>
@@ -753,7 +753,7 @@
                                                 'comments' => $submission->comments->map(function($c) {
                                                     return [
                                                         'user_name' => $c->user->name,
-                                                        'avatar' => $c->user->avatar ? asset('storage/' . $c->user->avatar) : null,
+                                                        'avatar' => $c->user->avatar ? route('file.avatar', $c->user->id) : null,
                                                         'pesan' => $c->pesan,
                                                         'is_admin' => $c->user->role_id != 3,
                                                         'time' => $c->created_at->translatedFormat('d M, H:i')
@@ -769,7 +769,7 @@
                             <tr>
                                 <td colspan="5" class="p-8 text-center text-slate-400">
                                     <div class="flex flex-col items-center gap-3">
-                                        <span class="text-4xl">📋</span>
+                                        <span class="text-4xl"><i class="fi fi-rr-clipboard-list"></i></span>
                                         <p class="font-medium text-slate-600">Belum ada data submission</p>
                                         <p class="text-sm">Mahasiswa belum ditugaskan ke tugas ini.</p>
                                     </div>
@@ -807,7 +807,7 @@
                     <!-- Left: Review Form -->
                     <div>
                         <h4 class="font-bold text-slate-800 mb-4 flex items-center gap-2">
-                            <span>📝</span> Form Penilaian
+                            <span><i class="fi fi-rr-edit"></i></span> Form Penilaian
                         </h4>
                         <form id="evalForm" method="POST" action="">
                             @csrf

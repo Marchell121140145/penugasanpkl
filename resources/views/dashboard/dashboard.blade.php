@@ -15,7 +15,7 @@
             <div class="flex items-center gap-2.5 cursor-pointer relative" x-data="{ open: false }" @click.away="open = false" @click="open = !open">
                 <!-- Gunakan inisial nama jika ada -->
                 @if(Auth::user()->avatar)
-                    <img src="{{ asset('storage/' . Auth::user()->avatar) }}" class="w-10 h-10 rounded-full object-cover">
+                    <img src="{{ route('file.avatar', Auth::user()->id) }}" class="w-10 h-10 rounded-full object-cover">
                 @else
                     <div class="w-10 h-10 rounded-full bg-red-500 text-white flex items-center justify-center font-bold">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</div>
                 @endif
@@ -34,13 +34,13 @@
                      style="display: none;">
                     
                     <a href="{{ route('profile.edit') }}" class="block px-4 py-3 text-sm text-slate-800 hover:bg-slate-100 transition-colors">
-                        👤 Profile
+                        <i class="fi fi-rr-user mr-2"></i> Profile
                     </a>
                     
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <a href="{{ route('logout') }}" onclick="event.preventDefault(); this.closest('form').submit();" class="block px-4 py-3 text-sm text-red-500 hover:bg-red-50 transition-colors">
-                            🚪 Log Out
+                            <i class="fi fi-rr-exit mr-2"></i> Log Out
                         </a>
                     </form>
                 </div>
@@ -291,7 +291,7 @@
                 </ul>
                 @else
                 <div class="text-center py-8">
-                    <div class="text-4xl mb-3">📭</div>
+                    <div class="text-4xl mb-3"><i class="fi fi-rr-envelope-open"></i></div>
                     <p class="text-slate-400 text-sm">Belum ada aktivitas terkini</p>
                 </div>
                 @endif
@@ -304,19 +304,19 @@
                 </div>
                 <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
                     <a href="{{ route('penugasan.create') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-red-500">📋</div>
+                        <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-clipboard-list"></i></div>
                         <span class="text-slate-800 font-medium text-sm">Buat Penugasan</span>
                     </a>
                     <a href="{{ route('absensi') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-red-500">📊</div>
+                        <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-chart-histogram"></i></div>
                         <span class="text-slate-800 font-medium text-sm">Rekap Absensi</span>
                     </a>
                     <a href="{{ route('pelaksana.list') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-red-500">👤</div>
+                        <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-users"></i></div>
                         <span class="text-slate-800 font-medium text-sm">Pelaksana</span>
                     </a>
                     <a href="{{ route('penugasan') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-red-500">📈</div>
+                        <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-chart-line-up"></i></div>
                         <span class="text-slate-800 font-medium text-sm">Semua Tugas</span>
                     </a>
                 </div>
@@ -347,7 +347,7 @@
                 </ul>
                 @else
                 <div class="text-center py-8">
-                    <div class="text-4xl mb-3">📋</div>
+                    <div class="text-4xl mb-3"><i class="fi fi-rr-clipboard-list"></i></div>
                     <p class="text-slate-400 text-sm">Belum ada penugasan</p>
                 </div>
                 @endif
@@ -373,7 +373,7 @@
                 </ul>
                 @else
                 <div class="text-center py-8">
-                    <div class="text-4xl mb-3">📅</div>
+                    <div class="text-4xl mb-3"><i class="fi fi-rr-calendar"></i></div>
                     <p class="text-slate-400 text-sm">Tidak ada sesi absensi hari ini</p>
                 </div>
                 @endif

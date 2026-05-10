@@ -77,6 +77,17 @@ class ExcelEditorController extends Controller
         $type = $request->input('type');
         $id = $request->input('id');
 
+        $validator = \Illuminate\Support\Facades\Validator::make($request->all(), [
+            'file' => 'required|file|mimes:xls,xlsx,csv|max:20480',
+        ], [
+            'file.mimes' => 'Hanya file Excel (.xls, .xlsx) atau CSV yang diperbolehkan.',
+            'file.max' => 'Ukuran file maksimal adalah 20MB.',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['success' => false, 'message' => $validator->errors()->first()], 400);
+        }
+
         // Pastikan ada file yang diunggah dari client JS
         if (!$request->hasFile('file')) {
             return response()->json(['success' => false, 'message' => 'Tidak ada file stream yang diterima'], 400);

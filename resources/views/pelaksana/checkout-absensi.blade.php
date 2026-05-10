@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Check-Out Absensi - Sistem PKL</title>
+    <!-- Flaticon CDN -->
+    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
     <style>
         * {
             margin: 0;
@@ -386,9 +388,9 @@
 <body>
     <div class="container">
         <div class="header">
-            <h1>🚪 Check-Out Absensi</h1>
+            <h1><i class="fi fi-rr-exit"></i> Check-Out Absensi</h1>
             <p>Ambil foto sebagai bukti check-out</p>
-            <div class="badge">📤 Check-Out Mode</div>
+            <div class="badge"><i class="fi fi-rr-sign-out-alt"></i> Check-Out Mode</div>
         </div>
 
         <div class="content">
@@ -398,7 +400,7 @@
 
             <!-- Check-in Summary -->
             <div class="checkin-summary">
-                <div class="icon">✅</div>
+                <div class="icon"><i class="fi fi-rr-check-circle" style="color: #16a34a;"></i></div>
                 <div class="details">
                     <div class="title">Sudah Check-In</div>
                     <div class="time">Masuk: {{ $assignee->check_in_time->format('H:i') }} WIB</div>
@@ -430,7 +432,7 @@
             <!-- Location Info -->
             <div class="location-section">
                 <div class="location-header">
-                    <span>📍</span>
+                    <span><i class="fi fi-rr-marker"></i></span>
                     <strong>Lokasi Saat Ini</strong>
                 </div>
                 <div class="location-info">
@@ -442,18 +444,18 @@
             <!-- Upload Section -->
             <div class="upload-section">
                 <div class="upload-title">
-                    <span>📷</span>
+                    <span><i class="fi fi-rr-camera"></i></span>
                     Bukti Foto Check-Out
                 </div>
                 
                 <div class="upload-area" id="uploadArea">
-                    <div class="camera-icon">📸</div>
+                    <div class="camera-icon"><i class="fi fi-rr-camera"></i></div>
                     <div style="font-weight: 600; font-size: 1.2rem; margin-bottom: 10px; color: #1e293b;">Ambil Foto Check-Out</div>
                     <div style="color: #64748b; margin-bottom: 20px;">
                         Pastikan foto jelas menunjukkan wajah dan lingkungan sekitar
                     </div>
                     <button class="camera-btn" onclick="openCamera()" id="openCameraBtn">
-                        📸 Buka Kamera
+                        <i class="fi fi-rr-camera"></i> Buka Kamera
                     </button>
                 </div>
 
@@ -463,10 +465,10 @@
                 </div>
                 <div id="cameraControls" style="text-align: center; display: none; margin-top: 15px;">
                     <button class="capture-btn" onclick="capturePhoto()">
-                        📷 Ambil Foto
+                        <i class="fi fi-rr-camera"></i> Ambil Foto
                     </button>
                     <button class="cancel-btn" onclick="closeCamera()">
-                        ✖ Batal
+                        <i class="fi fi-rr-cross"></i> Batal
                     </button>
                 </div>
 

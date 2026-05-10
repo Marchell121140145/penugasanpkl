@@ -422,28 +422,28 @@
     <div id="create-task-container">
         <!-- Back Navigation -->
         <a href="{{ route('penugasan.show', $task->id) }}" class="nav-back">
-            <span>←</span> Kembali ke Detail Tugas
+            <span><i class="fi fi-rr-arrow-left"></i></span> Kembali ke Detail Tugas
         </a>
 
         <!-- Flash Messages -->
         @if(session('success'))
-            <div class="alert alert-success">✅ {{ session('success') }}</div>
+            <div class="alert alert-success"><i class="fi fi-rr-check-circle mr-1"></i> {{ session('success') }}</div>
         @endif
         @if(session('error'))
-            <div class="alert alert-error">❌ {{ session('error') }}</div>
+            <div class="alert alert-error"><i class="fi fi-rr-cross-circle mr-1"></i> {{ session('error') }}</div>
         @endif
 
         <div class="container-custom">
             <div class="header-custom" style="display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h1>✏️ Edit Tugas</h1>
+                    <h1><i class="fi fi-rr-edit"></i> Edit Tugas</h1>
                     <p>Perbarui informasi tugas "{{ $task->judul }}"</p>
                 </div>
                 <form action="{{ route('penugasan.destroy', $task->id) }}" method="POST" onsubmit="return confirm('PERINGATAN: Yakin ingin menghapus tugas ini secara permanen beserta semua filenya? Semua progress mahasiswa juga akan hilang.')">
                     @csrf
                     @method('DELETE')
                     <button type="submit" style="background: rgba(255,255,255,0.2); color: white; border: 1px solid rgba(255,255,255,0.5); padding: 8px 16px; border-radius: 6px; font-weight: bold; cursor: pointer; transition: all 0.3s;" onmouseover="this.style.background='#ef4444';this.style.borderColor='#ef4444'" onmouseout="this.style.background='rgba(255,255,255,0.2)';this.style.borderColor='rgba(255,255,255,0.5)'">
-                        🗑️ Hapus Tugas
+                        <i class="fi fi-rr-trash"></i> Hapus Tugas
                     </button>
                 </form>
             </div>
@@ -577,7 +577,7 @@
                             @foreach($existingFiles as $file)
                             <div class="existing-file" id="existingFile{{ $file->id }}">
                                 <div class="file-info" style="display: flex; align-items: center; gap: 8px;">
-                                    <span>📎</span>
+                                    <span><i class="fi fi-rr-clip"></i></span>
                                     <span>{{ $file->nama_file }}</span>
                                     <span class="file-size" style="color: #94a3b8; font-size: 0.8rem;">({{ strtoupper($file->tipe) }},
                                         @if($file->ukuran >= 1048576)
@@ -605,7 +605,7 @@
                     <div class="form-group">
                         <label>Tambah File Baru (Opsional)</label>
                         <div class="file-upload" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                            <div class="upload-icon">📎</div>
+                            <div class="upload-icon"><i class="fi fi-rr-clip"></i></div>
                             <div style="font-weight: 500; margin-bottom: 5px;">Klik atau seret file kesini</div>
                             <div style="color: #64748b; font-size: 0.9rem;">
                                 Format: PDF, Word, Excel, PowerPoint, Gambar, ZIP (Maks. 10MB per file)
@@ -625,7 +625,7 @@
                             <!-- Existing links will be rendered here by JS -->
                         </div>
                         <button type="button" class="add-link-btn" onclick="addLinkEntry()">
-                            🔗 Tambah Link
+                            <i class="fi fi-rr-link"></i> Tambah Link
                         </button>
                     </div>
 
@@ -786,13 +786,13 @@
         function getFileIcon(filename) {
             const ext = filename.split('.').pop().toLowerCase();
             const icons = {
-                'pdf': '📄', 'doc': '📝', 'docx': '📝',
-                'xls': '📊', 'xlsx': '📊',
-                'ppt': '📽️', 'pptx': '📽️',
-                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️',
-                'zip': '📦', 'rar': '📦',
+                'pdf': '<i class="fi fi-rr-document"></i>', 'doc': '<i class="fi fi-rr-document"></i>', 'docx': '<i class="fi fi-rr-document"></i>',
+                'xls': '<i class="fi fi-rr-chart-histogram"></i>', 'xlsx': '<i class="fi fi-rr-chart-histogram"></i>',
+                'ppt': '<i class="fi fi-rr-presentation"></i>', 'pptx': '<i class="fi fi-rr-presentation"></i>',
+                'jpg': '<i class="fi fi-rr-picture"></i>', 'jpeg': '<i class="fi fi-rr-picture"></i>', 'png': '<i class="fi fi-rr-picture"></i>', 'gif': '<i class="fi fi-rr-picture"></i>',
+                'zip': '<i class="fi fi-rr-box"></i>', 'rar': '<i class="fi fi-rr-box"></i>',
             };
-            return icons[ext] || '📎';
+            return icons[ext] || '<i class="fi fi-rr-clip"></i>';
         }
 
         // --- Link handling ---

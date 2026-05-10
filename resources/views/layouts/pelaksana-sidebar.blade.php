@@ -4,10 +4,10 @@
 >
     <div class="px-5 pb-5 border-b border-slate-700 mb-5 transition-all duration-300" :class="{ 'px-[5px]': !sidebarOpen }">
         <div class="flex items-center justify-between">
-            <h2 class="text-white text-2xl font-bold whitespace-nowrap" x-show="sidebarOpen">🎓 SISPKL</h2>
+            <h2 class="text-white text-2xl font-bold whitespace-nowrap" x-show="sidebarOpen"><i class="fi fi-rr-graduation-cap text-xl mr-1"></i> SISPKL</h2>
             <button @click="sidebarOpen = !sidebarOpen" class="text-white p-1 hover:bg-slate-700 rounded transition focus:outline-none">
-                <span x-show="sidebarOpen">◀</span>
-                <span x-show="!sidebarOpen" class="block mx-auto">▶</span>
+                <span x-show="sidebarOpen"><i class="fi fi-rr-angle-left"></i></span>
+                <span x-show="!sidebarOpen" class="block mx-auto"><i class="fi fi-rr-angle-right"></i></span>
             </button>
         </div>
         <small class="text-slate-400 block mt-1 whitespace-nowrap" x-show="sidebarOpen">Pelaksana Portal</small>
@@ -19,7 +19,7 @@
                class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap {{ request()->routeIs('pelaksana.dashboard') ? 'bg-blue-600 text-white' : '' }}"
                :class="{ 'justify-center px-0': !sidebarOpen }"
             >
-                <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">🏠</span> 
+                <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }"><i class="fi fi-rr-home"></i></span> 
                 <span x-show="sidebarOpen">Dashboard</span>
             </a>
         </li>
@@ -28,8 +28,18 @@
                class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap {{ request()->routeIs('pelaksana.penugasan') ? 'bg-blue-600 text-white' : '' }}"
                :class="{ 'justify-center px-0': !sidebarOpen }"
             >
-                <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">📋</span> 
-                <span x-show="sidebarOpen">Tugas Saya</span>
+                <div class="relative flex items-center justify-center mr-3 w-6" :class="{ 'mr-0': !sidebarOpen }">
+                    <span class="text-xl text-center"><i class="fi fi-rr-clipboard-list"></i></span>
+                    @if(isset($badgePendingTasks) && $badgePendingTasks > 0)
+                        <span x-show="!sidebarOpen" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $badgePendingTasks }}</span>
+                    @endif
+                </div>
+                <span x-show="sidebarOpen" class="flex-1 flex justify-between items-center">
+                    Tugas Saya
+                    @if(isset($badgePendingTasks) && $badgePendingTasks > 0)
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $badgePendingTasks }}</span>
+                    @endif
+                </span>
             </a>
         </li>
         <li class="mb-1">
@@ -37,15 +47,25 @@
                class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap {{ request()->routeIs('pelaksana.absensi') ? 'bg-blue-600 text-white' : '' }}"
                :class="{ 'justify-center px-0': !sidebarOpen }"
             >
-                <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">📅</span> 
-                <span x-show="sidebarOpen">Absensi</span>
+                <div class="relative flex items-center justify-center mr-3 w-6" :class="{ 'mr-0': !sidebarOpen }">
+                    <span class="text-xl text-center"><i class="fi fi-rr-calendar"></i></span>
+                    @if(isset($badgeUnfilledAttendances) && $badgeUnfilledAttendances > 0)
+                        <span x-show="!sidebarOpen" class="absolute -top-1 -right-2 bg-red-500 text-white text-[10px] font-bold px-1.5 py-0.5 rounded-full">{{ $badgeUnfilledAttendances }}</span>
+                    @endif
+                </div>
+                <span x-show="sidebarOpen" class="flex-1 flex justify-between items-center">
+                    Absensi
+                    @if(isset($badgeUnfilledAttendances) && $badgeUnfilledAttendances > 0)
+                        <span class="bg-red-500 text-white text-xs font-bold px-2 py-0.5 rounded-full">{{ $badgeUnfilledAttendances }}</span>
+                    @endif
+                </span>
             </a>
         <li class="mb-1">
             <a href="{{ route('profile.edit') }}" 
                class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap {{ request()->routeIs('profile.edit') ? 'bg-blue-600 text-white' : '' }}"
                :class="{ 'justify-center px-0': !sidebarOpen }"
             >
-                <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">👤</span> 
+                <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }"><i class="fi fi-rr-user"></i></span> 
                 <span x-show="sidebarOpen">Profile</span>
             </a>
         </li>
@@ -56,8 +76,8 @@
                :class="{ 'justify-center px-0': !sidebarOpen }"
             >
                 <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">
-                    <span x-show="!isDark">🌙</span>
-                    <span x-show="isDark">☀️</span>
+                    <span x-show="!isDark"><i class="fi fi-rr-moon"></i></span>
+                    <span x-show="isDark"><i class="fi fi-rr-sun"></i></span>
                 </span> 
                 <span x-show="sidebarOpen">
                     <span x-show="!isDark">Dark Mode</span>
@@ -73,7 +93,7 @@
                    class="flex items-center px-4 py-3 rounded-lg transition-all duration-300 text-slate-300 hover:bg-slate-700 hover:text-white whitespace-nowrap"
                    :class="{ 'justify-center px-0': !sidebarOpen }"
                 >
-                    <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }">🚪</span> 
+                    <span class="text-xl w-6 text-center flex items-center justify-center mr-3" :class="{ 'mr-0': !sidebarOpen }"><i class="fi fi-rr-exit"></i></span> 
                     <span x-show="sidebarOpen">Logout</span>
                 </a>
             </form>

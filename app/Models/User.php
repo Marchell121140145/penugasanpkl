@@ -23,7 +23,6 @@ class User extends Authenticatable
         'email',
         'avatar',
         'password',
-        'role_id',
         'divisi_id',
         'pembimbing_id',
         'pkl_start',

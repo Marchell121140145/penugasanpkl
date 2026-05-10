@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\TaskFile;
 use App\Models\TaskSubmission;
 use App\Models\AttendanceAssignee;
+use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 
@@ -104,4 +105,33 @@ class FileServeController extends Controller
 
         return Storage::disk('local')->response($filePath);
     }
+
+    /**
+     * Serve avatar user secara private.
+     * Akses: Semua user yang terautentikasi (avatar ditampilkan di banyak halaman).
+     * Mendukung backward compatibility: cek di local disk dulu, lalu public disk.
+     *
+     * @param int $id User ID
+     */
+    public function serveAvatar($id)
+    {
+        $targetUser = User::findOrFail($id);
+
+        if (!$targetUser->avatar) {
+            abort(404, 'Avatar tidak ditemukan.');
+        }
+
+        // Cek di local disk terlebih dahulu (avatar baru)
+        if (Storage::disk('local')->exists($targetUser->avatar)) {
+            return Storage::disk('local')->response($targetUser->avatar);
+        }
+
+        // Backward compatibility: cek di public disk (avatar lama)
+        if (Storage::disk('public')->exists($targetUser->avatar)) {
+            return Storage::disk('public')->response($targetUser->avatar);
+        }
+
+        abort(404, 'File avatar tidak ditemukan.');
+    }
 }
+

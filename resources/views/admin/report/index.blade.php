@@ -44,7 +44,7 @@
         <!-- Page Header -->
         <div class="flex flex-col md:flex-row md:items-center justify-between mb-8 gap-4 no-print">
             <div>
-                <h1 class="text-3xl font-bold text-slate-800 tracking-tight">📊 Analytics Pelaksana</h1>
+                <h1 class="text-3xl font-bold text-slate-800 tracking-tight"><i class="fi fi-rr-chart-histogram"></i> Analytics Pelaksana</h1>
                 <p class="text-slate-500 mt-1">Rekap nilai tugas dan persentase kehadiran.</p>
             </div>
             
@@ -93,7 +93,7 @@
         <!-- Summary Statistics Cards -->
         <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 transition-all hover:shadow-md card">
-                <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl">👥</div>
+                <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl"><i class="fi fi-rr-users"></i></div>
                 <div>
                     <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Total Pelaksana</h3>
                     <div class="text-3xl font-extrabold text-slate-800 mt-1">{{ $summary['total_students'] }}</div>
@@ -101,7 +101,7 @@
             </div>
 
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 transition-all hover:shadow-md card">
-                <div class="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center text-3xl">⭐</div>
+                <div class="w-16 h-16 rounded-2xl bg-emerald-50 flex items-center justify-center text-3xl"><i class="fi fi-rr-star"></i></div>
                 <div>
                     <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Avg Nilai</h3>
                     <div class="text-3xl font-extrabold text-slate-800 mt-1">{{ $summary['avg_grade'] }}</div>
@@ -109,7 +109,7 @@
             </div>
 
             <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100 flex items-center gap-5 transition-all hover:shadow-md card">
-                <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl">📅</div>
+                <div class="w-16 h-16 rounded-2xl bg-red-50 flex items-center justify-center text-3xl"><i class="fi fi-rr-calendar"></i></div>
                 <div>
                     <h3 class="text-sm font-semibold text-slate-500 uppercase tracking-wider">Avg Kehadiran</h3>
                     <div class="text-3xl font-extrabold text-slate-800 mt-1">{{ $summary['avg_attendance'] }}%</div>
@@ -140,7 +140,7 @@
                                 <div class="flex items-center gap-3">
                                     <div class="w-10 h-10 rounded-full overflow-hidden border border-slate-100 bg-slate-100 shrink-0">
                                         @if($student['avatar'])
-                                            <img src="{{ asset('storage/' . $student['avatar']) }}" alt="{{ $student['name'] }}" class="w-full h-full object-cover">
+                                            <img src="{{ route('file.avatar', $student['id']) }}" alt="{{ $student['name'] }}" class="w-full h-full object-cover">
                                         @else
                                             <div class="w-full h-full flex items-center justify-center bg-red-500 text-white font-bold text-sm">
                                                 {{ substr($student['name'], 0, 1) }}
@@ -178,7 +178,7 @@
                             </td>
                             <td class="px-6 py-5 text-right no-print">
                                 <a href="{{ route('laporan.show', $student['id']) }}" class="inline-flex items-center justify-center w-9 h-9 rounded-xl bg-red-50 text-red-600 hover:bg-red-100 transition-colors" title="Analisis Lengkap">
-                                    <span class="text-lg">📈</span>
+                                    <span class="text-lg"><i class="fi fi-rr-chart-line-up"></i></span>
                                 </a>
                             </td>
                         </tr>

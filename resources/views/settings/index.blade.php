@@ -1,12 +1,18 @@
 <x-admin-layout>
     <div x-data="{ 
-        activeTab: 'umum',
+        activeTab: localStorage.getItem('settingsActiveTab') || 'umum',
         isEditModalOpen: false,
         editUser: {},
         isPurgeModalOpen: false,
         openEditModal(user) {
             this.editUser = user;
             this.isEditModalOpen = true;
+        },
+        init() {
+            this.$watch('activeTab', value => localStorage.setItem('settingsActiveTab', value));
+            if (window.location.search.includes('page=')) {
+                this.activeTab = 'users';
+            }
         }
     }">
         <!-- Header -->
@@ -32,22 +38,22 @@
             <!-- Settings Navigation -->
             <div class="md:col-span-3 space-y-2">
                 <button @click="activeTab = 'umum'" :class="activeTab === 'umum' ? 'bg-blue-600 text-white shadow-blue-100' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-200'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all shadow-md border">
-                    <span class="text-xl">🛠️</span>
+                    <span class="text-xl"><i class="fi fi-rr-settings"></i></span>
                     <span>Umum</span>
                 </button>
                 @if(auth()->user()->role_id == 1)
                 <button @click="activeTab = 'users'" :class="activeTab === 'users' ? 'bg-blue-600 text-white shadow-blue-100' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-200'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all shadow-md border">
-                    <span class="text-xl">👥</span>
+                    <span class="text-xl"><i class="fi fi-rr-users"></i></span>
                     <span>Manajemen User</span>
                 </button>
                 <button @click="activeTab = 'database'" :class="activeTab === 'database' ? 'bg-blue-600 text-white shadow-blue-100' : 'bg-white text-slate-600 hover:bg-slate-50 border-slate-200'" class="w-full flex items-center gap-3 px-4 py-3 rounded-xl font-bold transition-all shadow-md border">
-                    <span class="text-xl">💾</span>
+                    <span class="text-xl"><i class="fi fi-rr-disk"></i></span>
                     <span>Database</span>
                 </button>
                 @endif
                 <div class="pt-4 border-t border-slate-200">
                     <a href="{{ route('profile.edit') }}" class="flex items-center gap-3 px-4 py-3 bg-white text-slate-600 hover:bg-slate-50 rounded-xl font-semibold transition-all border border-slate-200/60">
-                        <span class="text-xl">👤</span>
+                        <span class="text-xl"><i class="fi fi-rr-user"></i></span>
                         <span>Profil Saya</span>
                     </a>
                 </div>
@@ -80,7 +86,7 @@
                         }
                     }">
                         <h3 class="text-xl font-bold text-slate-800 border-b border-slate-100 pb-4 mb-6 flex items-center gap-2">
-                            <span>🎨</span> Tampilan Aplikasi
+                            <span><i class="fi fi-rr-palette"></i></span> Tampilan Aplikasi
                         </h3>
                         
                         <div class="max-w-xl">
@@ -90,7 +96,7 @@
                                 <label class="cursor-pointer">
                                     <input type="radio" name="theme" value="light" class="peer sr-only" x-model="theme" @change="setTheme('light')">
                                     <div class="rounded-xl border-2 border-slate-200 p-4 hover:bg-slate-50 transition-all peer-checked:border-red-500 peer-checked:bg-red-50">
-                                        <div class="text-2xl mb-2 text-center">☀️</div>
+                                        <div class="text-2xl mb-2 text-center"><i class="fi fi-rr-sun"></i></div>
                                         <div class="text-sm font-bold text-slate-700 text-center">Terang (Light)</div>
                                     </div>
                                 </label>
@@ -99,7 +105,7 @@
                                 <label class="cursor-pointer">
                                     <input type="radio" name="theme" value="dark" class="peer sr-only" x-model="theme" @change="setTheme('dark')">
                                     <div class="rounded-xl border-2 border-slate-200 p-4 hover:bg-slate-50 transition-all peer-checked:border-red-500 peer-checked:bg-red-50">
-                                        <div class="text-2xl mb-2 text-center">🌙</div>
+                                        <div class="text-2xl mb-2 text-center"><i class="fi fi-rr-moon"></i></div>
                                         <div class="text-sm font-bold text-slate-700 text-center">Gelap (Dark)</div>
                                     </div>
                                 </label>
@@ -108,7 +114,7 @@
                                 <label class="cursor-pointer">
                                     <input type="radio" name="theme" value="system" class="peer sr-only" x-model="theme" @change="setTheme('system')">
                                     <div class="rounded-xl border-2 border-slate-200 p-4 hover:bg-slate-50 transition-all peer-checked:border-red-500 peer-checked:bg-red-50">
-                                        <div class="text-2xl mb-2 text-center">💻</div>
+                                        <div class="text-2xl mb-2 text-center"><i class="fi fi-rr-computer"></i></div>
                                         <div class="text-sm font-bold text-slate-700 text-center">Ikuti Sistem</div>
                                     </div>
                                 </label>
@@ -124,12 +130,12 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center">
                             <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                                <span class="p-2 bg-blue-50 text-blue-600 rounded-lg text-sm">👥</span>
+                                <span class="p-2 bg-blue-50 text-blue-600 rounded-lg text-sm"><i class="fi fi-rr-users"></i></span>
                                 Semua Pengguna Sistem
                             </h2>
                             <div class="flex items-center gap-3">
                                 <button @click="isPurgeModalOpen = true" class="bg-rose-50 hover:bg-rose-100 text-rose-600 px-4 py-2 rounded-lg text-sm font-bold flex items-center gap-2 transition-colors">
-                                    <span>🧹</span> Purge Pelaksana
+                                    <span><i class="fi fi-rr-broom"></i></span> Purge Pelaksana
                                 </button>
                                 <span class="bg-slate-100 text-slate-600 px-3 py-1 rounded-full text-xs font-bold">{{ $users->total() }} User</span>
                             </div>
@@ -273,7 +279,7 @@
                                      x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                                     <div class="flex justify-between items-center mb-4">
                                         <h3 class="text-xl font-bold leading-6 text-rose-600 flex items-center gap-2">
-                                            <span>🧹</span> Purge Pelaksana Kadaluarsa
+                                            <span><i class="fi fi-rr-broom"></i></span> Purge Pelaksana Kadaluarsa
                                         </h3>
                                         <button @click="isPurgeModalOpen = false" class="text-slate-400 hover:text-slate-500">
                                             <span class="text-2xl">&times;</span>
@@ -352,7 +358,7 @@
                     <div class="bg-white rounded-2xl shadow-sm border border-slate-200/60 overflow-hidden">
                         <div class="p-6 border-b border-slate-100 flex justify-between items-center">
                             <h2 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                                <span class="p-2 bg-amber-50 text-amber-600 rounded-lg text-sm">💾</span>
+                                <span class="p-2 bg-amber-50 text-amber-600 rounded-lg text-sm"><i class="fi fi-rr-disk"></i></span>
                                 Statistik Tabel
                             </h2>
                         </div>

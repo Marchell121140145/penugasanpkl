@@ -123,13 +123,14 @@ class PembimbingController extends Controller
             'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
         ]);
 
-        User::create([
+        $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role_id' => 2, // Fixed for Pembimbing
             'divisi_id' => $request->divisi_id,
         ]);
+        $user->role_id = 2;
+        $user->save();
 
         return redirect()->route('pembimbing.list')->with('success', 'Pembimbing baru berhasil ditambahkan.');
     }

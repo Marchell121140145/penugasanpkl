@@ -43,7 +43,7 @@
             </button>
             <div>
                 <h1 class="text-xl font-bold text-slate-800 flex items-center gap-2">
-                    <span class="text-emerald-500">📊</span>
+                    <span class="text-emerald-500"><i class="fi fi-rr-chart-histogram"></i></span>
                     <span>{{ $fileName }}</span>
                 </h1>
                 <p class="text-xs text-slate-500 uppercase font-semibold">Tugas: {{ $task->judul }}</p>

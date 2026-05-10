@@ -3,10 +3,10 @@
     @if(session('success'))
         <div class="bg-emerald-100 border-l-4 border-emerald-500 text-emerald-700 p-4 mb-6 rounded-r-xl shadow-sm flex items-center justify-between" x-data="{ show: true }" x-show="show">
             <div class="flex items-center">
-                <span class="mr-3 text-xl">✅</span>
+                <span class="mr-3 text-xl"><i class="fi fi-rr-check-circle"></i></span>
                 <p class="font-bold">{{ session('success') }}</p>
             </div>
-            <button @click="show = false" class="text-emerald-500 hover:text-emerald-700">✕</button>
+            <button @click="show = false" class="text-emerald-500 hover:text-emerald-700"><i class="fi fi-rr-cross"></i></button>
         </div>
     @endif
     <!-- Header -->
@@ -21,9 +21,7 @@
                     <span class="text-xl">+</span> Tambah User
                 </button>
             @endif
-            <div class="relative cursor-pointer">
-                <span class="text-xl">🔔</span>
-            </div>
+
         </div>
     </div>
 
@@ -55,7 +53,7 @@
     @if(auth()->check() && auth()->user()->role_id == 1 && isset($pendingUsers) && $pendingUsers->count() > 0)
     <div class="bg-amber-50 border-l-4 border-amber-500 rounded-xl p-6 shadow-sm mb-8">
         <div class="flex items-start gap-4">
-            <div class="text-3xl">⚠️</div>
+            <div class="text-3xl text-amber-500"><i class="fi fi-rr-triangle-warning"></i></div>
             <div class="flex-1">
                 <h2 class="text-amber-800 text-lg font-bold mb-1">Pendaftaran Menunggu Persetujuan ({{ $pendingUsers->count() }})</h2>
                 <p class="text-amber-700 text-sm mb-4">Pelaksana berikut telah mendaftar namun belum memiliki divisi. Mereka tidak dapat login sebelum Anda menempatkannya di suatu divisi.</p>
@@ -144,7 +142,7 @@
                 <div class="relative w-full md:w-auto">
                     <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500 pr-8" placeholder="Cari nama pelaksana...">
                     @if(request('search'))
-                        <a href="{{ route('pelaksana.list', request()->except('search', 'page')) }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm">✕</a>
+                        <a href="{{ route('pelaksana.list', request()->except('search', 'page')) }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm"><i class="fi fi-rr-cross-small"></i></a>
                     @endif
                 </div>
                 <button type="submit" class="p-2.5 bg-red-500 text-white rounded-lg text-sm font-medium hover:bg-red-600 transition-colors px-4">Cari</button>
@@ -236,7 +234,7 @@
                             <td class="p-4 text-sm">
                                 <div class="flex items-center gap-3">
                                     @if($pelaksana->avatar)
-                                        <img src="{{ asset('storage/' . $pelaksana->avatar) }}" class="w-9 h-9 rounded-full object-cover">
+                                        <img src="{{ route('file.avatar', $pelaksana->id) }}" class="w-9 h-9 rounded-full object-cover">
                                     @else
                                         <div class="w-9 h-9 rounded-full {{ $avatarColors[$colorIndex] }} flex items-center justify-center text-xs font-bold">{{ $initials }}</div>
                                     @endif
@@ -275,8 +273,8 @@
                             </td>
                             <td class="p-4 text-sm">
                                 <div class="flex flex-col gap-1">
-                                    <span class="text-emerald-600 font-medium text-xs">✅ Selesai: {{ $pelaksana->tugas_selesai_count }}</span>
-                                    <span class="text-red-500 font-medium text-xs">🔄 Aktif: {{ $pelaksana->tugas_aktif_count }}</span>
+                                    <span class="text-emerald-600 font-medium text-xs"><i class="fi fi-rr-check-circle text-[10px]"></i> Selesai: {{ $pelaksana->tugas_selesai_count }}</span>
+                                    <span class="text-red-500 font-medium text-xs"><i class="fi fi-rr-refresh text-[10px]"></i> Aktif: {{ $pelaksana->tugas_aktif_count }}</span>
                                 </div>
                             </td>
                             <td class="p-4 text-sm">
@@ -289,7 +287,7 @@
                         <tr>
                             <td colspan="7" class="p-8 text-center text-slate-400">
                                 <div class="flex flex-col items-center gap-3">
-                                    <span class="text-4xl">👤</span>
+                                    <span class="text-4xl"><i class="fi fi-rr-user"></i></span>
                                     <div>
                                         @if(request()->hasAny(['divisi_id', 'search']))
                                             <p class="font-medium text-slate-600">Tidak ada pelaksana yang cocok</p>
@@ -356,7 +354,8 @@
 
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
 
-            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
+            <div x-show="openAddUser"
+                 class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full"
                  x-transition:enter="transition ease-out duration-300"
                  x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
                  x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
@@ -366,7 +365,7 @@
                 
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
                     <h3 class="text-lg font-bold text-slate-800">Tambah User Baru</h3>
-                    <button @click="openAddUser = false" class="text-slate-400 hover:text-slate-600">✕</button>
+                    <button @click="openAddUser = false" class="text-slate-400 hover:text-slate-600"><i class="fi fi-rr-cross"></i></button>
                 </div>
 
                 <form action="{{ route('pelaksana.store') }}" method="POST">
@@ -394,7 +393,7 @@
                             </div>
                             <div class="flex items-end pb-1">
                                 <div class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100 flex items-center gap-2">
-                                    <span>👤</span> Role: Pelaksana
+                                    <span><i class="fi fi-rr-user"></i></span> Role: Pelaksana
                                 </div>
                             </div>
                         </div>

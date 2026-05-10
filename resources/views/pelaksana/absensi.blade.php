@@ -55,14 +55,14 @@
                     @if(session('success'))
                         <tr>
                             <td colspan="6" class="p-4 bg-emerald-50 text-emerald-700 font-medium text-center border-b border-emerald-200">
-                                ✅ {{ session('success') }}
+                                <i class="fi fi-rr-check-circle mr-1"></i> {{ session('success') }}
                             </td>
                         </tr>
                     @endif
                     @if(session('error'))
                         <tr>
                             <td colspan="6" class="p-4 bg-red-50 text-red-700 font-medium text-center border-b border-red-200">
-                                ❌ {{ session('error') }}
+                                <i class="fi fi-rr-cross-circle mr-1"></i> {{ session('error') }}
                             </td>
                         </tr>
                     @endif
@@ -131,11 +131,11 @@
                                     </a>
                                 @elseif($isCheckedIn && !$canCheckout)
                                     <span class="inline-flex items-center gap-1.5 text-xs text-slate-500 bg-slate-100 px-3 py-2 rounded-lg">
-                                        ⏳ Check-out mulai {{ $assignee->attendance->checkout_start->format('H:i') }}
+                                        <i class="fi fi-rr-hourglass-start"></i> Check-out mulai {{ $assignee->attendance->checkout_start->format('H:i') }}
                                     </span>
                                 @elseif($isSelesai)
                                     <span class="inline-flex items-center gap-1.5 text-xs text-emerald-600 bg-emerald-50 px-3 py-2 rounded-lg font-medium">
-                                        ✅ Selesai
+                                        <i class="fi fi-rr-check"></i> Selesai
                                     </span>
                                 @else
                                     {{ $assignee->keterangan ?? '-' }}

@@ -6,16 +6,13 @@
             <p class="text-slate-600">Kelola dan pantau kehadiran mahasiswa PKL</p>
         </div>
         <div class="flex items-center gap-4">
-            <div class="relative cursor-pointer">
-                <span class="text-xl">🔔</span>
-                <div class="absolute -top-1 -right-1 bg-red-500 text-white rounded-full w-[18px] h-[18px] text-[0.7rem] flex items-center justify-center">3</div>
-            </div>
+
         </div>
     </div>
 
     @if (session('success'))
         <div class="mb-6 bg-emerald-50 text-emerald-700 p-4 rounded-xl border border-emerald-200 flex items-start gap-3">
-            <span class="text-xl">✅</span>
+            <span class="text-xl"><i class="fi fi-rr-check-circle"></i></span>
             <div>
                 <h4 class="font-bold text-sm">Berhasil!</h4>
                 <p class="text-sm mt-1">{{ session('success') }}</p>
@@ -27,13 +24,13 @@
     <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-5 rounded-xl shadow-sm gap-4">
         <div class="flex gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
             <a href="{{ route('absensi.create') }}" class="bg-red-500 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap">
-                <span>📝</span> Buat Absensi
+                <span><i class="fi fi-rr-edit"></i></span> Buat Absensi
             </a>
             <button class="bg-emerald-500 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap">
-                <span>📥</span> Download
+                <span><i class="fi fi-rr-download"></i></span> Download
             </button>
             <button onclick="location.reload()" class="bg-white text-slate-800 border-2 border-slate-200 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap hover:border-red-300">
-                <span>🔄</span> Refresh
+                <span><i class="fi fi-rr-refresh"></i></span> Refresh
             </button>
         </div>
         <div class="flex gap-4 items-center w-full md:w-auto">

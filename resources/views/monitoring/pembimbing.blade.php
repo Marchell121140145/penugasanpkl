@@ -17,19 +17,17 @@
                     </button>
                 </div>
             @endif
-            <div class="relative cursor-pointer text-slate-400">
-                <span class="text-xl">🔔</span>
-            </div>
+
         </div>
     </div>
 
     @if(session('success'))
         <div class="bg-emerald-100 border-l-4 border-emerald-500 text-emerald-700 p-4 mb-6 rounded-r-xl shadow-sm flex items-center justify-between" x-data="{ show: true }" x-show="show">
             <div class="flex items-center">
-                <span class="mr-3 text-xl">✅</span>
+                <span class="mr-3 text-xl"><i class="fi fi-rr-check-circle"></i></span>
                 <p class="font-bold">{{ session('success') }}</p>
             </div>
-            <button @click="show = false" class="text-emerald-500 hover:text-emerald-700">✕</button>
+            <button @click="show = false" class="text-emerald-500 hover:text-emerald-700"><i class="fi fi-rr-cross"></i></button>
         </div>
     @endif
 
@@ -120,8 +118,8 @@
                         </td>
                         <td class="p-4 text-sm">
                             <div class="flex flex-col gap-1">
-                                <span class="text-emerald-600 font-medium text-xs">✅ Selesai: {{ $pembimbing->tugas_selesai_count }}</span>
-                                <span class="text-red-500 font-medium text-xs">🔄 Aktif: {{ $pembimbing->tugas_aktif_count }}</span>
+                                <span class="text-emerald-600 font-medium text-xs"><i class="fi fi-rr-check-circle text-[10px]"></i> Selesai: {{ $pembimbing->tugas_selesai_count }}</span>
+                                <span class="text-red-500 font-medium text-xs"><i class="fi fi-rr-refresh text-[10px]"></i> Aktif: {{ $pembimbing->tugas_aktif_count }}</span>
                             </div>
                         </td>
                         <td class="p-4 text-sm">
@@ -188,10 +186,10 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" @click="openAddPembimbing = false"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
+            <div x-show="openAddPembimbing" class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-lg sm:w-full">
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
                     <h3 class="text-lg font-bold text-slate-800">Tambah Pembimbing Baru</h3>
-                    <button @click="openAddPembimbing = false" class="text-slate-400 hover:text-slate-600">✕</button>
+                    <button @click="openAddPembimbing = false" class="text-slate-400 hover:text-slate-600"><i class="fi fi-rr-cross"></i></button>
                 </div>
 
                 <form action="{{ route('pembimbing.store') }}" method="POST">
@@ -219,7 +217,7 @@
                             </div>
                             <div class="flex items-end pb-1">
                                 <div class="px-4 py-2 bg-purple-50 text-purple-600 rounded-xl text-xs font-bold border border-purple-100 flex items-center gap-2">
-                                    <span>👨‍🏫</span> Role: Pembimbing
+                                    <span><i class="fi fi-rr-chalkboard-user"></i></span> Role: Pembimbing
                                 </div>
                             </div>
                         </div>
@@ -261,10 +259,10 @@
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:block sm:p-0">
             <div class="fixed inset-0 transition-opacity bg-slate-900/50 backdrop-blur-sm" @click="openAddDivisi = false"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen">&#8203;</span>
-            <div class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+            <div x-show="openAddDivisi" class="inline-block overflow-hidden text-left align-bottom transition-all transform bg-white rounded-2xl shadow-2xl sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
                     <h3 class="text-lg font-bold text-slate-800">Tambah Divisi Baru</h3>
-                    <button @click="openAddDivisi = false" class="text-slate-400 hover:text-slate-600">✕</button>
+                    <button @click="openAddDivisi = false" class="text-slate-400 hover:text-slate-600"><i class="fi fi-rr-cross"></i></button>
                 </div>
 
                 <form action="{{ route('divisi.store') }}" method="POST">

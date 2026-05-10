@@ -401,20 +401,20 @@
     <div id="create-task-container">
         <!-- Back Navigation -->
         <a href="{{ route('penugasan') }}" class="nav-back">
-            <span>←</span> Kembali ke Daftar Tugas
+            <span><i class="fi fi-rr-arrow-left"></i></span> Kembali ke Daftar Tugas
         </a>
 
         <!-- Flash Messages -->
         @if(session('success'))
-            <div class="alert alert-success">✅ {{ session('success') }}</div>
+            <div class="alert alert-success"><i class="fi fi-rr-check-circle mr-1"></i> {{ session('success') }}</div>
         @endif
         @if(session('error'))
-            <div class="alert alert-error">❌ {{ session('error') }}</div>
+            <div class="alert alert-error"><i class="fi fi-rr-cross-circle mr-1"></i> {{ session('error') }}</div>
         @endif
 
         <div class="container-custom">
             <div class="header-custom">
-                <h1>📝 Buat Tugas Baru</h1>
+                <h1><i class="fi fi-rr-edit"></i> Buat Tugas Baru</h1>
                 <p>Buat penugasan untuk peserta PKL</p>
             </div>
 
@@ -524,7 +524,7 @@
                     <div class="form-group">
                         <label>File Pendukung (Opsional)</label>
                         <div class="file-upload" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                            <div class="upload-icon">📎</div>
+                            <div class="upload-icon"><i class="fi fi-rr-clip"></i></div>
                             <div style="font-weight: 500; margin-bottom: 5px;">Klik atau seret file kesini</div>
                             <div style="color: #64748b; font-size: 0.9rem;">
                                 Format: PDF, Word, Excel, PowerPoint, Gambar, ZIP (Maks. 10MB per file)
@@ -544,7 +544,7 @@
                             <!-- Link entries will be added here -->
                         </div>
                         <button type="button" class="add-link-btn" onclick="addLinkEntry()">
-                            🔗 Tambah Link
+                            <i class="fi fi-rr-link"></i> Tambah Link
                         </button>
                     </div>
 
@@ -709,13 +709,13 @@
         function getFileIcon(filename) {
             const ext = filename.split('.').pop().toLowerCase();
             const icons = {
-                'pdf': '📄', 'doc': '📝', 'docx': '📝',
-                'xls': '📊', 'xlsx': '📊',
-                'ppt': '📽️', 'pptx': '📽️',
-                'jpg': '🖼️', 'jpeg': '🖼️', 'png': '🖼️', 'gif': '🖼️',
-                'zip': '📦', 'rar': '📦',
+                'pdf': '<i class="fi fi-rr-document"></i>', 'doc': '<i class="fi fi-rr-document"></i>', 'docx': '<i class="fi fi-rr-document"></i>',
+                'xls': '<i class="fi fi-rr-chart-histogram"></i>', 'xlsx': '<i class="fi fi-rr-chart-histogram"></i>',
+                'ppt': '<i class="fi fi-rr-presentation"></i>', 'pptx': '<i class="fi fi-rr-presentation"></i>',
+                'jpg': '<i class="fi fi-rr-picture"></i>', 'jpeg': '<i class="fi fi-rr-picture"></i>', 'png': '<i class="fi fi-rr-picture"></i>', 'gif': '<i class="fi fi-rr-picture"></i>',
+                'zip': '<i class="fi fi-rr-box"></i>', 'rar': '<i class="fi fi-rr-box"></i>',
             };
-            return icons[ext] || '📎';
+            return icons[ext] || '<i class="fi fi-rr-clip"></i>';
         }
 
         // --- Link handling ---

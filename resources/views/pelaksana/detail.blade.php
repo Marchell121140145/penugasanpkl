@@ -693,13 +693,13 @@
 
         @if(session('success'))
         <div class="success-message show" style="margin-bottom: 20px; display:flex;">
-            <span style="font-size: 1.5rem;">✅</span>
+            <span style="font-size: 1.5rem;"><i class="fi fi-rr-check-circle"></i></span>
             <span>{{ session('success') }}</span>
         </div>
         @endif
         @if($errors->any() || session('error'))
         <div class="success-message show" style="margin-bottom: 20px; background: #fee2e2; border-color: #fca5a5; color: #991b1b; display:flex;">
-            <span style="font-size: 1.5rem;">❌</span>
+            <span style="font-size: 1.5rem;"><i class="fi fi-rr-cross-circle"></i></span>
             <span>{{ session('error') ?? 'Terdapat kesalahan pada input form.' }}</span>
         </div>
         @endif
@@ -726,7 +726,7 @@
             @if($submission->komentar)
             <div style="background: white; padding: 15px; border-radius: 8px; border: 1px solid #bae6fd;">
                 <div style="font-weight: 600; font-size: 0.85rem; color: var(--primary); margin-bottom: 5px; display: flex; align-items: center; gap: 5px;">
-                    <span>📢</span> Pesan Utama dari Admin:
+                    <span><i class="fi fi-rr-bullhorn"></i></span> Pesan Utama dari Admin:
                 </div>
                 <p style="color: var(--dark); font-size: 0.95rem; line-height: 1.5; margin: 0;">{{ $submission->komentar }}</p>
             </div>
@@ -738,7 +738,7 @@
         <!-- Dialogue Section -->
         <div class="task-detail-card">
             <div class="upload-header" style="margin-bottom: 20px;">
-                <h2>💬 Diskusi dengan Admin</h2>
+                <h2><i class="fi fi-rr-comment-alt"></i> Diskusi dengan Admin</h2>
             </div>
             
             <div class="dialogue-container" id="pelaksanaCommentFeed">
@@ -751,7 +751,7 @@
                     @endphp
                     <div class="comment-item">
                         @if($comment->user->avatar)
-                            <img src="{{ asset('storage/' . $comment->user->avatar) }}" class="comment-avatar object-cover">
+                            <img src="{{ route('file.avatar', $comment->user->id) }}" class="comment-avatar object-cover">
                         @else
                             <div class="comment-avatar {{ $avatarColor }}">{{ $initials }}</div>
                         @endif
@@ -764,7 +764,7 @@
                     </div>
                 @empty
                     <div style="text-align: center; color: var(--secondary); padding: 40px 0;">
-                        <span style="font-size: 3rem; display: block; margin-bottom: 10px;">💬</span>
+                        <span style="font-size: 3rem; display: block; margin-bottom: 10px;"><i class="fi fi-rr-comment-alt"></i></span>
                         <p>Belum ada diskusi untuk tugas ini.</p>
                         <p style="font-size: 0.85rem;">Gunakan kolom di bawah untuk bertanya atau memberikan kabar progres.</p>
                     </div>
@@ -840,7 +840,7 @@
                 <div class="mb-4">
                     <div class="file-attachment-item" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center;">
                         <div style="display: flex; align-items: center; gap: 15px;">
-                            <span style="font-size: 1.5rem;">{{ strtolower($file->tipe) === 'pdf' ? '📄' : '📎' }}</span>
+                            <span style="font-size: 1.5rem;">{!! strtolower($file->tipe) === 'pdf' ? '<i class="fi fi-rr-document"></i>' : '<i class="fi fi-rr-paperclip"></i>' !!}</span>
                             <div>
                                 <div style="font-weight: 600; color: var(--dark);">{{ $file->nama_file }}</div>
                                 <div style="font-size: 0.8rem; color: var(--secondary);">{{ strtoupper($file->tipe) . ' • ' . round($file->ukuran / 1024, 2) . ' KB' }}</div>
@@ -849,18 +849,18 @@
                         <div style="display: flex; align-items: center; gap: 8px;">
                             @if(strtolower($file->tipe) === 'pdf')
                                 <button type="button" class="pdf-viewer-toggle view-btn" onclick="togglePdfViewer('pdf-file-{{ $file->id }}', '{{ route('file.task', $file->id) }}')">
-                                    <span>👁️</span> Lihat
+                                    <span><i class="fi fi-rr-eye"></i></span> Lihat
                                 </button>
                                 <button type="button" class="pdf-viewer-toggle view-btn" onclick="openPdfModal('{{ $file->nama_file }}', '{{ route('file.task', $file->id) }}')" style="background: #f0fdf4; color: #16a34a;">
-                                    <span>🔍</span> Fullscreen
+                                    <span><i class="fi fi-rr-expand"></i></span> Fullscreen
                                 </button>
                             @elseif(in_array(strtolower($file->tipe), ['xls', 'xlsx']))
                                 <a href="{{ route('excel.editor', ['type' => 'task_file', 'id' => $file->id]) }}" class="pdf-viewer-toggle view-btn" style="background: #ecfdf5; color: #059669;">
-                                    <span>✏️</span> Edit di Web
+                                    <span><i class="fi fi-rr-pencil"></i></span> Edit di Web
                                 </a>
                             @endif
                             <a href="{{ route('file.task', $file->id) }}" target="_blank" class="action-btn download" style="display: flex; align-items: center; gap: 5px; text-decoration: none;">
-                                <span>⬇️</span> Download
+                                <span><i class="fi fi-rr-download"></i></span> Download
                             </a>
                         </div>
                     </div>
@@ -875,7 +875,7 @@
                 @foreach($taskLinks as $link)
                 <div class="file-attachment-item" style="background: white; border: 1px solid #e2e8f0; border-radius: 8px; padding: 15px; display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
                     <div style="display: flex; align-items: center; gap: 15px;">
-                        <span style="font-size: 1.5rem;">🔗</span>
+                        <span style="font-size: 1.5rem;"><i class="fi fi-rr-link"></i></span>
                         <div>
                             <div style="font-weight: 600; color: var(--dark);">{{ $link->nama_file }}</div>
                             <div style="font-size: 0.8rem; color: var(--secondary);">Tautan Luar</div>
@@ -884,11 +884,11 @@
                     <div style="display: flex; align-items: center; gap: 8px;">
                         @if(str_contains(strtolower($link->url), 'docs.google.com/spreadsheets'))
                             <button type="button" onclick="openPdfModal('{{ $link->nama_file }}', '{{ $link->url }}')" class="pdf-viewer-toggle view-btn" style="background: #f0fdf4; color: #16a34a;">
-                                <span>📊</span> Live Sheet
+                                <span><i class="fi fi-rr-chart-histogram"></i></span> Live Sheet
                             </button>
                         @endif
                         <a href="{{ $link->url }}" target="_blank" class="action-btn download" style="display: flex; align-items: center; gap: 5px; text-decoration: none;">
-                            <span>↗️</span> Buka
+                            <span><i class="fi fi-rr-arrow-up-right-from-square"></i></span> Buka
                         </a>
                     </div>
                 </div>
@@ -911,12 +911,12 @@
                 <div class="deadline-header">
                     <h2>Deadline</h2>
                     @if($isLate)
-                        <div class="deadline-warning">⚠️ Terlambat</div>
+                        <div class="deadline-warning"><i class="fi fi-rr-triangle-warning"></i> Terlambat</div>
                     @else
-                        <div class="deadline-warning" style="color: #047857;">⏳ {{ \Carbon\Carbon::parse($task->deadline_date)->diffForHumans() }}</div>
+                        <div class="deadline-warning" style="color: #047857;"><i class="fi fi-rr-hourglass-end"></i> {{ \Carbon\Carbon::parse($task->deadline_date)->diffForHumans() }}</div>
                     @endif
                 </div>
-                <div class="deadline-date">📅 {{ \Carbon\Carbon::parse($task->deadline_date)->format('d F Y') }} - {{ $task->deadline_time }} WIB</div>
+                <div class="deadline-date"><i class="fi fi-rr-calendar"></i> {{ \Carbon\Carbon::parse($task->deadline_date)->format('d F Y') }} - {{ $task->deadline_time }} WIB</div>
             </div>
 
             <!-- Form Upload Tugas -->
@@ -929,7 +929,7 @@
                     
                     @if(!$isSubmitted)
                         <div class="upload-area" onclick="document.getElementById('fileInput').click()">
-                            <div class="upload-icon">📁</div>
+                            <div class="upload-icon"><i class="fi fi-rr-folder"></i></div>
                             <div class="upload-text" id="uploadText">
                                 <strong>Klik di sini untuk upload file jawaban</strong>
                             </div>
@@ -948,7 +948,7 @@
                         
                         <div class="file-item">
                             <div class="file-info">
-                                <span class="file-icon">📄</span>
+                                <span class="file-icon"><i class="fi fi-rr-document"></i></span>
                                 <div>
                                     <div class="file-name">{{ $submission->file_nama }}</div>
                                     <div class="file-size">{{ round($submission->file_ukuran / 1024, 2) }} KB - Disubmit: {{ \Carbon\Carbon::parse($submission->submitted_at)->format('d M Y H:i') }}</div>
@@ -965,7 +965,7 @@
                     <!-- Submit Section -->
                     <div class="submit-section">
                         <button type="button" class="btn-cancel" onclick="window.location.href='{{ route('pelaksana.penugasan') }}'">Kembali</button>
-                        <button type="button" class="btn-submit" id="submitTaskBtn" onclick="confirmSubmitTask()">✅ Submit Tugas</button>
+                        <button type="button" class="btn-submit" id="submitTaskBtn" onclick="confirmSubmitTask()"><i class="fi fi-rr-check"></i> Submit Tugas</button>
                     </div>
                     @else
                     <div class="submit-section">
@@ -979,7 +979,7 @@
         <!-- Navigation Buttons -->
         <div style="display: flex; justify-content: start; margin-top: 20px;">
             <a href="{{ route('pelaksana.penugasan') }}" style="text-decoration:none; padding: 12px 24px; border: 2px solid var(--primary); background: white; color: var(--primary); border-radius: 8px; cursor: pointer; font-weight: 600;">
-                ← Kembali
+                <i class="fi fi-rr-arrow-left"></i> Kembali
             </a>
         </div>
     </div>
@@ -1021,7 +1021,7 @@
             if (confirmed) {
                 const submitBtn = document.getElementById('submitTaskBtn');
                 submitBtn.disabled = true;
-                submitBtn.textContent = '⏳ Mengunggah...';
+                submitBtn.innerHTML = '<i class="fi fi-rr-hourglass-end"></i> Mengunggah...';
                 
                 document.getElementById('submissionForm').submit();
             }

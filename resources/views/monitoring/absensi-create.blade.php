@@ -102,7 +102,7 @@
                                 <div class="flex items-center gap-3">
                                     <div class="h-8 w-8 rounded-full bg-red-100 flex items-center justify-center text-red-600 font-bold overflow-hidden flex-shrink-0">
                                         @if($pelaksana->avatar)
-                                            <img src="{{ asset('storage/' . $pelaksana->avatar) }}" alt="{{ $pelaksana->name }}" class="w-full h-full object-cover">
+                                            <img src="{{ route('file.avatar', $pelaksana->id) }}" alt="{{ $pelaksana->name }}" class="w-full h-full object-cover">
                                         @else
                                             {{ substr($pelaksana->name, 0, 1) }}
                                         @endif
