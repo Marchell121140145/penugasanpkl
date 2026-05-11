@@ -1,5 +1,5 @@
 <div 
-    class="bg-slate-800 text-white py-5 flex flex-col transition-all duration-300 ease-in-out shrink-0 overflow-x-hidden min-h-screen"
+    class="bg-slate-800 text-white py-5 flex flex-col transition-all duration-300 ease-in-out shrink-0 overflow-x-hidden min-h-screen print:hidden"
     :class="sidebarOpen ? 'w-[250px]' : 'w-[80px]'"
 >
     <div class="px-5 pb-5 border-b border-slate-700 mb-5 transition-all duration-300" :class="{ 'px-[5px]': !sidebarOpen }">

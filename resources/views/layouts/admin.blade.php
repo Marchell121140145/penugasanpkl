@@ -32,7 +32,7 @@
     @include('layouts.sidebar')
 
     <!-- Main Content -->
-    <div class="flex-1 p-8 overflow-y-auto">
+    <div class="flex-1 p-8 print:p-0 overflow-y-auto">
         {{ $slot }}
     </div>
 
