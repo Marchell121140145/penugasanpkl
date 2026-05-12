@@ -2,8 +2,8 @@
     <!-- Header -->
     <div class="flex justify-between items-center mb-8">
         <div>
-            <h1 class="text-slate-800 text-3xl font-bold mb-1">Welcome Back {{ Auth::user()->name ?? 'Admin' }}</h1>
-            <p class="text-slate-600">Monitoring penugasan PKL</p>
+            <h1 class="text-slate-800 text-3xl font-bold mb-1">Monitoring Penugasan PKL</h1>
+            <p class="text-slate-600">Monitoring tugas pelaksana PKL</p>
         </div>
         <div class="flex items-center gap-4">
 

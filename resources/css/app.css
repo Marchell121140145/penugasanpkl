@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+[x-cloak] { display: none !important; }
+
+
 /* ============================================
    DARK MODE — scoped to .dark-auto layouts
    (admin.blade.php & pelaksana.blade.php only)

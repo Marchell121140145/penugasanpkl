@@ -456,6 +456,7 @@
         </div>
     </div>
     @endif
+    </div>
 </x-admin-layout>
 
 
