@@ -66,17 +66,8 @@ class PelaksanaController extends Controller
 
         $pelaksanas = $query->paginate(10)->appends($request->query());
 
-        // Stats (untuk admin lihat semua, untuk pembimbing lihat sesuai scope)
-        if (auth()->check() && auth()->user()->role_id == 2) {
-            $totalPelaksana = User::where('role_id', 3)
-                ->whereNotNull('divisi_id')
-                ->where(function ($q) use ($user) {
-                    $q->where('divisi_id', $user->divisi_id)
-                      ->orWhere('pembimbing_id', $user->id);
-                })->count();
-        } else {
-            $totalPelaksana = User::where('role_id', 3)->whereNotNull('divisi_id')->count();
-        }
+        // Stats (menyesuaikan dengan filter yang diterapkan)
+        $totalPelaksana = $pelaksanas->total();
 
         // Ambil data pendaftaran yang menunggu persetujuan admin
         $pendingUsers = collect();

@@ -44,9 +44,18 @@ class PembimbingController extends Controller
         $pembimbings = $query->paginate(10)->appends($request->query());
 
         // Stats
-        $totalPembimbing = User::where('role_id', 2)->count();
-        $totalPelaksana = User::where('role_id', 3)->count();
-        $totalTugas = Task::count();
+        $totalPembimbing = $pembimbings->total();
+        
+        $pelaksanaQuery = User::where('role_id', 3);
+        $taskQuery = Task::query();
+        
+        if ($request->filled('divisi_id')) {
+            $pelaksanaQuery->where('divisi_id', $request->divisi_id);
+            $taskQuery->where('divisi_id', $request->divisi_id);
+        }
+        
+        $totalPelaksana = $pelaksanaQuery->count();
+        $totalTugas = $taskQuery->count();
 
         // Divisi list for filter dropdown
         $divisis = Divisi::orderBy('nama')->get();

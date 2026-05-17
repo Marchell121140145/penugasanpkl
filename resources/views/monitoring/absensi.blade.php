@@ -31,8 +31,8 @@
         @endif
 
         <!-- Action Bar -->
-        <div class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white p-5 rounded-xl shadow-sm gap-4">
-            <div class="flex gap-4 w-full md:w-auto overflow-x-auto pb-2 md:pb-0">
+        <div class="flex flex-col lg:flex-row justify-between items-center mb-6 bg-white p-5 rounded-xl shadow-sm gap-4">
+            <div class="flex gap-4 w-full lg:w-auto overflow-x-auto pb-2 lg:pb-0">
                 <a href="{{ route('absensi.create') }}" class="bg-red-500 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap">
                     <span><i class="fi fi-rr-edit"></i></span> Buat Absensi
                 </a>
@@ -41,38 +41,48 @@
                     <span><i class="fi fi-rr-settings-sliders"></i></span> Pengaturan Otomatisasi
                 </button>
                 @endif
-                <button class="bg-emerald-500 text-white px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap">
-                    <span><i class="fi fi-rr-download"></i></span> Download
-                </button>
-                <button onclick="location.reload()" class="bg-white text-slate-800 border-2 border-slate-200 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap hover:border-red-300">
-                    <span><i class="fi fi-rr-refresh"></i></span> Refresh
-                </button>
+                <a href="{{ route('absensi') }}" class="bg-white text-slate-800 border-2 border-slate-200 px-5 py-2.5 rounded-lg font-medium flex items-center gap-2 hover:-translate-y-0.5 shadow-sm transition-all text-sm whitespace-nowrap hover:border-red-300">
+                    <span><i class="fi fi-rr-refresh"></i></span> Reset
+                </a>
             </div>
-            <div class="flex gap-4 items-center w-full md:w-auto">
-                <input type="text" id="searchInput" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500" placeholder="Cari judul sesi...">
-            </div>
+            <form method="GET" action="{{ route('absensi') }}" class="flex gap-4 items-center w-full lg:w-auto">
+                <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="p-2.5 border-2 border-slate-200 rounded-lg text-sm focus:outline-none focus:border-red-500" onchange="this.form.submit()" title="Filter berdasarkan tanggal batas check-in">
+                
+                <select name="per_page" class="p-2.5 pr-8 border-2 border-slate-200 rounded-lg text-sm focus:outline-none focus:border-red-500 cursor-pointer" onchange="this.form.submit()" title="Jumlah data per halaman">
+                    <option value="10" {{ request('per_page') == 10 ? 'selected' : '' }}>10</option>
+                    <option value="15" {{ request('per_page') == 15 ? 'selected' : '' }}>15</option>
+                    <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50</option>
+                </select>
+
+                <div class="relative">
+                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500 pr-10" placeholder="Cari judul sesi...">
+                    <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500">
+                        <i class="fi fi-rr-search"></i>
+                    </button>
+                </div>
+            </form>
         </div>
 
         <!-- Stats Cards -->
         <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
             <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-slate-400">
                 <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Sesi</h3>
-                <div class="text-3xl font-bold text-slate-800 mb-1">{{ count($attendances) }}</div>
+                <div class="text-3xl font-bold text-slate-800 mb-1">{{ $attendances->total() }}</div>
                 <div class="text-xs text-slate-500">Sesi terdata</div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-emerald-500">
                 <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Sudah Check-In</h3>
-                <div class="text-3xl font-bold text-slate-800 mb-1">{{ collect($attendances)->sum('hadir_count') }}</div>
-                <div class="text-xs text-emerald-500">Dari {{ collect($attendances)->sum('total_assignees') }} total peserta</div>
+                <div class="text-3xl font-bold text-slate-800 mb-1">{{ collect($attendances->items())->sum('hadir_count') }}</div>
+                <div class="text-xs text-emerald-500">Dari {{ collect($attendances->items())->sum('total_assignees') }} total sesi absensi</div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-blue-500">
                 <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Sudah Check-Out</h3>
-                <div class="text-3xl font-bold text-slate-800 mb-1">{{ collect($attendances)->sum('checkout_count') }}</div>
+                <div class="text-3xl font-bold text-slate-800 mb-1">{{ collect($attendances->items())->sum('checkout_count') }}</div>
                 <div class="text-xs text-blue-500">Selesai</div>
             </div>
             <div class="bg-white p-6 rounded-xl shadow-sm border-l-4 border-l-red-500">
                 <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Belum Check-In</h3>
-                <div class="text-3xl font-bold text-slate-800 mb-1">{{ collect($attendances)->sum('total_assignees') - collect($attendances)->sum('hadir_count') }}</div>
+                <div class="text-3xl font-bold text-slate-800 mb-1">{{ collect($attendances->items())->sum('total_assignees') - collect($attendances->items())->sum('hadir_count') }}</div>
                 <div class="text-xs text-red-500">Belum mengisi</div>
             </div>
         </div>
@@ -82,7 +92,7 @@
             <div class="flex justify-between items-center mb-6">
                 <h2 class="text-slate-800 text-xl font-semibold">Daftar Sesi Absensi</h2>
                 <div class="text-slate-500 text-sm">
-                    Menampilkan <span class="font-medium text-slate-800">{{ count($attendances) }}</span> sesi terbaru
+                    Menampilkan <span class="font-medium text-slate-800">{{ $attendances->firstItem() ?? 0 }}</span> - <span class="font-medium text-slate-800">{{ $attendances->lastItem() ?? 0 }}</span> dari <span class="font-medium text-slate-800">{{ $attendances->total() }}</span> sesi
                 </div>
             </div>
             
@@ -133,6 +143,10 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <div class="mt-6">
+                {{ $attendances->links() }}
             </div>
         </div>
 
@@ -219,17 +233,4 @@
         @endif
     </div>
 
-    <script>
-        // Search functionality for session table
-        const searchInput = document.getElementById('searchInput');
-        const sessionRows = document.querySelectorAll('.session-row');
-
-        searchInput.addEventListener('input', function() {
-            const searchTerm = this.value.toLowerCase();
-            sessionRows.forEach(row => {
-                const title = row.getAttribute('data-title');
-                row.style.display = title.includes(searchTerm) ? '' : 'none';
-            });
-        });
-    </script>
 </x-admin-layout>

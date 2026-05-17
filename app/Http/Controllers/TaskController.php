@@ -21,6 +21,11 @@ class TaskController extends Controller
     public function index(Request $request)
     {
         $query = Task::with(['assignees', 'submissions', 'divisi', 'creator']);
+        
+        $user = \Illuminate\Support\Facades\Auth::user();
+        if ($user->role_id == 2) {
+            $query->where('divisi_id', $user->divisi_id);
+        }
 
         // Filter: Status
         if ($request->filled('status')) {
@@ -65,12 +70,34 @@ class TaskController extends Controller
 
         $tasks = $query->paginate(10)->appends($request->query());
 
-        // Stats (unfiltered)
-        $totalTasks = Task::count();
-        $completedTasks = Task::where('status', 'completed')->count();
-        $activeTasks = Task::where('status', 'active')->count();
-        $draftTasks = Task::where('status', 'draft')->count();
-        $lateTasks = Task::where('status', 'active')
+        // Base query for stats (applying all filters except status)
+        $baseStatQuery = Task::query();
+        if ($user->role_id == 2) {
+            $baseStatQuery->where('divisi_id', $user->divisi_id);
+        }
+        if ($request->filled('prioritas')) {
+            $baseStatQuery->where('prioritas', $request->prioritas);
+        }
+        if ($request->filled('divisi_id')) {
+            $baseStatQuery->where('divisi_id', $request->divisi_id);
+        }
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $baseStatQuery->where(function ($q) use ($search) {
+                $q->where('judul', 'like', "%{$search}%")
+                  ->orWhere('deskripsi', 'like', "%{$search}%")
+                  ->orWhereHas('assignees', function ($q2) use ($search) {
+                      $q2->where('name', 'like', "%{$search}%");
+                  });
+            });
+        }
+
+        // Stats (filtered)
+        $totalTasks = (clone $baseStatQuery)->count();
+        $completedTasks = (clone $baseStatQuery)->where('status', 'completed')->count();
+        $activeTasks = (clone $baseStatQuery)->where('status', 'active')->count();
+        $draftTasks = (clone $baseStatQuery)->where('status', 'draft')->count();
+        $lateTasks = (clone $baseStatQuery)->where('status', 'active')
             ->where('deadline_date', '<', now()->toDateString())
             ->count();
 

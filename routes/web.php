@@ -75,6 +75,9 @@ Route::middleware(['auth', 'verified', 'role:1,2'])->group(function () {
     Route::get('/pelaksana-list', [PelaksanaController::class, 'index'])->name('pelaksana.list');
     Route::get('/pelaksana-list/{id}', [PelaksanaController::class, 'show'])->name('pelaksana.show');
     Route::put('/pelaksana-list/{id}', [PelaksanaController::class, 'update'])->name('pelaksana.update');
+
+    // --- Settings (General Profil) ---
+    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
 });
 
 // =========================================
@@ -97,7 +100,6 @@ Route::middleware(['auth', 'verified', 'role:1'])->group(function () {
     Route::post('/divisi', [PembimbingController::class, 'storeDivisi'])->name('divisi.store');
 
     // --- Settings ---
-    Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
     Route::delete('/settings/user/{id}', [SettingsController::class, 'destroyUser'])->name('settings.user.destroy');
     Route::put('/settings/user/{id}', [SettingsController::class, 'updateUser'])->name('settings.user.update');
     Route::post('/settings/purge-pelaksana', [SettingsController::class, 'purgePelaksana'])->name('settings.purge');

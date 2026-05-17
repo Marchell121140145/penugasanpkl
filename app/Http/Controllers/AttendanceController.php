@@ -20,13 +20,29 @@ class AttendanceController extends Controller
 
         // Dapatkan daftar "Sesi Absensi" 
         $attendancesQuery = Attendance::withCount([
-            'assignees as hadir_count' => function($q) {
+            'assignees as hadir_count' => function($q) use ($user) {
                 $q->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai']);
+                if ($user->role_id == 2) {
+                    $q->whereHas('user', function($sq) use ($user) {
+                        $sq->where('pembimbing_id', $user->id)->orWhere('divisi_id', $user->divisi_id);
+                    });
+                }
             },
-            'assignees as checkout_count' => function($q) {
+            'assignees as checkout_count' => function($q) use ($user) {
                 $q->whereIn('status', ['Hadir - Selesai', 'Terlambat - Selesai']);
+                if ($user->role_id == 2) {
+                    $q->whereHas('user', function($sq) use ($user) {
+                        $sq->where('pembimbing_id', $user->id)->orWhere('divisi_id', $user->divisi_id);
+                    });
+                }
             },
-            'assignees as total_assignees'
+            'assignees as total_assignees' => function($q) use ($user) {
+                if ($user->role_id == 2) {
+                    $q->whereHas('user', function($sq) use ($user) {
+                        $sq->where('pembimbing_id', $user->id)->orWhere('divisi_id', $user->divisi_id);
+                    });
+                }
+            }
         ])->latest();
 
         if ($user->role_id == 2) {
@@ -35,7 +51,25 @@ class AttendanceController extends Controller
                   ->orWhere('divisi_id', $user->divisi_id);
             });
         }
-        $attendances = $attendancesQuery->take(15)->get();
+        
+        // Filter Pencarian
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $attendancesQuery->where('title', 'like', "%{$search}%");
+        }
+        
+        // Filter Tanggal
+        if ($request->filled('tanggal')) {
+            $attendancesQuery->whereDate('deadline', $request->tanggal);
+        }
+        
+        // Pagination
+        $perPage = $request->get('per_page', 10);
+        if (!in_array($perPage, [10, 15, 50])) {
+            $perPage = 10;
+        }
+
+        $attendances = $attendancesQuery->paginate($perPage)->appends($request->query());
 
         // Ambil pengaturan auto-generate
         $autoSettings = [
