@@ -308,7 +308,6 @@ class AttendanceController extends Controller
 
         $request->validate([
             'image_data' => 'required|string',
-            'lokasi' => 'required|string',
             'keterangan' => 'nullable|string'
         ]);
 
@@ -339,7 +338,6 @@ class AttendanceController extends Controller
             'photo_path' => $filePath,
             'check_in_time' => now(),
             'status' => $status,
-            'lokasi' => $request->lokasi,
             'keterangan' => $request->keterangan
         ]);
 
@@ -379,7 +377,6 @@ class AttendanceController extends Controller
 
         $request->validate([
             'image_data' => 'required|string',
-            'lokasi' => 'required|string',
             'keterangan' => 'nullable|string'
         ]);
 
@@ -407,7 +404,6 @@ class AttendanceController extends Controller
             'checkout_photo_path' => $filePath,
             'check_out_time' => now(),
             'status' => $newStatus,
-            'checkout_lokasi' => $request->lokasi,
             'keterangan' => $request->keterangan ?? $assignee->keterangan,
         ]);
 

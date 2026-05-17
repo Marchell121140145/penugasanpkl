@@ -1,568 +1,207 @@
 <x-admin-layout>
-    <style>
-        /* Scoped styles based on user's design */
-        #create-task-container * {
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        #create-task-container .container-custom {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-            margin-bottom: 50px;
-        }
-
-        #create-task-container .header-custom {
-            background: #3b82f6;
-            color: white;
-            padding: 25px;
-        }
-
-        #create-task-container .header-custom h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-            font-weight: bold;
-        }
-
-        #create-task-container .form-section {
-            padding: 30px;
-        }
-
-        #create-task-container .form-group {
-            margin-bottom: 25px;
-        }
-
-        #create-task-container .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: #1e293b;
-        }
-
-        #create-task-container .form-control-custom {
-            width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            font-size: 1rem;
-            transition: all 0.3s;
-        }
-
-        #create-task-container .form-control-custom:focus {
-            outline: none;
-            border-color: #3b82f6;
-        }
-
-        #create-task-container textarea.form-control-custom {
-            min-height: 120px;
-            resize: vertical;
-        }
-
-        #create-task-container .form-row-custom {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 20px;
-        }
-
-        #create-task-container .btn-custom {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: all 0.3s;
-            display: inline-block;
-        }
-
-        #create-task-container .btn-primary-custom {
-            background: #3b82f6;
-            color: white;
-        }
-
-        #create-task-container .btn-primary-custom:hover {
-            background: #2563eb;
-        }
-
-        #create-task-container .btn-outline-custom {
-            background: white;
-            border: 2px solid #e2e8f0;
-            color: #64748b;
-        }
-
-        #create-task-container .btn-outline-custom:hover {
-            border-color: #94a3b8;
-            color: #475569;
-        }
-
-        #create-task-container .form-actions {
-            display: flex;
-            gap: 15px;
-            justify-content: flex-end;
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
-        }
-
-        #create-task-container .student-list {
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            padding: 15px;
-            max-height: 200px;
-            overflow-y: auto;
-        }
-
-        #create-task-container .student-item {
-            display: flex;
-            align-items: center;
-            padding: 8px 0;
-            border-bottom: 1px solid #f1f5f9;
-        }
-
-        #create-task-container .student-item:last-child {
-            border-bottom: none;
-        }
-
-        #create-task-container .student-checkbox {
-            margin-right: 10px;
-        }
-
-        #create-task-container .file-upload {
-            border: 2px dashed #cbd5e1;
-            border-radius: 8px;
-            padding: 30px;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        #create-task-container .file-upload:hover {
-            border-color: #3b82f6;
-            background: #f8fafc;
-        }
-
-        #create-task-container .file-upload.drag-over {
-            border-color: #3b82f6;
-            background: #eff6ff;
-        }
-
-        #create-task-container .upload-icon {
-            font-size: 2rem;
-            color: #64748b;
-            margin-bottom: 10px;
-        }
-
-        /* Nav back style */
-        .nav-back {
-            margin-bottom: 15px;
-            display: inline-block;
-            color: #64748b;
-            text-decoration: none;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-        .nav-back:hover {
-            color: #3b82f6;
-        }
-
-        /* Error styling */
-        .input-error {
-            border-color: #ef4444 !important;
-        }
-        .error-text {
-            color: #ef4444;
-            font-size: 0.85rem;
-            margin-top: 4px;
-        }
-
-        /* Alert messages */
-        .alert {
-            padding: 12px 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-            font-size: 0.95rem;
-        }
-        .alert-success {
-            background: #dcfce7;
-            color: #166534;
-            border: 1px solid #bbf7d0;
-        }
-        .alert-error {
-            background: #fef2f2;
-            color: #991b1b;
-            border: 1px solid #fecaca;
-        }
-
-        /* File list item */
-        .file-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 8px 12px;
-            background: #f8fafc;
-            border: 1px solid #e2e8f0;
-            border-radius: 6px;
-            margin-top: 8px;
-            font-size: 0.9rem;
-        }
-        .file-item .file-info {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            color: #334155;
-        }
-        .file-item .file-size {
-            color: #94a3b8;
-            font-size: 0.8rem;
-        }
-        .file-item .remove-file {
-            color: #ef4444;
-            cursor: pointer;
-            background: none;
-            border: none;
-            font-size: 1.1rem;
-            padding: 0 4px;
-        }
-        .file-item .remove-file:hover {
-            color: #dc2626;
-        }
-
-        /* Link section */
-        .link-entry {
-            display: flex;
-            gap: 10px;
-            margin-top: 10px;
-            align-items: flex-start;
-        }
-        .link-entry input {
-            flex: 1;
-        }
-        .link-entry .remove-link {
-            color: #ef4444;
-            cursor: pointer;
-            background: none;
-            border: 2px solid #fecaca;
-            border-radius: 6px;
-            padding: 10px 14px;
-            font-size: 1rem;
-            transition: all 0.3s;
-            margin-top: 0;
-        }
-        .link-entry .remove-link:hover {
-            background: #fef2f2;
-            border-color: #ef4444;
-        }
-        .add-link-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            padding: 8px 14px;
-            margin-top: 10px;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            background: white;
-            color: #3b82f6;
-            font-weight: 500;
-            font-size: 0.9rem;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-        .add-link-btn:hover {
-            border-color: #3b82f6;
-            background: #eff6ff;
-        }
-
-        /* Student counter */
-        .student-counter {
-            font-size: 0.85rem;
-            color: #64748b;
-            margin-top: 8px;
-        }
-        .student-counter strong {
-            color: #3b82f6;
-        }
-
-        /* Dark Mode Overrides */
-        .dark #create-task-container .container-custom {
-            background: #1f2937;
-            box-shadow: 0 4px 6px rgba(0,0,0,0.3);
-        }
-
-        .dark #create-task-container .form-group label {
-            color: #e5e7eb;
-        }
-
-        .dark #create-task-container .form-control-custom {
-            background: #374151;
-            border-color: #4b5563;
-            color: #f3f4f6;
-        }
-
-        .dark #create-task-container .form-control-custom:focus {
-            border-color: #3b82f6;
-        }
-
-        .dark #create-task-container .student-list {
-            border-color: #4b5563;
-            background: #1f2937;
-        }
-
-        .dark #create-task-container .student-item {
-            border-bottom-color: #374151;
-        }
-        
-        .dark #create-task-container .student-item label {
-            color: #d1d5db;
-        }
-
-        .dark #create-task-container .file-upload {
-            border-color: #4b5563;
-            background: #1f2937;
-        }
-
-        .dark #create-task-container .file-upload:hover {
-            background: #374151;
-            border-color: #3b82f6;
-        }
-
-        .dark #create-task-container .file-item {
-            background: #374151;
-            border-color: #4b5563;
-        }
-
-        .dark #create-task-container .file-item .file-info {
-            color: #e5e7eb;
-        }
-
-        .dark #create-task-container .btn-outline-custom {
-            background: #374151;
-            border-color: #4b5563;
-            color: #d1d5db;
-        }
-
-        .dark #create-task-container .btn-outline-custom:hover {
-            background: #4b5563;
-            color: white;
-        }
-
-        .dark #create-task-container .add-link-btn {
-            background: #1f2937;
-            border-color: #4b5563;
-            color: #60a5fa;
-        }
-
-        .dark #create-task-container .add-link-btn:hover {
-            background: #374151;
-            border-color: #3b82f6;
-        }
-
-        .dark .nav-back {
-            color: #9ca3af;
-        }
-
-        .dark .nav-back:hover {
-            color: #60a5fa;
-        }
-        
-        .dark #create-task-container textarea.form-control-custom {
-            background: #374151;
-            color: #f3f4f6;
-        }
-        
-        .dark #create-task-container .form-actions {
-            border-top-color: #374151;
-        }
-
-        .dark #create-task-container select.form-control-custom option {
-            background: #1f2937;
-            color: #f3f4f6;
-        }
-        
-        .dark #create-task-container .student-counter {
-            color: #9ca3af;
-        }
-
-        .dark #create-task-container select[readonly] {
-            background-color: #374151 !important;
-            color: #9ca3af;
-        }
-    </style>
-
-    <div id="create-task-container">
-        <!-- Back Navigation -->
-        <a href="{{ route('penugasan') }}" class="nav-back">
-            <span><i class="fi fi-rr-arrow-left"></i></span> Kembali ke Daftar Tugas
-        </a>
+        <!-- Header -->
+        <div class="flex items-center gap-4 mb-8">
+            <a href="{{ route('penugasan') }}" class="w-10 h-10 bg-white dark:bg-gray-800 rounded-full flex items-center justify-center text-slate-500 hover:text-blue-600 hover:-translate-x-1 hover:shadow-md transition-all shadow-sm">
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+            </a>
+            <div>
+                <h1 class="text-slate-800 dark:text-gray-100 text-3xl font-bold mb-1">Buat Tugas Baru</h1>
+                <p class="text-slate-600 dark:text-gray-400">Buat penugasan untuk peserta PKL</p>
+            </div>
+        </div>
 
         <!-- Flash Messages -->
         @if(session('success'))
-            <div class="alert alert-success"><i class="fi fi-rr-check-circle mr-1"></i> {{ session('success') }}</div>
+            <div class="bg-green-100 border border-green-300 text-green-800 p-3.5 rounded-lg mb-5 w-full text-sm flex items-center">
+                <i class="fi fi-rr-check-circle mr-2 text-lg"></i> {{ session('success') }}
+            </div>
         @endif
         @if(session('error'))
-            <div class="alert alert-error"><i class="fi fi-rr-cross-circle mr-1"></i> {{ session('error') }}</div>
+            <div class="bg-red-100 border border-red-300 text-red-800 p-3.5 rounded-lg mb-5 w-full text-sm flex items-center">
+                <i class="fi fi-rr-cross-circle mr-2 text-lg"></i> {{ session('error') }}
+            </div>
         @endif
 
-        <div class="container-custom">
-            <div class="header-custom">
-                <h1><i class="fi fi-rr-edit"></i> Buat Tugas Baru</h1>
-                <p>Buat penugasan untuk peserta PKL</p>
-            </div>
-
-            <div class="form-section">
-                <form id="createTaskForm" action="{{ route('penugasan.store') }}" method="POST" enctype="multipart/form-data">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-slate-100 dark:border-gray-700 p-8 mb-12">
+            <form id="createTaskForm" action="{{ route('penugasan.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <input type="hidden" name="status" id="taskStatus" value="active">
 
-                    <!-- Informasi Dasar Tugas -->
-                    <div class="form-group">
-                        <label for="taskTitle">Judul Tugas *</label>
-                        <input type="text" id="taskTitle" name="judul" class="form-control-custom @error('judul') input-error @enderror" placeholder="Contoh: Analisis Requirement System" value="{{ old('judul') }}" required>
-                        @error('judul')
-                            <div class="error-text">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    <!-- BAGIAN 1: INFORMASI TUGAS -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-gray-200 mb-4 pb-2 border-b border-slate-100 dark:border-gray-700 flex items-center gap-2">
+                            <span class="text-blue-600 dark:text-blue-400 mr-1">1</span> Informasi Tugas
+                        </h3>
 
-                    <div class="form-group">
-                        <label for="taskDescription">Deskripsi Tugas *</label>
-                        <textarea id="taskDescription" name="deskripsi" class="form-control-custom @error('deskripsi') input-error @enderror" placeholder="Jelaskan detail tugas yang harus dikerjakan..." required>{{ old('deskripsi') }}</textarea>
-                        @error('deskripsi')
-                            <div class="error-text">{{ $message }}</div>
-                        @enderror
-                    </div>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="md:col-span-2">
+                                <label for="taskTitle" class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Judul Tugas *</label>
+                                <input type="text" id="taskTitle" name="judul" class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('judul') !border-red-500 @enderror" placeholder="Contoh: Analisis Requirement System" value="{{ old('judul') }}" required>
+                                @error('judul')
+                                    <div class="text-red-500 text-xs mt-1.5">{{ $message }}</div>
+                                @enderror
+                            </div>
 
-                    <div class="form-row-custom">
-                        <div class="form-group">
-                            <label for="taskType">Jenis Tugas</label>
-                            <select id="taskType" name="jenis_tugas" class="form-control-custom">
-                                <option value="individu" {{ old('jenis_tugas') == 'individu' ? 'selected' : '' }}>Tugas Individu</option>
-                                <option value="kelompok" {{ old('jenis_tugas') == 'kelompok' ? 'selected' : '' }}>Tugas Kelompok</option>
-                                <option value="proyek" {{ old('jenis_tugas') == 'proyek' ? 'selected' : '' }}>Proyek</option>
-                            </select>
+                            <div class="md:col-span-2">
+                                <label for="taskDescription" class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Deskripsi Tugas *</label>
+                                <textarea id="taskDescription" name="deskripsi" rows="3" class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white resize-y @error('deskripsi') !border-red-500 @enderror" placeholder="Jelaskan detail tugas yang harus dikerjakan..." required>{{ old('deskripsi') }}</textarea>
+                                @error('deskripsi')
+                                    <div class="text-red-500 text-xs mt-1.5">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div>
+                                <label for="taskType" class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Jenis Tugas</label>
+                                <select id="taskType" name="jenis_tugas" class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="individu" {{ old('jenis_tugas') == 'individu' ? 'selected' : '' }}>Tugas Individu</option>
+                                    <option value="kelompok" {{ old('jenis_tugas') == 'kelompok' ? 'selected' : '' }}>Tugas Kelompok</option>
+                                    <option value="proyek" {{ old('jenis_tugas') == 'proyek' ? 'selected' : '' }}>Proyek</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label for="taskPriority" class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Prioritas</label>
+                                <select id="taskPriority" name="prioritas" class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white">
+                                    <option value="rendah" {{ old('prioritas') == 'rendah' ? 'selected' : '' }}>Rendah</option>
+                                    <option value="sedang" {{ old('prioritas', 'sedang') == 'sedang' ? 'selected' : '' }}>Sedang</option>
+                                    <option value="tinggi" {{ old('prioritas') == 'tinggi' ? 'selected' : '' }}>Tinggi</option>
+                                </select>
+                            </div>
+
+                            <div>
+                                <label for="taskDivisi" class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Divisi *</label>
+                                <select id="taskDivisi" name="divisi_id" class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('divisi_id') !border-red-500 @enderror" required {{ auth()->user()->role_id == 2 ? 'readonly style=pointer-events:none;background-color:#f8fafc;' : '' }}>
+                                    <option value="" disabled {{ old('divisi_id') || auth()->user()->role_id == 2 ? '' : 'selected' }}>-- Pilih Divisi --</option>
+                                    @foreach($divisis as $divisi)
+                                        <option value="{{ $divisi->id }}" {{ old('divisi_id', auth()->user()->role_id == 2 ? auth()->user()->divisi_id : '') == $divisi->id ? 'selected' : '' }}>
+                                            {{ $divisi->nama }}
+                                        </option>
+                                    @endforeach
+                                </select>
+                                @error('divisi_id')
+                                    <div class="text-red-500 text-xs mt-1.5">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label for="taskDeadline" class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Deadline *</label>
+                                    <input type="date" id="taskDeadline" name="deadline_date" class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white @error('deadline_date') !border-red-500 @enderror" value="{{ old('deadline_date') }}" required>
+                                    @error('deadline_date')
+                                        <div class="text-red-500 text-xs mt-1.5">{{ $message }}</div>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label for="taskTime" class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Waktu Deadline</label>
+                                    <input type="time" id="taskTime" name="deadline_time" class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white" value="{{ old('deadline_time', '23:59') }}">
+                                </div>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="taskPriority">Prioritas</label>
-                            <select id="taskPriority" name="prioritas" class="form-control-custom">
-                                <option value="rendah" {{ old('prioritas') == 'rendah' ? 'selected' : '' }}>Rendah</option>
-                                <option value="sedang" {{ old('prioritas', 'sedang') == 'sedang' ? 'selected' : '' }}>Sedang</option>
-                                <option value="tinggi" {{ old('prioritas') == 'tinggi' ? 'selected' : '' }}>Tinggi</option>
-                            </select>
-                        </div>
                     </div>
 
-                    <!-- Divisi (Dynamic from DB) -->
-                    <div class="form-group">
-                        <label for="taskDivisi">Divisi *</label>
-                        <select id="taskDivisi" name="divisi_id" class="form-control-custom @error('divisi_id') input-error @enderror" required {{ auth()->user()->role_id == 2 ? 'readonly style=pointer-events:none;background-color:#f8fafc;' : '' }}>
-                            <option value="" disabled {{ old('divisi_id') || auth()->user()->role_id == 2 ? '' : 'selected' }}>-- Pilih Divisi --</option>
-                            @foreach($divisis as $divisi)
-                                <option value="{{ $divisi->id }}" {{ old('divisi_id', auth()->user()->role_id == 2 ? auth()->user()->divisi_id : '') == $divisi->id ? 'selected' : '' }}>
-                                    {{ $divisi->nama }}
-                                </option>
-                            @endforeach
-                        </select>
-                        @error('divisi_id')
-                            <div class="error-text">{{ $message }}</div>
-                        @enderror
-                    </div>
+                    <!-- BAGIAN 2: PILIH MAHASISWA -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-gray-200 mb-4 pb-2 border-b border-slate-100 dark:border-gray-700 flex items-center gap-2">
+                            <span class="text-blue-600 dark:text-blue-400 mr-1">2</span> Pilih Penerima Tugas <span class="text-red-500">*</span>
+                        </h3>
 
-                    <!-- Deadline -->
-                    <div class="form-row-custom">
-                        <div class="form-group">
-                            <label for="taskDeadline">Deadline *</label>
-                            <input type="date" id="taskDeadline" name="deadline_date" class="form-control-custom @error('deadline_date') input-error @enderror" value="{{ old('deadline_date') }}" required>
-                            @error('deadline_date')
-                                <div class="error-text">{{ $message }}</div>
-                            @enderror
-                        </div>
-                        <div class="form-group">
-                            <label for="taskTime">Waktu Deadline</label>
-                            <input type="time" id="taskTime" name="deadline_time" class="form-control-custom" value="{{ old('deadline_time', '23:59') }}">
-                        </div>
-                    </div>
-
-                    <!-- Pilih Mahasiswa (Dynamic from DB) -->
-                    <div class="form-group">
-                        <label>Pilih Mahasiswa *</label>
                         @error('assignees')
-                            <div class="error-text" style="margin-bottom: 8px;">{{ $message }}</div>
+                            <div class="text-red-500 text-sm mb-4">{{ $message }}</div>
                         @enderror
-                        <div class="student-list">
+
+                        <div class="mb-4">
+                            <div class="relative">
+                                <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400">
+                                    <i class="fi fi-rr-search"></i>
+                                </span>
+                                <input type="text" id="searchPelaksana" class="w-full pl-10 pr-3 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white text-sm" placeholder="Cari nama pelaksana...">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 max-h-[300px] overflow-y-auto p-4 bg-slate-50 dark:bg-gray-700/50 border border-slate-200 dark:border-gray-600 rounded-xl" id="pelaksanaContainer">
                             @forelse($mahasiswas as $mhs)
-                                <div class="student-item" data-divisi="{{ $mhs->divisi_id }}">
+                                <label class="student-item flex items-center p-3 rounded-lg border border-slate-200 dark:border-gray-600 bg-white dark:bg-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-gray-700 transition-all select-none" data-divisi="{{ $mhs->divisi_id }}">
                                     <input type="checkbox" 
-                                           class="student-checkbox" 
+                                           class="student-checkbox mr-3 w-4 h-4 text-blue-600 rounded border-gray-300 focus:ring-blue-500 dark:bg-gray-700 dark:border-gray-600" 
                                            name="assignees[]" 
                                            value="{{ $mhs->id }}" 
                                            id="student{{ $mhs->id }}"
                                            {{ is_array(old('assignees')) && in_array($mhs->id, old('assignees')) ? 'checked' : '' }}>
-                                    <label for="student{{ $mhs->id }}">{{ $mhs->name }} ({{ $mhs->email }})</label>
-                                </div>
+                                    <div class="flex items-center gap-3 overflow-hidden">
+                                        <div class="h-8 w-8 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center font-bold overflow-hidden flex-shrink-0 dark:bg-blue-900/50 dark:text-blue-300">
+                                            @if($mhs->avatar)
+                                                <img src="{{ route('file.avatar', $mhs->id) }}" alt="{{ $mhs->name }}" class="w-full h-full object-cover">
+                                            @else
+                                                {{ substr($mhs->name, 0, 1) }}
+                                            @endif
+                                        </div>
+                                        <div class="overflow-hidden">
+                                            <div class="font-medium text-slate-800 dark:text-gray-200 text-sm truncate student-name">{{ $mhs->name }}</div>
+                                            <div class="text-xs text-slate-500 dark:text-gray-400 truncate student-email">{{ $mhs->email }}</div>
+                                        </div>
+                                    </div>
+                                </label>
                             @empty
-                                <div style="color: #94a3b8; text-align: center; padding: 20px;">
+                                <div class="col-span-full text-slate-400 dark:text-gray-500 text-center py-6">
                                     Belum ada data mahasiswa pelaksana.
                                 </div>
                             @endforelse
                         </div>
-                        <div style="margin-top: 10px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
-                            <button type="button" class="btn-custom btn-outline-custom" style="padding: 8px 12px; font-size: 0.9rem;" onclick="selectAllStudents()">Pilih Semua</button>
-                            <button type="button" class="btn-custom btn-outline-custom" style="padding: 8px 12px; font-size: 0.9rem;" onclick="deselectAllStudents()">Hapus Semua</button>
-                            <span class="student-counter">Dipilih: <strong id="selectedCount">0</strong> dari <span id="totalVisibleCount">{{ count($mahasiswas) }}</span> mahasiswa</span>
+
+                        <div class="mt-3 flex gap-3 items-center flex-wrap">
+                            <button type="button" class="px-3 py-1.5 text-xs rounded-lg font-medium bg-white dark:bg-gray-700 border-2 border-slate-200 dark:border-gray-600 text-slate-600 dark:text-gray-300 hover:border-slate-400 dark:hover:border-gray-400 transition-colors" onclick="selectAllStudents()">Pilih Semua</button>
+                            <button type="button" class="px-3 py-1.5 text-xs rounded-lg font-medium bg-white dark:bg-gray-700 border-2 border-slate-200 dark:border-gray-600 text-slate-600 dark:text-gray-300 hover:border-slate-400 dark:hover:border-gray-400 transition-colors" onclick="deselectAllStudents()">Hapus Semua</button>
+                            <span class="text-xs text-slate-500 dark:text-gray-400">Dipilih: <strong id="selectedCount" class="text-blue-600 dark:text-blue-400 font-bold">0</strong> dari <span id="totalVisibleCount">{{ count($mahasiswas) }}</span></span>
                         </div>
                     </div>
 
-                    <!-- File Pendukung (Multiple) -->
-                    <div class="form-group">
-                        <label>File Pendukung (Opsional)</label>
-                        <div class="file-upload" id="dropZone" onclick="document.getElementById('fileInput').click()">
-                            <div class="upload-icon"><i class="fi fi-rr-clip"></i></div>
-                            <div style="font-weight: 500; margin-bottom: 5px;">Klik atau seret file kesini</div>
-                            <div style="color: #64748b; font-size: 0.9rem;">
-                                Format: PDF, Word, Excel, PowerPoint, Gambar, ZIP (Maks. 10MB per file)
+                    <!-- BAGIAN 3: LAMPIRAN & CATATAN -->
+                    <div class="mb-8">
+                        <h3 class="text-lg font-bold text-slate-800 dark:text-gray-200 mb-4 pb-2 border-b border-slate-100 dark:border-gray-700 flex items-center gap-2">
+                            <span class="text-blue-600 dark:text-blue-400 mr-1">3</span> Lampiran & Catatan Tambahan (Opsional)
+                        </h3>
+
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">File Pendukung</label>
+                                <div id="dropZone" class="border-2 border-dashed border-slate-300 dark:border-gray-600 rounded-lg p-6 text-center cursor-pointer transition-colors hover:border-blue-500 hover:bg-slate-50 dark:hover:bg-gray-700 dark:bg-gray-800" onclick="document.getElementById('fileInput').click()">
+                                    <div class="text-3xl text-slate-400 dark:text-gray-500 mb-2"><i class="fi fi-rr-clip"></i></div>
+                                    <div class="font-medium text-slate-700 dark:text-gray-200 text-sm mb-1">Klik atau seret file kesini</div>
+                                    <div class="text-slate-500 dark:text-gray-400 text-xs">
+                                        Maks. 10MB per file
+                                    </div>
+                                </div>
+                                <input type="file" id="fileInput" name="files[]" class="hidden" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.zip,.rar">
+                                @error('files.*')
+                                    <div class="text-red-500 text-xs mt-1.5">{{ $message }}</div>
+                                @enderror
+                                <div id="fileList" class="mt-3 flex flex-col gap-2"></div>
+                            </div>
+
+                            <div>
+                                <label class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Link Pendukung</label>
+                                <div id="linkContainer" class="flex flex-col gap-2">
+                                    <!-- Link entries will be added here -->
+                                </div>
+                                <button type="button" class="inline-flex items-center gap-2 px-3 py-1.5 mt-2 border-2 border-slate-200 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-blue-600 dark:text-blue-400 font-medium text-xs transition-colors hover:border-blue-500 hover:bg-blue-50 dark:hover:bg-gray-600" onclick="addLinkEntry()">
+                                    <i class="fi fi-rr-link"></i> Tambah Link
+                                </button>
+                            </div>
+
+                            <div>
+                                <label for="taskNotes" class="block mb-2 text-sm font-semibold text-slate-700 dark:text-gray-300">Catatan Tambahan</label>
+                                <textarea id="taskNotes" name="catatan" class="w-full px-4 py-2.5 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm transition-colors focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white min-h-[80px] resize-y" placeholder="Tambahkan catatan atau instruksi khusus...">{{ old('catatan') }}</textarea>
                             </div>
                         </div>
-                        <input type="file" id="fileInput" name="files[]" style="display: none;" multiple accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.zip,.rar">
-                        @error('files.*')
-                            <div class="error-text">{{ $message }}</div>
-                        @enderror
-                        <div id="fileList"></div>
-                    </div>
-
-                    <!-- Link Pendukung -->
-                    <div class="form-group">
-                        <label>Link Pendukung (Opsional)</label>
-                        <div id="linkContainer">
-                            <!-- Link entries will be added here -->
-                        </div>
-                        <button type="button" class="add-link-btn" onclick="addLinkEntry()">
-                            <i class="fi fi-rr-link"></i> Tambah Link
-                        </button>
-                    </div>
-
-                    <!-- Catatan Tambahan -->
-                    <div class="form-group">
-                        <label for="taskNotes">Catatan Tambahan</label>
-                        <textarea id="taskNotes" name="catatan" class="form-control-custom" placeholder="Tambahkan catatan atau instruksi khusus...">{{ old('catatan') }}</textarea>
                     </div>
 
                     <!-- Actions -->
-                    <div class="form-actions">
-                        <button type="button" class="btn-custom btn-outline-custom" onclick="saveDraft()">Simpan Draft</button>
-                        <button type="submit" class="btn-custom btn-primary-custom">Buat Tugas</button>
+                    <div class="flex gap-4 justify-end mt-10 pt-6 border-t border-slate-200 dark:border-gray-700">
+                        <button type="button" class="px-6 py-2.5 text-sm rounded-lg font-semibold bg-white dark:bg-gray-700 border-2 border-slate-200 dark:border-gray-600 text-slate-600 dark:text-gray-300 hover:border-slate-400 dark:hover:border-gray-400 transition-colors" onclick="saveDraft()">Simpan Draft</button>
+                        <button type="submit" class="px-6 py-2.5 text-sm rounded-lg font-semibold bg-blue-600 text-white hover:bg-blue-700 transition-colors">Buat Tugas</button>
                     </div>
                 </form>
-            </div>
         </div>
-    </div>
 
     <script>
         // Set minimum date to today
@@ -579,23 +218,31 @@
 
         // --- Student selection & Filtering ---
         const taskDivisiSelect = document.getElementById('taskDivisi');
+        const searchPelaksanaInput = document.getElementById('searchPelaksana');
         const studentItems = document.querySelectorAll('.student-item');
         const totalVisibleCountSpan = document.getElementById('totalVisibleCount');
 
-        function filterStudentsByDivisi() {
+        function filterStudents() {
             const selectedDivisi = taskDivisiSelect.value;
+            const searchText = searchPelaksanaInput.value.toLowerCase().trim();
             let visibleCount = 0;
             
             studentItems.forEach(item => {
-                // Remove unchecked checkboxes when hiding to prevent accidental submissions of hidden students if they were checked
                 const cb = item.querySelector('.student-checkbox');
-                
-                if (!selectedDivisi || item.dataset.divisi === selectedDivisi) {
+                const name = item.querySelector('.student-name').textContent.toLowerCase();
+                const email = item.querySelector('.student-email').textContent.toLowerCase();
+                const matchesDivisi = !selectedDivisi || item.dataset.divisi === selectedDivisi;
+                const matchesSearch = !searchText || name.includes(searchText) || email.includes(searchText);
+
+                if (matchesDivisi && matchesSearch) {
                     item.style.display = 'flex';
                     visibleCount++;
                 } else {
                     item.style.display = 'none';
-                    cb.checked = false; // uncheck hidden items
+                    // if it doesn't match division, we uncheck it so it doesn't submit
+                    if (!matchesDivisi) {
+                        cb.checked = false;
+                    }
                 }
             });
             
@@ -603,10 +250,11 @@
             updateStudentCount();
         }
 
-        taskDivisiSelect.addEventListener('change', filterStudentsByDivisi);
+        taskDivisiSelect.addEventListener('change', filterStudents);
+        searchPelaksanaInput.addEventListener('input', filterStudents);
         
-        // Initial filter run (in case old value is set or Pembimbing)
-        filterStudentsByDivisi();
+        // Initial run
+        filterStudents();
 
         function updateStudentCount() {
             const checked = document.querySelectorAll('.student-checkbox:checked').length;
@@ -650,14 +298,14 @@
         // Drag and drop
         dropZone.addEventListener('dragover', function(e) {
             e.preventDefault();
-            this.classList.add('drag-over');
+            this.classList.add('border-blue-500', 'bg-blue-50', 'dark:bg-gray-700');
         });
         dropZone.addEventListener('dragleave', function() {
-            this.classList.remove('drag-over');
+            this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-gray-700');
         });
         dropZone.addEventListener('drop', function(e) {
             e.preventDefault();
-            this.classList.remove('drag-over');
+            this.classList.remove('border-blue-500', 'bg-blue-50', 'dark:bg-gray-700');
             for (let i = 0; i < e.dataTransfer.files.length; i++) {
                 selectedFiles.items.add(e.dataTransfer.files[i]);
             }
@@ -674,14 +322,14 @@
                 const icon = getFileIcon(file.name);
 
                 const div = document.createElement('div');
-                div.className = 'file-item';
+                div.className = 'flex items-center justify-between p-3 bg-slate-50 dark:bg-gray-700 border border-slate-200 dark:border-gray-600 rounded-lg text-sm';
                 div.innerHTML = `
-                    <div class="file-info">
-                        <span>${icon}</span>
-                        <span>${file.name}</span>
-                        <span class="file-size">(${size})</span>
+                    <div class="flex items-center gap-2 text-slate-700 dark:text-gray-200 overflow-hidden">
+                        <span class="text-slate-500 dark:text-gray-400 text-lg">${icon}</span>
+                        <span class="truncate max-w-[150px] sm:max-w-xs">${file.name}</span>
+                        <span class="text-slate-400 dark:text-gray-400 text-xs ml-1 whitespace-nowrap">(${size})</span>
                     </div>
-                    <button type="button" class="remove-file" onclick="removeFile(${i})" title="Hapus file">✕</button>
+                    <button type="button" class="text-red-500 hover:text-red-700 dark:text-red-400 dark:hover:text-red-300 text-lg px-2" onclick="removeFile(${i})" title="Hapus file"><i class="fi fi-rr-cross-small"></i></button>
                 `;
                 fileListDiv.appendChild(div);
             }
@@ -724,12 +372,12 @@
         function addLinkEntry() {
             const container = document.getElementById('linkContainer');
             const div = document.createElement('div');
-            div.className = 'link-entry';
+            div.className = 'flex gap-3 items-start';
             div.id = `linkEntry${linkCount}`;
             div.innerHTML = `
-                <input type="text" name="links[${linkCount}][judul]" class="form-control-custom" placeholder="Judul link (opsional)" style="flex: 0.4;">
-                <input type="url" name="links[${linkCount}][url]" class="form-control-custom" placeholder="https://contoh.com/dokumen" style="flex: 0.6;">
-                <button type="button" class="remove-link" onclick="removeLinkEntry(${linkCount})" title="Hapus link">✕</button>
+                <input type="text" name="links[${linkCount}][judul]" class="w-2/5 px-4 py-3 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm md:text-base focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white" placeholder="Judul (opsional)">
+                <input type="url" name="links[${linkCount}][url]" class="w-3/5 px-4 py-3 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm md:text-base focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white" placeholder="https://contoh.com/dokumen">
+                <button type="button" class="text-red-500 border-2 border-red-200 dark:border-red-900 rounded-lg px-4 py-3 text-sm md:text-base transition-colors hover:bg-red-50 dark:hover:bg-red-900/30 hover:border-red-500" onclick="removeLinkEntry(${linkCount})" title="Hapus link"><i class="fi fi-rr-trash"></i></button>
             `;
             container.appendChild(div);
             linkCount++;
@@ -753,12 +401,12 @@
                     (function() {
                         const container = document.getElementById('linkContainer');
                         const div = document.createElement('div');
-                        div.className = 'link-entry';
+                        div.className = 'flex gap-3 items-start';
                         div.id = `linkEntry${linkCount}`;
                         div.innerHTML = `
-                            <input type="text" name="links[${linkCount}][judul]" class="form-control-custom" placeholder="Judul link (opsional)" style="flex: 0.4;" value="{{ addslashes($link['judul'] ?? '') }}">
-                            <input type="url" name="links[${linkCount}][url]" class="form-control-custom" placeholder="https://contoh.com/dokumen" style="flex: 0.6;" value="{{ addslashes($link['url'] ?? '') }}">
-                            <button type="button" class="remove-link" onclick="removeLinkEntry(${linkCount})" title="Hapus link">✕</button>
+                            <input type="text" name="links[${linkCount}][judul]" class="w-2/5 px-4 py-3 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm md:text-base focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white" placeholder="Judul (opsional)" value="{{ addslashes($link['judul'] ?? '') }}">
+                            <input type="url" name="links[${linkCount}][url]" class="w-3/5 px-4 py-3 border-2 border-slate-200 dark:border-gray-600 rounded-lg text-sm md:text-base focus:outline-none focus:border-blue-500 dark:bg-gray-700 dark:text-white" placeholder="https://contoh.com/dokumen" value="{{ addslashes($link['url'] ?? '') }}">
+                            <button type="button" class="text-red-500 border-2 border-red-200 dark:border-red-900 rounded-lg px-4 py-3 text-sm md:text-base transition-colors hover:bg-red-50 dark:hover:bg-red-900/30 hover:border-red-500" onclick="removeLinkEntry(${linkCount})" title="Hapus link"><i class="fi fi-rr-trash"></i></button>
                         `;
                         container.appendChild(div);
                         linkCount++;
@@ -768,5 +416,3 @@
         @endif
     </script>
 </x-admin-layout>
-
-

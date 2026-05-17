@@ -117,8 +117,6 @@ class DummyDataSeeder extends Seeder
                     'check_out_time' => $checkOutTime,
                     'photo_path' => $checkInTime ? 'attendances/dummy.jpg' : null,
                     'checkout_photo_path' => $checkOutTime ? 'attendances/dummy_checkout.jpg' : null,
-                    'lokasi' => $checkInTime ? '-5.' . rand(3000, 4000) . ', 105.' . rand(2000, 3000) : null,
-                    'checkout_lokasi' => $checkOutTime ? '-5.' . rand(3000, 4000) . ', 105.' . rand(2000, 3000) : null,
                     'keterangan' => in_array($status, ['Izin', 'Sakit']) ? $faker->sentence() : null,
                     'created_at' => $checkInTime ?: clone $date,
                     'updated_at' => $checkOutTime ?: ($checkInTime ?: clone $date),

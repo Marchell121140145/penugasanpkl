@@ -47,21 +47,20 @@
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-In</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-Out</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Status</th>
-                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Lokasi</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Aksi</th>
                     </tr>
                 </thead>
                 <tbody>
                     @if(session('success'))
                         <tr>
-                            <td colspan="6" class="p-4 bg-emerald-50 text-emerald-700 font-medium text-center border-b border-emerald-200">
+                            <td colspan="5" class="p-4 bg-emerald-50 text-emerald-700 font-medium text-center border-b border-emerald-200">
                                 <i class="fi fi-rr-check-circle mr-1"></i> {{ session('success') }}
                             </td>
                         </tr>
                     @endif
                     @if(session('error'))
                         <tr>
-                            <td colspan="6" class="p-4 bg-red-50 text-red-700 font-medium text-center border-b border-red-200">
+                            <td colspan="5" class="p-4 bg-red-50 text-red-700 font-medium text-center border-b border-red-200">
                                 <i class="fi fi-rr-cross-circle mr-1"></i> {{ session('error') }}
                             </td>
                         </tr>
@@ -117,7 +116,6 @@
                             <td class="p-4 text-sm">
                                 <span class="px-3 py-1 rounded-full text-xs font-medium {{ $statusColor }} inline-block text-center whitespace-nowrap {{ $isBelumAbsen ? 'border border-slate-200' : '' }}">{{ $assignee->status }}</span>
                             </td>
-                            <td class="p-4 text-sm text-slate-600">{{ $assignee->lokasi ?? '-' }}</td>
                             <td class="p-4 text-sm">
                                 @if($isBelumAbsen)
                                     <a href="{{ route('pelaksana.absensi.create', $assignee->id) }}" class="inline-flex items-center justify-center gap-1.5 bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg text-sm font-medium transition-all shadow-sm hover:shadow-md active:scale-95">
@@ -143,7 +141,7 @@
                             </td>
                         </tr>
                     @empty
-                        <tr><td colspan="6" class="p-8 text-center text-slate-500 font-medium">Kamu belum memiliki tugas absensi.</td></tr>
+                        <tr><td colspan="5" class="p-8 text-center text-slate-500 font-medium">Kamu belum memiliki tugas absensi.</td></tr>
                     @endforelse
                 </tbody>
             </table>

@@ -15,8 +15,6 @@ class AttendanceAssignee extends Model
         'status',
         'check_in_time',
         'check_out_time',
-        'lokasi',
-        'checkout_lokasi',
         'keterangan',
         'photo_path',
         'checkout_photo_path',

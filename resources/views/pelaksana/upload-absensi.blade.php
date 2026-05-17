@@ -248,44 +248,6 @@
             justify-content: center;
         }
 
-        /* Location Section */
-        .location-section {
-            background: #f0fdf4;
-            border: 2px solid #bbf7d0;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .location-header {
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            margin-bottom: 10px;
-        }
-
-        .location-info {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .location-status {
-            padding: 4px 8px;
-            border-radius: 12px;
-            font-size: 0.8rem;
-            font-weight: 500;
-        }
-
-        .status-valid {
-            background: #dcfce7;
-            color: #16a34a;
-        }
-
-        .status-invalid {
-            background: #fef3c7;
-            color: #d97706;
-        }
 
         /* Action Buttons */
         .action-buttons {
@@ -374,17 +336,6 @@
                 </div>
             </div>
 
-            <!-- Location Info -->
-            <div class="location-section">
-                <div class="location-header">
-                    <span><i class="fi fi-rr-marker"></i></span>
-                    <strong>Lokasi Saat Ini</strong>
-                </div>
-                <div class="location-info">
-                    <span id="locationText">Mendeteksi lokasi...</span>
-                    <span class="location-status status-valid" id="locationStatus">Dalam Area</span>
-                </div>
-            </div>
 
             <!-- Upload Section -->
             <div class="upload-section">
@@ -432,7 +383,6 @@
             <form id="attendanceForm" action="{{ route('pelaksana.absensi.submit', $assignee->id) }}" method="POST">
                 @csrf
                 <input type="hidden" name="image_data" id="image_data" required>
-                <input type="hidden" name="lokasi" id="lokasi" value="Mendeteksi lokasi..." required>
                 
                 <div class="mb-4" style="margin-top: 25px; margin-bottom: 25px;">
                     <label for="keterangan" style="display: block; font-weight: 600; margin-bottom: 10px; color: #1e293b;">Catatan / Keterangan (Opsional):</label>
@@ -566,34 +516,6 @@
             }
         }
 
-        // Get location
-        function getLocation() {
-            if (navigator.geolocation) {
-                navigator.geolocation.getCurrentPosition(
-                    (position) => {
-                        const lat = position.coords.latitude;
-                        const lng = position.coords.longitude;
-                        const locText = `Lat: ${lat.toFixed(4)}, Lng: ${lng.toFixed(4)}`;
-                        document.getElementById('locationText').textContent = locText;
-                        document.getElementById('lokasi').value = `${lat}, ${lng}`; // Set hidden input value
-                        
-                        const statusElement = document.getElementById('locationStatus');
-                        statusElement.textContent = 'Dalam Area';
-                        statusElement.className = 'location-status status-valid';
-                    },
-                    (error) => {
-                        document.getElementById('locationText').textContent = 'Tidak dapat mengakses lokasi';
-                        document.getElementById('locationStatus').textContent = 'Location Off';
-                        document.getElementById('locationStatus').className = 'location-status status-invalid';
-                        document.getElementById('lokasi').value = 'Location Off / GPS Error';
-                    }
-                );
-            } else {
-                document.getElementById('locationText').textContent = 'Geolocation tidak didukung';
-                document.getElementById('lokasi').value = 'Geolocation tidak didukung browser';
-            }
-        }
-
         // Intercept form submission to add captured image
         document.getElementById('attendanceForm').addEventListener('submit', function(e) {
             const hasPhoto = previewContainer.children.length > 0;
@@ -614,7 +536,6 @@
 
         // Initialize
         document.getElementById('submitBtn').disabled = true;
-        getLocation();
     </script>
 </body>
 </html>

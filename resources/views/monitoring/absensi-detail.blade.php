@@ -114,7 +114,6 @@
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-In</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Check-Out</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Status</th>
-                        <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Lokasi</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Keterangan</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Bukti</th>
                         <th class="p-4 font-semibold text-slate-800 border-b-2 border-slate-200 text-sm">Aksi</th>
@@ -163,7 +162,6 @@
                                 @endif
                             </td>
                             <td class="p-4 text-sm"><span class="px-3 py-1.5 rounded-full text-xs font-medium {{ $statusColor }} block w-fit text-center whitespace-nowrap">{{ $assignee->status }}</span></td>
-                            <td class="p-4 text-sm text-slate-800">{{ $assignee->lokasi ?? '-' }}</td>
                             <td class="p-4 text-sm text-slate-800">{{ $assignee->keterangan ?? '-' }}</td>
                             <td class="p-4 text-sm">
                                 <div class="flex gap-1 flex-col">
@@ -190,7 +188,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="10" class="p-8 text-center text-slate-500 font-medium">Belum ada peserta dalam sesi ini.</td>
+                            <td colspan="9" class="p-8 text-center text-slate-500 font-medium">Belum ada peserta dalam sesi ini.</td>
                         </tr>
                     @endforelse
                 </tbody>

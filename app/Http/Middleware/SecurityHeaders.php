@@ -32,8 +32,8 @@ class SecurityHeaders
         // Kontrol informasi referrer yang dikirim ke situs lain
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
 
-        // Batasi akses ke fitur browser (kamera, mikrofon, geolokasi)
-        $response->headers->set('Permissions-Policy', 'camera=(self), microphone=(), geolocation=(self)');
+        // Batasi akses ke fitur browser (kamera, mikrofon)
+        $response->headers->set('Permissions-Policy', 'camera=(self), microphone=()');
 
         return $response;
     }
