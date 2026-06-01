@@ -107,10 +107,10 @@
             <div class="space-y-4">
                 @forelse($recentTasks as $task)
                 @php
-                    $hasSubmission = $task->submissions->isNotEmpty();
-                    $isPending = !$hasSubmission;
-                    $statusColor = $isPending ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600';
-                    $icon = $isPending ? '<i class="fi fi-rr-triangle-warning"></i>' : '<i class="fi fi-rr-check"></i>';
+                    $userSubmission = $task->submissions->first();
+                    $isCompleted = $userSubmission && in_array($userSubmission->status, ['submitted', 'graded']);
+                    $statusColor = !$isCompleted ? 'bg-amber-100 text-amber-600' : 'bg-emerald-100 text-emerald-600';
+                    $icon = !$isCompleted ? '<i class="fi fi-rr-triangle-warning"></i>' : '<i class="fi fi-rr-check"></i>';
                 @endphp
                 <a href="{{ route('pelaksana.penugasan.show', $task->id) }}" class="flex items-start p-4 bg-slate-50 rounded-lg border border-slate-100 block hover:bg-slate-100 transition-colors">
                     <div class="{{ $statusColor }} p-3 rounded-lg mr-4">
@@ -120,7 +120,7 @@
                         <h4 class="font-semibold text-slate-800 mb-1">{{ $task->judul }}</h4>
                         <p class="text-sm text-slate-600 mb-2">Deadline: {{ \Carbon\Carbon::parse($task->deadline_date)->translatedFormat('d M Y') }}</p>
                         <div class="w-full bg-slate-200 rounded-full h-1.5 mb-2">
-                            <div class="{{ $isPending ? 'bg-amber-500' : 'bg-emerald-500' }} h-1.5 rounded-full" style="width: {{ $hasSubmission ? '100%' : '0%' }}"></div>
+                            <div class="{{ !$isCompleted ? 'bg-amber-500' : 'bg-emerald-500' }} h-1.5 rounded-full" style="width: {{ $isCompleted ? '100%' : '0%' }}"></div>
                         </div>
                     </div>
                 </a>

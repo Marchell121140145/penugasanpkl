@@ -228,17 +228,19 @@ class PelaksanaController extends Controller
         $user = auth()->user();
         
         // 1. Task Statistics
-        $assignedTaskIds = $user->assignedTasks()->pluck('tasks.id');
+        $assignedTaskIds = $user->assignedTasks()->where('tasks.status', 'active')->pluck('tasks.id');
         $totalTasks = $assignedTaskIds->count();
         
-        // Pending tasks = assigned but not submitted
-        $submittedTaskIds = $user->submissions()->pluck('task_id');
+        // Pending tasks = assigned but not submitted (excluding drafts/working)
+        $submittedTaskIds = $user->submissions()->whereIn('status', ['submitted', 'graded'])->pluck('task_id');
         $pendingTasks = $user->assignedTasks()
+            ->where('tasks.status', 'active')
             ->whereNotIn('tasks.id', $submittedTaskIds)
             ->count();
             
         // Tasks nearing deadline (within 3 days)
         $nearingDeadlineCount = $user->assignedTasks()
+            ->where('tasks.status', 'active')
             ->whereNotIn('tasks.id', $submittedTaskIds)
             ->where('deadline_date', '<=', now()->addDays(3))
             ->where('deadline_date', '>=', now()->toDateString())
@@ -263,11 +265,12 @@ class PelaksanaController extends Controller
         
         // 4. Recent Activities
         $recentTasks = $user->assignedTasks()
+            ->where('tasks.status', 'active')
             ->with(['submissions' => function($q) use ($user) {
                 $q->where('user_id', $user->id);
             }])
             ->latest()
-            ->take(2)
+            ->take(3)
             ->get();
             
         $recentAttendances = AttendanceAssignee::with('attendance')
@@ -276,10 +279,12 @@ class PelaksanaController extends Controller
             ->take(3)
             ->get();
             
-        // 5. Priority Task (Nearest deadline, not submitted)
+        // 5. Priority Task (High priority first, then nearest deadline, not submitted)
         $priorityTask = $user->assignedTasks()
+            ->where('tasks.status', 'active')
             ->whereNotIn('tasks.id', $submittedTaskIds)
-            ->orderBy('deadline_date', 'asc')
+            ->orderByRaw("CASE WHEN tasks.prioritas = 'tinggi' THEN 1 WHEN tasks.prioritas = 'sedang' THEN 2 WHEN tasks.prioritas = 'rendah' THEN 3 ELSE 4 END ASC")
+            ->orderBy('tasks.deadline_date', 'asc')
             ->first();
 
         return view('pelaksana.dashboard', compact(
@@ -312,6 +317,7 @@ class PelaksanaController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'divisi_id' => 'nullable|exists:divisi,id',
+            'pembimbing_id' => 'nullable|exists:users,id',
         ], [
             'name.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
             'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
@@ -322,6 +328,7 @@ class PelaksanaController extends Controller
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'divisi_id' => $request->divisi_id,
+            'pembimbing_id' => $request->pembimbing_id,
         ]);
         $user->role_id = 3;
         $user->save();

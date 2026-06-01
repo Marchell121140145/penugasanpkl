@@ -62,7 +62,7 @@
                     <option value="{{ $divisi->nama }}">{{ $divisi->nama }}</option>
                 @endforeach
             </select>
-            <input type="text" id="searchInput" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500" placeholder="Cari nama pembimbing...">
+            <input type="text" id="searchInput" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-64 text-sm focus:outline-none focus:border-red-500" placeholder="Cari nama pembimbing...">
         </div>
     </div>
 

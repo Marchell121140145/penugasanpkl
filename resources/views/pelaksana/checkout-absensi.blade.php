@@ -1,455 +1,122 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Check-Out Absensi - Sistem PKL</title>
-    <!-- Flaticon CDN -->
-    <link rel='stylesheet' href='https://cdn-uicons.flaticon.com/2.1.0/uicons-regular-rounded/css/uicons-regular-rounded.css'>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-        }
-
-        body {
-            background-color: #f8fafc;
-            padding: 20px;
-        }
-
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 12px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-            overflow: hidden;
-        }
-
-        .header {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-            padding: 25px;
-            text-align: center;
-        }
-
-        .header h1 {
-            font-size: 1.5rem;
-            margin-bottom: 5px;
-        }
-
-        .header .badge {
-            display: inline-block;
-            background: rgba(255,255,255,0.2);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            margin-top: 8px;
-        }
-
-        .content {
-            padding: 30px;
-        }
-
-        /* Attendance Info */
-        .attendance-info {
-            background: #eff6ff;
-            border: 2px solid #bfdbfe;
-            border-radius: 8px;
-            padding: 20px;
-            margin-bottom: 25px;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 15px;
-        }
-
-        .info-item {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .info-label {
-            font-size: 0.8rem;
-            color: #64748b;
-            margin-bottom: 5px;
-        }
-
-        .info-value {
-            font-weight: 600;
-            color: #1e293b;
-        }
-
-        .info-value.success {
-            color: #059669;
-        }
-
-        /* Check-in Summary */
-        .checkin-summary {
-            background: #f0fdf4;
-            border: 2px solid #bbf7d0;
-            border-radius: 8px;
-            padding: 16px 20px;
-            margin-bottom: 25px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .checkin-summary .icon {
-            font-size: 1.5rem;
-        }
-
-        .checkin-summary .details {
-            flex: 1;
-        }
-
-        .checkin-summary .details .title {
-            font-weight: 600;
-            color: #16a34a;
-            font-size: 0.9rem;
-        }
-
-        .checkin-summary .details .time {
-            color: #15803d;
-            font-size: 0.85rem;
-            font-family: 'Courier New', monospace;
-        }
-
-        /* Upload Section */
-        .upload-section {
-            margin-bottom: 25px;
-        }
-
-        .upload-title {
-            font-size: 1.1rem;
-            color: #1e293b;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .upload-area {
-            border: 2px solid #bfdbfe;
-            border-radius: 12px;
-            padding: 40px 20px;
-            text-align: center;
-            transition: all 0.3s;
-            background: #eff6ff;
-        }
-
-        .camera-icon {
-            font-size: 4rem;
-            color: #3b82f6;
-            margin-bottom: 20px;
-            animation: pulse 2s infinite;
-        }
-
-        @keyframes pulse {
-            0%, 100% {
-                transform: scale(1);
-            }
-            50% {
-                transform: scale(1.05);
-            }
-        }
-
-        .camera-btn {
-            background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
-            color: white;
-            border: none;
-            padding: 16px 32px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1.1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 10px;
-            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
-            transition: all 0.3s;
-        }
-
-        .camera-btn:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1d4ed8 100%);
-            transform: translateY(-2px);
-            box-shadow: 0 6px 16px rgba(59, 130, 246, 0.4);
-        }
-
-        .camera-btn:active {
-            transform: translateY(0);
-        }
-
-        /* Camera Preview */
-        #cameraPreview {
-            display: none;
-            width: 100%;
-            max-width: 400px;
-            height: 300px;
-            background: #000;
-            border-radius: 12px;
-            margin: 20px auto;
-            overflow: hidden;
-        }
-
-        #cameraPreview video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-
-        .capture-btn {
-            background: #10b981;
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin: 10px 5px;
-            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
-            transition: all 0.3s;
-        }
-
-        .capture-btn:hover {
-            background: #059669;
-            transform: translateY(-2px);
-        }
-
-        .cancel-btn {
-            background: #ef4444;
-            color: white;
-            border: none;
-            padding: 14px 28px;
-            border-radius: 10px;
-            cursor: pointer;
-            font-weight: 600;
-            font-size: 1rem;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            margin: 10px 5px;
-            box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
-            transition: all 0.3s;
-        }
-
-        .cancel-btn:hover {
-            background: #dc2626;
-            transform: translateY(-2px);
-        }
-
-        /* Preview Section */
-        .preview-section {
-            margin-top: 20px;
-        }
-
-        .preview-title {
-            font-size: 1rem;
-            color: #1e293b;
-            margin-bottom: 10px;
-        }
-
-        .preview-container {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-
-        .preview-item {
-            position: relative;
-            border: 2px solid #e2e8f0;
-            border-radius: 8px;
-            overflow: hidden;
-        }
-
-        .preview-image {
-            width: 100%;
-            height: 120px;
-            object-fit: cover;
-        }
-
-        .preview-remove {
-            position: absolute;
-            top: 5px;
-            right: 5px;
-            background: rgba(239, 68, 68, 0.9);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-
-        /* Action Buttons */
-        .action-buttons {
-            display: flex;
-            gap: 15px;
-            margin-top: 30px;
-        }
-
-        .btn {
-            padding: 14px 24px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-            font-weight: 600;
-            flex: 1;
-            transition: all 0.3s;
-        }
-
-        .btn-primary {
-            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
-            color: white;
-        }
-
-        .btn-primary:hover {
-            background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%);
-        }
-
-        .btn-outline {
-            background: white;
-            border: 2px solid #e2e8f0;
-            color: #64748b;
-        }
-
-        .btn-outline:hover {
-            border-color: #3b82f6;
-            color: #3b82f6;
-        }
-
-        /* Time Display */
-        .time-display {
-            text-align: center;
-            font-size: 2rem;
-            font-weight: bold;
-            color: #1e293b;
-            margin: 20px 0;
-        }
-
-        .date-display {
-            text-align: center;
-            color: #64748b;
-            margin-bottom: 20px;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <div class="header">
-            <h1><i class="fi fi-rr-exit"></i> Check-Out Absensi</h1>
-            <p>Ambil foto sebagai bukti check-out</p>
-            <div class="badge"><i class="fi fi-rr-sign-out-alt"></i> Check-Out Mode</div>
+<x-pelaksana-layout>
+    <div class="max-w-2xl mx-auto">
+        <!-- Header -->
+        <div class="mb-6">
+            <a href="{{ route('pelaksana.absensi') }}" class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 text-sm font-medium transition-colors mb-4 inline-flex">
+                <i class="fi fi-rr-arrow-left"></i> Kembali ke Riwayat
+            </a>
+            <h1 class="text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
+                <i class="fi fi-rr-exit text-blue-600 dark:text-blue-500"></i> Check-Out Absensi
+            </h1>
+            <p class="text-slate-600 dark:text-slate-400">Ambil foto sebagai bukti check-out untuk mengakhiri sesi absen.</p>
         </div>
 
-        <div class="content">
-            <!-- Current Time Display -->
-            <div class="time-display" id="currentTime">--:--:--</div>
-            <div class="date-display" id="currentDate">-- --- ----</div>
-
-            <!-- Check-in Summary -->
-            <div class="checkin-summary">
-                <div class="icon"><i class="fi fi-rr-check-circle" style="color: #16a34a;"></i></div>
-                <div class="details">
-                    <div class="title">Sudah Check-In</div>
-                    <div class="time">Masuk: {{ $assignee->check_in_time->format('H:i') }} WIB</div>
+        <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden mb-6">
+            <!-- Time Display -->
+            <div class="bg-gradient-to-br from-blue-600 to-blue-800 dark:from-slate-800 dark:to-slate-900 text-white p-8 text-center border-b border-blue-900/50">
+                <div class="text-4xl md:text-5xl font-black mb-2 tracking-tight" id="currentTime">--:--:--</div>
+                <div class="text-blue-100 dark:text-slate-400 font-medium" id="currentDate">-- --- ----</div>
+                <div class="mt-4 inline-flex items-center gap-2 bg-white/20 dark:bg-slate-700/50 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-semibold border border-white/10">
+                    <i class="fi fi-rr-sign-out-alt"></i> Check-Out Mode
                 </div>
             </div>
 
-            <!-- Attendance Info -->
-            <div class="attendance-info">
-                <div class="info-grid">
-                    <div class="info-item">
-                        <span class="info-label">Nama</span>
-                        <span class="info-value">{{ Auth::user()->name }}</span>
+            <div class="p-6 md:p-8">
+                <!-- Check-in Summary -->
+                <div class="flex items-center gap-4 bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-200 dark:border-emerald-800/50 rounded-xl p-5 mb-6">
+                    <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xl flex-shrink-0">
+                        <i class="fi fi-rr-check"></i>
                     </div>
-                    <div class="info-item">
-                        <span class="info-label">Tugas Absen</span>
-                        <span class="info-value">{{ $assignee->attendance->title ?? 'Absensi Rutin' }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Waktu Check-In</span>
-                        <span class="info-value success">{{ $assignee->check_in_time->format('d M Y - H:i') }}</span>
-                    </div>
-                    <div class="info-item">
-                        <span class="info-label">Status Saat Ini</span>
-                        <span class="info-value" style="color: #2563eb;">{{ $assignee->status }} — Siap Check-Out</span>
+                    <div>
+                        <div class="font-bold text-emerald-700 dark:text-emerald-400 text-sm uppercase tracking-wider mb-1">Sudah Check-In</div>
+                        <div class="text-slate-700 dark:text-slate-300 font-medium font-mono">Masuk: {{ $assignee->check_in_time->format('H:i') }} WIB</div>
                     </div>
                 </div>
+
+                <!-- Attendance Info -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800">
+                    <div>
+                        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Nama</div>
+                        <div class="font-semibold text-slate-800 dark:text-white">{{ Auth::user()->name }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Tugas Absen</div>
+                        <div class="font-semibold text-slate-800 dark:text-white">{{ $assignee->attendance->title ?? 'Absensi Rutin' }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Waktu Check-In</div>
+                        <div class="font-semibold text-emerald-600 dark:text-emerald-400">{{ $assignee->check_in_time->format('d M Y - H:i') }}</div>
+                    </div>
+                    <div>
+                        <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Status Saat Ini</div>
+                        <div class="font-semibold text-blue-600 dark:text-blue-400">{{ $assignee->status }} — Siap Check-Out</div>
+                    </div>
+                </div>
+
+                <!-- Upload Section -->
+                <div class="mb-6">
+                    <h3 class="text-lg font-bold text-slate-800 dark:text-white mb-4 flex items-center gap-2">
+                        <i class="fi fi-rr-camera text-blue-600 dark:text-blue-500"></i> Bukti Foto Check-Out
+                    </h3>
+                    
+                    <div id="uploadArea" class="border-2 border-dashed border-blue-200 dark:border-slate-700 bg-blue-50/50 dark:bg-slate-800/50 rounded-2xl p-8 text-center transition-all hover:bg-blue-50 dark:hover:bg-slate-800">
+                        <div class="w-20 h-20 bg-white dark:bg-slate-700 rounded-full flex items-center justify-center text-blue-500 dark:text-blue-400 text-3xl mx-auto mb-4 shadow-sm animate-pulse">
+                            <i class="fi fi-rr-camera"></i>
+                        </div>
+                        <h4 class="text-xl font-bold text-slate-800 dark:text-white mb-2">Ambil Foto Check-Out</h4>
+                        <p class="text-slate-500 dark:text-slate-400 text-sm mb-6 max-w-sm mx-auto">
+                            Pastikan foto jelas menunjukkan wajah dan lingkungan sekitar tempat kerja Anda
+                        </p>
+                        <button onclick="openCamera()" id="openCameraBtn" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 px-6 rounded-xl shadow-md shadow-blue-500/30 transition-all flex items-center gap-2 mx-auto">
+                            <i class="fi fi-rr-camera"></i> Buka Kamera
+                        </button>
+                    </div>
+
+                    <!-- Camera Preview (Live Video) -->
+                    <div id="cameraPreview" class="hidden w-full max-w-md mx-auto aspect-video bg-black rounded-2xl overflow-hidden mt-4 relative shadow-inner">
+                        <video id="video" autoplay playsinline class="w-full h-full object-cover"></video>
+                    </div>
+                    <div id="cameraControls" class="hidden text-center mt-6 flex-wrap justify-center gap-3">
+                        <button onclick="capturePhoto()" class="bg-emerald-500 hover:bg-emerald-600 text-white font-semibold py-3 px-6 rounded-xl shadow-md shadow-emerald-500/30 transition-all flex items-center gap-2">
+                            <i class="fi fi-rr-camera"></i> Ambil Foto
+                        </button>
+                        <button onclick="closeCamera()" class="bg-slate-200 dark:bg-slate-700 hover:bg-slate-300 dark:hover:bg-slate-600 text-slate-700 dark:text-white font-semibold py-3 px-6 rounded-xl transition-all flex items-center gap-2">
+                            <i class="fi fi-rr-cross"></i> Batal
+                        </button>
+                    </div>
+
+                    <!-- Hidden canvas for capturing -->
+                    <canvas id="canvas" class="hidden"></canvas>
+
+                    <!-- Preview -->
+                    <div id="previewSection" class="hidden mt-6">
+                        <div class="text-sm font-semibold text-slate-700 dark:text-slate-300 mb-3">Preview Foto:</div>
+                        <div id="previewContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                            <!-- Preview images will appear here -->
+                        </div>
+                    </div>
+                </div>
+
+                <form id="attendanceForm" action="{{ route('pelaksana.absensi.checkout.submit', $assignee->id) }}" method="POST" class="border-t border-slate-100 dark:border-slate-700 pt-6 mt-2">
+                    @csrf
+                    <input type="hidden" name="image_data" id="image_data" required>
+                    
+                    <div class="mb-8">
+                        <label for="keterangan" class="block font-semibold text-slate-700 dark:text-slate-300 mb-2">Catatan / Keterangan (Opsional):</label>
+                        <textarea name="keterangan" id="keterangan" rows="3" class="w-full border-2 border-slate-200 dark:border-slate-700 rounded-xl bg-white dark:bg-slate-800 text-slate-800 dark:text-white p-4 focus:ring-4 focus:ring-blue-500/20 focus:border-blue-500 dark:focus:border-blue-500 transition-colors resize-y" placeholder="Tuliskan keterangan jika ada kondisi khusus (lembur, selesai lebih awal, izin sebentar, dsb)"></textarea>
+                    </div>
+
+                    <!-- Action Buttons -->
+                    <div class="flex flex-col sm:flex-row gap-4">
+                        <a href="{{ route('pelaksana.absensi') }}" class="flex-1 py-3.5 px-6 rounded-xl font-bold text-slate-700 dark:text-slate-300 bg-slate-100 dark:bg-slate-800 hover:bg-slate-200 dark:hover:bg-slate-700 border border-slate-200 dark:border-slate-700 text-center transition-all">
+                            Kembali
+                        </a>
+                        <button type="submit" id="submitBtn" class="flex-[2] py-3.5 px-6 rounded-xl font-bold text-white bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 transition-all disabled:opacity-50 disabled:cursor-not-allowed">
+                            Submit Check-Out
+                        </button>
+                    </div>
+                </form>
             </div>
-
-
-            <!-- Upload Section -->
-            <div class="upload-section">
-                <div class="upload-title">
-                    <span><i class="fi fi-rr-camera"></i></span>
-                    Bukti Foto Check-Out
-                </div>
-                
-                <div class="upload-area" id="uploadArea">
-                    <div class="camera-icon"><i class="fi fi-rr-camera"></i></div>
-                    <div style="font-weight: 600; font-size: 1.2rem; margin-bottom: 10px; color: #1e293b;">Ambil Foto Check-Out</div>
-                    <div style="color: #64748b; margin-bottom: 20px;">
-                        Pastikan foto jelas menunjukkan wajah dan lingkungan sekitar
-                    </div>
-                    <button class="camera-btn" onclick="openCamera()" id="openCameraBtn">
-                        <i class="fi fi-rr-camera"></i> Buka Kamera
-                    </button>
-                </div>
-
-                <!-- Camera Preview (Live Video) -->
-                <div id="cameraPreview">
-                    <video id="video" autoplay playsinline></video>
-                </div>
-                <div id="cameraControls" style="text-align: center; display: none; margin-top: 15px;">
-                    <button class="capture-btn" onclick="capturePhoto()">
-                        <i class="fi fi-rr-camera"></i> Ambil Foto
-                    </button>
-                    <button class="cancel-btn" onclick="closeCamera()">
-                        <i class="fi fi-rr-cross"></i> Batal
-                    </button>
-                </div>
-
-                <!-- Hidden canvas for capturing -->
-                <canvas id="canvas" style="display: none;"></canvas>
-
-                <!-- Preview -->
-                <div class="preview-section" id="previewSection" style="display: none;">
-                    <div class="preview-title">Preview Foto:</div>
-                    <div class="preview-container" id="previewContainer">
-                        <!-- Preview images will appear here -->
-                    </div>
-                </div>
-            </div>
-
-            <form id="attendanceForm" action="{{ route('pelaksana.absensi.checkout.submit', $assignee->id) }}" method="POST">
-                @csrf
-                <input type="hidden" name="image_data" id="image_data" required>
-                
-                <div class="mb-4" style="margin-top: 25px; margin-bottom: 25px;">
-                    <label for="keterangan" style="display: block; font-weight: 600; margin-bottom: 10px; color: #1e293b;">Catatan / Keterangan (Opsional):</label>
-                    <textarea name="keterangan" id="keterangan" rows="3" style="width: 100%; border: 2px solid #e2e8f0; border-radius: 8px; padding: 12px; font-size: 1rem; color: #333;" placeholder="Tuliskan keterangan jika ada kondisi khusus (lembur, selesai lebih awal, dsb)"></textarea>
-                </div>
-
-                <!-- Action Buttons -->
-                <div class="action-buttons">
-                    <a href="{{ route('pelaksana.absensi') }}" class="btn btn-outline text-center" style="line-height: inherit; text-decoration: none; align-content: center;">Kembali</a>
-                    <button type="submit" class="btn btn-primary" id="submitBtn">Submit Check-Out</button>
-                </div>
-            </form>
         </div>
     </div>
 
@@ -465,8 +132,10 @@
                 day: 'numeric' 
             });
             
-            document.getElementById('currentTime').textContent = timeString;
-            document.getElementById('currentDate').textContent = dateString;
+            const timeEl = document.getElementById('currentTime');
+            const dateEl = document.getElementById('currentDate');
+            if(timeEl) timeEl.textContent = timeString;
+            if(dateEl) dateEl.textContent = dateString;
         }
 
         // Update time every second
@@ -501,9 +170,10 @@
                 video.srcObject = stream;
                 
                 // Show camera preview and controls
-                uploadArea.style.display = 'none';
-                cameraPreview.style.display = 'block';
-                cameraControls.style.display = 'block';
+                uploadArea.classList.add('hidden');
+                cameraPreview.classList.remove('hidden');
+                cameraControls.classList.remove('hidden');
+                cameraControls.classList.add('flex');
                 
             } catch (error) {
                 console.error('Error accessing camera:', error);
@@ -539,23 +209,29 @@
             }
             
             video.srcObject = null;
-            cameraPreview.style.display = 'none';
-            cameraControls.style.display = 'none';
-            uploadArea.style.display = 'block';
+            cameraPreview.classList.add('hidden');
+            cameraControls.classList.remove('flex');
+            cameraControls.classList.add('hidden');
+            uploadArea.classList.remove('hidden');
         }
 
         // Show preview of captured photo
         function showPreview(imageData) {
             const previewItem = document.createElement('div');
-            previewItem.className = 'preview-item';
+            previewItem.className = 'relative border-2 border-slate-200 dark:border-slate-700 rounded-xl overflow-hidden aspect-video shadow-sm group';
             previewItem.innerHTML = `
-                <img src="${imageData}" class="preview-image" alt="Preview">
-                <button class="preview-remove" onclick="removePreview(this)">×</button>
+                <img src="${imageData}" class="w-full h-full object-cover" alt="Preview">
+                <button type="button" onclick="removePreview(this)" class="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white rounded-full w-8 h-8 flex items-center justify-center shadow-lg transition-transform hover:scale-110">
+                    <i class="fi fi-rr-cross text-xs"></i>
+                </button>
+                <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/60 to-transparent p-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <p class="text-white text-xs font-medium">Foto siap diunggah</p>
+                </div>
             `;
             
             previewContainer.innerHTML = '';
             previewContainer.appendChild(previewItem);
-            previewSection.style.display = 'block';
+            previewSection.classList.remove('hidden');
             
             // Enable submit button
             document.getElementById('submitBtn').disabled = false;
@@ -563,9 +239,9 @@
 
         // Remove preview
         function removePreview(button) {
-            button.parentElement.remove();
+            button.closest('div.relative').remove();
             if (previewContainer.children.length === 0) {
-                previewSection.style.display = 'none';
+                previewSection.classList.add('hidden');
                 document.getElementById('submitBtn').disabled = true;
                 capturedImageData = null;
             }
@@ -585,12 +261,11 @@
             document.getElementById('image_data').value = capturedImageData;
 
             const submitBtn = document.getElementById('submitBtn');
-            submitBtn.textContent = 'Mengirim...';
+            submitBtn.innerHTML = '<i class="fi fi-rr-spinner animate-spin"></i> Mengirim...';
             submitBtn.disabled = true;
         });
 
         // Initialize
         document.getElementById('submitBtn').disabled = true;
     </script>
-</body>
-</html>
+</x-pelaksana-layout>

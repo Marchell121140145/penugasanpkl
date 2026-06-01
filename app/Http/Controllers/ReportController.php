@@ -138,6 +138,14 @@ class ReportController extends Controller
             ->get()
             ->sortBy('attendance.deadline');
 
+        // Calculate single student stats
+        $gradedSubmissions = $submissions->whereNotNull('nilai');
+        $avgGrade = $gradedSubmissions->count() > 0 ? round($gradedSubmissions->avg('nilai'), 1) : 0;
+
+        $totalSessions = $attendances->count();
+        $presentCount = $attendances->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
+        $attendancePercentage = $totalSessions > 0 ? round(($presentCount / $totalSessions) * 100) : 0;
+
         // Prepare chart data: Grade Progression
         $gradeLabels = [];
         $gradeValues = [];
@@ -157,7 +165,7 @@ class ReportController extends Controller
             'Belum Mengisi' => $attendances->where('status', 'Belum Mengisi')->count(),
         ];
 
-        return view('admin.report.show', compact('pelaksana', 'submissions', 'attendances', 'gradeLabels', 'gradeValues', 'attStats'));
+        return view('admin.report.show', compact('pelaksana', 'submissions', 'attendances', 'gradeLabels', 'gradeValues', 'attStats', 'avgGrade', 'attendancePercentage'));
     }
 
     public function exportCsv(Request $request)

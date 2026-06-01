@@ -175,7 +175,7 @@
                     @endforeach
                 </select>
                 <div class="relative w-full md:w-auto">
-                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500 pr-8" placeholder="Cari nama pelaksana...">
+                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-64 text-sm focus:outline-none focus:border-red-500 pr-8" placeholder="Cari nama pelaksana...">
                     @if(request('search'))
                         <a href="{{ route('pelaksana.list', request()->except('search', 'page')) }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm"><i class="fi fi-rr-cross-small"></i></a>
                     @endif
@@ -399,11 +399,27 @@
                  x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95">
                 
                 <div class="px-6 py-4 border-b border-slate-100 flex justify-between items-center">
-                    <h3 class="text-lg font-bold text-slate-800">Tambah User Baru</h3>
+                    <div class="flex items-center gap-3">
+                        <h3 class="text-lg font-bold text-slate-800">Tambah User Baru</h3>
+                        <div class="px-3 py-1 bg-red-50 text-red-600 rounded-lg text-xs font-bold border border-red-100 flex items-center gap-1.5">
+                            <i class="fi fi-rr-user"></i> Pelaksana
+                        </div>
+                    </div>
                     <button @click="openAddUser = false" class="text-slate-400 hover:text-slate-600"><i class="fi fi-rr-cross"></i></button>
                 </div>
 
-                <form action="{{ route('pelaksana.store') }}" method="POST">
+                <form action="{{ route('pelaksana.store') }}" method="POST" x-data="{
+                    selectedDivisi: '',
+                    allPembimbings: [
+                        @foreach($pembimbings as $pemb)
+                        { id: '{{ $pemb->id }}', name: '{{ addslashes($pemb->name) }}', divisi_id: '{{ $pemb->divisi_id }}' },
+                        @endforeach
+                    ],
+                    get availablePembimbings() {
+                        if (!this.selectedDivisi) return [];
+                        return this.allPembimbings.filter(p => p.divisi_id == this.selectedDivisi);
+                    }
+                }">
                     @csrf
                     <div class="p-6 space-y-4">
                         <div>
@@ -419,17 +435,22 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                             <div>
                                 <label class="block text-sm font-semibold text-slate-700 mb-1">Divisi (Opsional)</label>
-                                <select name="divisi_id" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors bg-white">
+                                <select name="divisi_id" x-model="selectedDivisi" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors bg-white">
                                     <option value="">Tidak ada divisi</option>
                                     @foreach($divisis as $divisi)
                                         <option value="{{ $divisi->id }}">{{ $divisi->nama }}</option>
                                     @endforeach
                                 </select>
                             </div>
-                            <div class="flex items-end pb-1">
-                                <div class="px-4 py-2 bg-red-50 text-red-600 rounded-xl text-xs font-bold border border-red-100 flex items-center gap-2">
-                                    <span><i class="fi fi-rr-user"></i></span> Role: Pelaksana
-                                </div>
+                            <div>
+                                <label class="block text-sm font-semibold text-slate-700 mb-1">Pembimbing (Opsional)</label>
+                                <select name="pembimbing_id" class="w-full px-4 py-2.5 border-2 border-slate-200 rounded-xl focus:outline-none focus:border-red-500 transition-colors bg-white" :disabled="!selectedDivisi" :class="!selectedDivisi ? 'bg-slate-50 text-slate-400' : 'bg-white'">
+                                    <option value="">Tidak ada pembimbing</option>
+                                    <template x-for="pemb in availablePembimbings" :key="pemb.id">
+                                        <option :value="pemb.id" x-text="pemb.name"></option>
+                                    </template>
+                                </select>
+                                <p x-show="selectedDivisi && availablePembimbings.length === 0" class="text-xs text-red-500 mt-1" x-cloak>Tidak ada pembimbing di divisi ini.</p>
                             </div>
                         </div>
 

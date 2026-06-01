@@ -83,7 +83,7 @@
                     @endforeach
                 </select>
                 <div class="relative w-full md:w-auto">
-                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500 pr-8" placeholder="Cari tugas atau mahasiswa...">
+                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-64 text-sm focus:outline-none focus:border-red-500 pr-8" placeholder="Cari tugas atau mahasiswa...">
                     @if(request('search'))
                         <a href="{{ route('penugasan', request()->except('search', 'page')) }}" class="absolute right-2.5 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 text-sm">✕</a>
                     @endif
@@ -219,7 +219,7 @@
                                 {{ ucfirst($task->prioritas) }}
                             </td>
                             <td class="p-4 text-sm">
-                                <div class="w-[100px] h-2 bg-slate-200 rounded-full overflow-hidden mb-1">
+                                <div class="w-24 h-2 bg-slate-200 rounded-full overflow-hidden mb-1">
                                     <div class="h-full {{ $progressColor }} rounded-full" style="width: {{ $progress }}%"></div>
                                 </div>
                                 <small class="text-slate-600">{{ $submittedCount }}/{{ $totalSubmissions }} ({{ $progress }}%)</small>

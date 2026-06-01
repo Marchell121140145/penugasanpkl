@@ -55,7 +55,7 @@
                 </select>
 
                 <div class="relative">
-                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-[250px] text-sm focus:outline-none focus:border-red-500 pr-10" placeholder="Cari judul sesi...">
+                    <input type="text" name="search" value="{{ request('search') }}" class="p-2.5 border-2 border-slate-200 rounded-lg w-full md:w-64 text-sm focus:outline-none focus:border-red-500 pr-10" placeholder="Cari judul sesi...">
                     <button type="submit" class="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-red-500">
                         <i class="fi fi-rr-search"></i>
                     </button>

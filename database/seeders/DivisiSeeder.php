@@ -13,11 +13,10 @@ class DivisiSeeder extends Seeder
     public function run(): void
     {
         $divisis = [
-            ['nama' => 'Divisi IT'],
-            ['nama' => 'Divisi Keuangan'],
-            ['nama' => 'Divisi HRD'],
-            ['nama' => 'Divisi Marketing'],
-            ['nama' => 'Divisi Operasional'],
+            ['nama' => 'Divisi SSGS'],
+            ['nama' => 'Divisi BGES'],
+            ['nama' => 'Divisi HERO'],
+
         ];
 
         foreach ($divisis as $divisi) {
