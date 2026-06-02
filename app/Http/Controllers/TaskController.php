@@ -579,6 +579,15 @@ class TaskController extends Controller
             'file' => 'nullable|file|max:20480|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png,gif,zip,rar',
         ]);
 
+        // Blokir ekstensi berbahaya secara eksplisit
+        if ($request->hasFile('file')) {
+            $ext = strtolower($request->file('file')->getClientOriginalExtension());
+            $blocked = ['exe', 'bat', 'cmd', 'msi', 'com', 'scr', 'pif', 'vbs', 'js', 'wsf', 'sh', 'php', 'py'];
+            if (in_array($ext, $blocked)) {
+                return redirect()->back()->with('error', 'File dengan ekstensi .' . $ext . ' tidak diperbolehkan!');
+            }
+        }
+
         if ($request->hasFile('file')) {
             // Jika ada file lama, hapus
             if ($submission->file_path && Storage::disk('local')->exists($submission->file_path)) {

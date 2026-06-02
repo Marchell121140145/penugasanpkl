@@ -123,6 +123,7 @@
                     @forelse($assignees as $index => $assignee)
                         @php
                             $user = $assignee->user;
+                            if (!$user) continue;
 
                             $statusColor = 'bg-slate-100 text-slate-600';
                             if (in_array($assignee->status, ['Hadir', 'Hadir - Selesai'])) $statusColor = 'bg-emerald-100 text-emerald-600';

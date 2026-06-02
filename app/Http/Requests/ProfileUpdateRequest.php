@@ -25,7 +25,7 @@ class ProfileUpdateRequest extends FormRequest
                 'max:255',
                 Rule::unique(User::class)->ignore($this->user()->id),
             ],
-            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048'],
+            'avatar' => ['nullable', 'image', 'mimes:jpeg,png,jpg,gif', 'max:2048', 'dimensions:max_width=800,max_height=800'],
         ];
     }
 
@@ -39,6 +39,9 @@ class ProfileUpdateRequest extends FormRequest
         return [
             'name.regex' => 'Nama hanya boleh berisi huruf dan spasi.',
             'name.max' => 'Nama tidak boleh lebih dari 60 karakter.',
+            'avatar.dimensions' => 'Ukuran gambar maksimal adalah 800x800 pixel.',
+            'avatar.image' => 'File harus berupa gambar.',
+            'avatar.mimes' => 'Format gambar yang diizinkan hanya jpeg, png, jpg, dan gif.',
         ];
     }
 }

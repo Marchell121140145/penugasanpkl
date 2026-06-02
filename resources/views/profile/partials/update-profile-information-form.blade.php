@@ -35,6 +35,7 @@
                     file:text-sm file:font-semibold
                     file:bg-red-50 file:text-red-700
                     hover:file:bg-red-100 transition-all cursor-pointer"
+                    accept="image/*"
                     onchange="previewImage(event)"/>
             </label>
         </div>

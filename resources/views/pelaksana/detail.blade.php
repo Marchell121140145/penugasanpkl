@@ -207,7 +207,7 @@
                     <div class="mt-10 pt-8 border-t-2 border-dashed border-slate-200 dark:border-slate-700">
                         <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-6">Upload Penugasan Anda</h2>
                         
-                        @if(!$isSubmitted)
+                        @if($submission->status != 'graded')
                             <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl p-8 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50 dark:hover:border-blue-500 dark:hover:bg-slate-800/50 transition-all group" onclick="document.getElementById('fileInput').click()">
                                 <div class="text-4xl text-slate-400 group-hover:text-blue-500 mb-4 transition-colors">
                                     <i class="fi fi-rr-folder-upload"></i>
@@ -218,7 +218,7 @@
                                 <div class="text-sm text-slate-500 dark:text-slate-400 mb-6">
                                     Format: PDF, DOC, DOCX, ZIP, XLS, JPG, dll (Maks 20MB)
                                 </div>
-                                <input type="file" name="file" id="fileInput" class="hidden" onchange="updateFileName(this)">
+                                <input type="file" name="file" id="fileInput" class="hidden" accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.jpg,.jpeg,.png,.gif,.zip,.rar" onchange="updateFileName(this)">
                                 <div class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2.5 px-6 rounded-xl transition-colors shadow-sm gap-2">
                                     <i class="fi fi-rr-upload"></i> Pilih File
                                 </div>
@@ -251,14 +251,14 @@
                         </div>
                         @endif
 
-                        @if(!$isSubmitted)
+                        @if($submission->status != 'graded')
                         <!-- Submit Section -->
                         <div class="mt-8 pt-6 border-t border-slate-100 dark:border-slate-700 flex flex-col-reverse sm:flex-row justify-end gap-3">
                             <a href="{{ route('pelaksana.penugasan') }}" class="px-6 py-3 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-bold hover:bg-slate-50 dark:hover:bg-slate-700 hover:border-slate-300 dark:hover:border-slate-600 transition-all text-center">
                                 Batal
                             </a>
                             <button type="button" id="submitTaskBtn" onclick="confirmSubmitTask()" class="px-6 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-xl shadow-lg shadow-emerald-500/30 transition-all flex items-center justify-center gap-2">
-                                <i class="fi fi-rr-check"></i> Submit Tugas
+                                <i class="fi fi-rr-check"></i> Submit Tugas / Update
                             </button>
                         </div>
                         @else
@@ -371,6 +371,18 @@
         function confirmSubmitTask() {
             var fileInput = document.getElementById('fileInput');
             let confirmMessage = '';
+
+            // Blokir file exe
+            if (fileInput.files && fileInput.files[0]) {
+                const ext = fileInput.files[0].name.split('.').pop().toLowerCase();
+                const blocked = ['exe', 'bat', 'cmd', 'msi', 'com', 'scr', 'pif', 'vbs', 'js', 'wsf', 'sh'];
+                if (blocked.includes(ext)) {
+                    alert('File dengan ekstensi .' + ext + ' tidak diperbolehkan!\nFormat yang diterima: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX, JPG, PNG, GIF, ZIP, RAR');
+                    fileInput.value = '';
+                    document.getElementById('uploadText').innerHTML = '<strong class="font-bold">Klik di sini untuk upload file jawaban</strong>';
+                    return;
+                }
+            }
 
             if (!fileInput.value && !{{ $submission->file_path ? 'true' : 'false' }}) {
                 confirmMessage = 'Anda tidak memilih file apa pun.\nTugas akan ditandai sebagai Selesai tanpa file tambahan.\n\nApakah Anda yakin ingin mensubmit tugas ini?';

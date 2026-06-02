@@ -35,6 +35,10 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
+    // --- Excel Editor (semua role, controller punya access check sendiri) ---
+    Route::get('/penugasan/excel-editor', [ExcelEditorController::class, 'edit'])->name('excel.editor');
+    Route::post('/penugasan/excel-editor/save', [ExcelEditorController::class, 'save'])->name('excel.editor.save');
 });
 
 // =========================================
@@ -52,10 +56,6 @@ Route::middleware(['auth', 'verified', 'role:1,2'])->group(function () {
     Route::delete('/penugasan/{id}', [TaskController::class, 'destroy'])->name('penugasan.destroy');
     Route::post('/penugasan/grade/{id}', [TaskController::class, 'submitGrade'])->name('penugasan.grade');
     Route::post('/penugasan/comment/{id}', [TaskController::class, 'storeComment'])->name('penugasan.comment');
-
-    // --- Excel Editor ---
-    Route::get('/penugasan/excel-editor', [ExcelEditorController::class, 'edit'])->name('excel.editor');
-    Route::post('/penugasan/excel-editor/save', [ExcelEditorController::class, 'save'])->name('excel.editor.save');
 
     // --- Absensi ---
     Route::get('/absensi', [AttendanceController::class, 'index'])->name('absensi');
