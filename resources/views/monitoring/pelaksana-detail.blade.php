@@ -50,9 +50,11 @@
             </div>
         </div>
         <div>
+            @if(auth()->user()->role_id == 1)
             <button onclick="document.getElementById('editModal').classList.remove('hidden')" class="px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white font-medium rounded-xl shadow-md transition-all hover:-translate-y-0.5 mt-4 md:mt-0 flex items-center gap-2">
                 <i class="fi fi-rr-edit"></i> Edit Profil
             </button>
+            @endif
         </div>
     </div>
 
@@ -136,6 +138,7 @@
     </div>
 
     <!-- Edit Modal -->
+    @if(auth()->user()->role_id == 1)
     <div id="editModal" class="hidden fixed inset-0 z-50 overflow-y-auto">
         <div class="flex items-center justify-center min-h-screen px-4 pt-4 pb-20 text-center sm:p-0">
             <div class="fixed inset-0 transition-opacity" aria-hidden="true" onclick="document.getElementById('editModal').classList.add('hidden')">
@@ -202,6 +205,7 @@
             </div>
         </div>
     </div>
+    @endif
 </x-admin-layout>
 
 

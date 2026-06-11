@@ -1,6 +1,6 @@
 <x-admin-layout>
     <!-- Header -->
-    <div class="flex justify-between items-center mb-8">
+    <div class="flex justify-between items-center mb-5">
         <div class="welcome">
             <h1 class="text-slate-800 text-3xl font-bold mb-1">Welcome Back, {{ Auth::user()->name ?? 'User' }}!</h1>
             <p class="text-slate-600">
@@ -48,9 +48,34 @@
         </div>
     </div>
 
+    <!-- Quick Actions -->
+    <div class="bg-white rounded-xl p-6 shadow-sm mb-5">
+        <div class="flex justify-between items-center mb-5">
+            <h2 class="text-slate-800 text-xl font-semibold">Quick Actions</h2>
+        </div>
+        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            <a href="{{ route('penugasan.create') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
+                <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-clipboard-list"></i></div>
+                <span class="text-slate-800 font-medium text-sm">Buat Penugasan</span>
+            </a>
+            <a href="{{ route('absensi') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
+                <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-chart-histogram"></i></div>
+                <span class="text-slate-800 font-medium text-sm">Rekap Absensi</span>
+            </a>
+            <a href="{{ route('pelaksana.list') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
+                <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-users"></i></div>
+                <span class="text-slate-800 font-medium text-sm">Pelaksana</span>
+            </a>
+            <a href="{{ route('penugasan') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
+                <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-chart-line-up"></i></div>
+                <span class="text-slate-800 font-medium text-sm">Semua Tugas</span>
+            </a>
+        </div>
+    </div>
+
     <!-- Filter Bar (Admin Only) -->
     @if(Auth::user()->role_id == 1)
-    <div class="bg-white p-4 rounded-xl shadow-sm mb-8 border border-slate-100 flex flex-wrap items-center justify-between gap-4">
+    <div class="bg-white p-4 rounded-xl shadow-sm mb-5 border border-slate-100 flex flex-wrap items-center justify-between gap-4">
         <div class="flex items-center gap-3">
             <div class="p-2 bg-red-50 text-red-600 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"></polygon></svg>
@@ -83,7 +108,7 @@
         </form>
     </div>
     @elseif(Auth::user()->role_id == 2)
-    <div class="bg-red-50 border border-red-100 p-4 rounded-xl mb-8 flex items-center justify-between flex-wrap gap-4">
+    <div class="bg-red-50 border border-red-100 p-4 rounded-xl mb-5 flex items-center justify-between flex-wrap gap-4">
         <div class="flex items-center gap-3">
             <div class="p-2 bg-red-100 text-red-600 rounded-lg">
                 <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"></path><circle cx="9" cy="7" r="4"></circle><path d="M23 21v-2a4 4 0 0 0-3-3.87"></path><path d="M16 3.13a4 4 0 0 1 0 7.75"></path></svg>
@@ -105,7 +130,7 @@
     @endif
 
     <!-- Stats Grid - Penugasan & Absensi -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-8">
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5 mb-5">
         <!-- Statistik Penugasan -->
         <div class="bg-white p-5 rounded-xl shadow-sm border-l-4 border-l-red-500">
             <h3 class="text-slate-500 text-sm mb-2 uppercase tracking-wide">Total Penugasan</h3>
@@ -148,7 +173,7 @@
     </div>
 
     <!-- Charts Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-5">
         <div class="bg-white rounded-xl p-6 shadow-sm text-center">
             <h3 class="text-slate-800 mb-4 text-lg font-semibold">Statistik Penyelesaian Tugas</h3>
             <div class="h-[250px] relative">
@@ -268,16 +293,16 @@
     </script>
 
     <!-- Two Column Layout -->
-    <div class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6">
+    <div class="grid grid-cols-1 lg:grid-cols-[2fr_1fr] gap-6 items-stretch">
         <!-- Left Column -->
-        <div>
+        <div class="flex flex-col h-full">
             <!-- Recent Activity -->
-            <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
-                <div class="flex justify-between items-center mb-5">
+            <div class="bg-white rounded-xl p-6 shadow-sm flex-1 flex flex-col">
+                <div class="flex justify-between items-center mb-5 shrink-0">
                     <h2 class="text-slate-800 text-xl font-semibold">Aktivitas Terkini</h2>
                 </div>
                 @if($recentActivities->count() > 0)
-                <ul class="list-none">
+                <ul class="list-none flex-1 overflow-y-auto">
                     @foreach($recentActivities as $activity)
                     <li class="flex items-center py-4 border-b border-slate-100 last:border-0 hover:bg-slate-50 transition-colors rounded-lg px-2">
                         <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center mr-4 text-red-500 text-lg shrink-0">{{ $activity['icon'] }}</div>
@@ -290,43 +315,18 @@
                     @endforeach
                 </ul>
                 @else
-                <div class="text-center py-8">
-                    <div class="text-4xl mb-3"><i class="fi fi-rr-envelope-open"></i></div>
+                <div class="text-center flex-1 flex flex-col items-center justify-center py-8">
+                    <div class="text-5xl mb-4 text-slate-200"><i class="fi fi-rr-envelope-open"></i></div>
                     <p class="text-slate-400 text-sm">Belum ada aktivitas terkini</p>
                 </div>
                 @endif
             </div>
-
-            <!-- Quick Actions -->
-            <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
-                <div class="flex justify-between items-center mb-5">
-                    <h2 class="text-slate-800 text-xl font-semibold">Quick Actions</h2>
-                </div>
-                <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                    <a href="{{ route('penugasan.create') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-clipboard-list"></i></div>
-                        <span class="text-slate-800 font-medium text-sm">Buat Penugasan</span>
-                    </a>
-                    <a href="{{ route('absensi') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-chart-histogram"></i></div>
-                        <span class="text-slate-800 font-medium text-sm">Rekap Absensi</span>
-                    </a>
-                    <a href="{{ route('pelaksana.list') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-users"></i></div>
-                        <span class="text-slate-800 font-medium text-sm">Pelaksana</span>
-                    </a>
-                    <a href="{{ route('penugasan') }}" class="bg-white border-2 border-slate-200 p-5 rounded-xl text-center cursor-pointer transition-all hover:border-red-500 hover:-translate-y-1 no-underline">
-                        <div class="text-2xl mb-2 text-red-500"><i class="fi fi-rr-chart-line-up"></i></div>
-                        <span class="text-slate-800 font-medium text-sm">Semua Tugas</span>
-                    </a>
-                </div>
-            </div>
         </div>
 
         <!-- Right Column -->
-        <div>
+        <div class="flex flex-col gap-6 h-full">
             <!-- Recent Tasks -->
-            <div class="bg-white rounded-xl p-6 shadow-sm mb-6|">
+            <div class="bg-white rounded-xl p-6 shadow-sm">
                 <div class="flex justify-between items-center mb-5">
                     <h2 class="text-slate-800 text-xl font-semibold">Penugasan Terbaru</h2>
                     <a href="{{ route('penugasan') }}" class="text-red-500 text-sm font-medium hover:underline">Lihat Semua</a>
@@ -347,14 +347,14 @@
                 </ul>
                 @else
                 <div class="text-center py-8">
-                    <div class="text-4xl mb-3"><i class="fi fi-rr-clipboard-list"></i></div>
+                    <div class="text-4xl mb-3 text-slate-200"><i class="fi fi-rr-clipboard-list"></i></div>
                     <p class="text-slate-400 text-sm">Belum ada penugasan</p>
                 </div>
                 @endif
             </div>
 
             <!-- Today's Attendance -->
-            <div class="bg-white rounded-xl p-6 shadow-sm mb-6">
+            <div class="bg-white rounded-xl p-6 shadow-sm">
                 <div class="flex justify-between items-center mb-5">
                     <h2 class="text-slate-800 text-xl font-semibold">Absensi Hari Ini</h2>
                     <a href="{{ route('absensi') }}" class="text-red-500 text-sm font-medium hover:underline">Detail</a>
@@ -373,7 +373,7 @@
                 </ul>
                 @else
                 <div class="text-center py-8">
-                    <div class="text-4xl mb-3"><i class="fi fi-rr-calendar"></i></div>
+                    <div class="text-4xl mb-3 text-slate-200"><i class="fi fi-rr-calendar"></i></div>
                     <p class="text-slate-400 text-sm">Tidak ada sesi absensi hari ini</p>
                 </div>
                 @endif

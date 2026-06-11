@@ -71,10 +71,9 @@ Route::middleware(['auth', 'verified', 'role:1,2'])->group(function () {
     Route::get('/laporan/export', [ReportController::class, 'exportCsv'])->name('laporan.export');
     Route::get('/laporan/pelaksana/{id}', [ReportController::class, 'show'])->name('laporan.show');
 
-    // --- Pelaksana Management (lihat & update) ---
+    // --- Pelaksana Management (lihat) ---
     Route::get('/pelaksana-list', [PelaksanaController::class, 'index'])->name('pelaksana.list');
     Route::get('/pelaksana-list/{id}', [PelaksanaController::class, 'show'])->name('pelaksana.show');
-    Route::put('/pelaksana-list/{id}', [PelaksanaController::class, 'update'])->name('pelaksana.update');
 
     // --- Settings (General Profil) ---
     Route::get('/settings', [SettingsController::class, 'index'])->name('settings.index');
@@ -85,10 +84,11 @@ Route::middleware(['auth', 'verified', 'role:1,2'])->group(function () {
 // =========================================
 Route::middleware(['auth', 'verified', 'role:1'])->group(function () {
 
-    // --- Pelaksana: Tambah, Approve, Reject ---
+    // --- Pelaksana: Tambah, Approve, Reject, Update ---
     Route::post('/pelaksana-list', [PelaksanaController::class, 'store'])->name('pelaksana.store');
     Route::post('/pelaksana-list/{id}/approve', [PelaksanaController::class, 'approveRegistration'])->name('pelaksana.approve');
     Route::delete('/pelaksana-list/{id}/reject', [PelaksanaController::class, 'rejectRegistration'])->name('pelaksana.reject');
+    Route::put('/pelaksana-list/{id}', [PelaksanaController::class, 'update'])->name('pelaksana.update');
 
     // --- Pembimbing Management ---
     Route::get('/pembimbing-list', [PembimbingController::class, 'index'])->name('pembimbing.list');

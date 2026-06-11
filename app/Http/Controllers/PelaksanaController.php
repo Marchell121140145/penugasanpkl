@@ -252,6 +252,13 @@ class PelaksanaController extends Controller
         $presentCount = $attendances->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
         $attendanceRate = $totalAttendanceSessions > 0 ? round(($presentCount / $totalAttendanceSessions) * 100) : 0;
         
+        $attendanceBreakdown = [
+            'hadir' => $attendances->whereIn('status', ['Hadir', 'Hadir - Selesai'])->count(),
+            'terlambat' => $attendances->whereIn('status', ['Terlambat', 'Terlambat - Selesai'])->count(),
+            'izin_sakit' => $attendances->whereIn('status', ['Izin', 'Sakit'])->count(),
+            'alpha' => $attendances->where('status', 'Alpha')->count(),
+        ];
+        
         // 3. PKL Duration
         $daysLeft = 0;
         $endDateFormatted = '-';
@@ -270,7 +277,7 @@ class PelaksanaController extends Controller
                 $q->where('user_id', $user->id);
             }])
             ->latest()
-            ->take(3)
+            ->take(5)
             ->get();
             
         $recentAttendances = AttendanceAssignee::with('attendance')
@@ -287,6 +294,16 @@ class PelaksanaController extends Controller
             ->orderBy('tasks.deadline_date', 'asc')
             ->first();
 
+        // 6. Average Score (Rata-rata Nilai)
+        $averageScore = $user->submissions()->whereNotNull('nilai')->avg('nilai');
+        $averageScore = $averageScore ? round($averageScore, 1) : 0;
+
+        // 7. Calendar Tasks (Seluruh tugas aktif untuk kalender, termasuk bulan depan/sebelumnya)
+        $calendarTasks = $user->assignedTasks()
+            ->where('tasks.status', 'active')
+            ->whereNotNull('tasks.deadline_date')
+            ->get(['tasks.id', 'tasks.judul', 'tasks.deadline_date']);
+
         return view('pelaksana.dashboard', compact(
             'totalTasks',
             'pendingTasks',
@@ -298,7 +315,10 @@ class PelaksanaController extends Controller
             'endDateFormatted',
             'recentTasks',
             'recentAttendances',
-            'priorityTask'
+            'priorityTask',
+            'averageScore',
+            'calendarTasks',
+            'attendanceBreakdown'
         ));
     }
 

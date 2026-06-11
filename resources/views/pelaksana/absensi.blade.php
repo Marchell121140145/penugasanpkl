@@ -136,7 +136,14 @@
                                         <i class="fi fi-rr-check"></i> Selesai
                                     </span>
                                 @else
-                                    {{ $assignee->keterangan ?? '-' }}
+                                    @if($assignee->keterangan)
+                                        <div class="text-xs text-slate-500 bg-slate-50 p-2 rounded border border-slate-100 italic w-48">
+                                            <span class="font-semibold text-slate-600 block mb-0.5"><i class="fi fi-rr-comment-alt mr-1"></i> Keterangan:</span>
+                                            {{ $assignee->keterangan }}
+                                        </div>
+                                    @else
+                                        <span class="text-slate-400 text-xs italic">- Tidak ada aksi -</span>
+                                    @endif
                                 @endif
                             </td>
                         </tr>
