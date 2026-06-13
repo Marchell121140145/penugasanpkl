@@ -17,9 +17,9 @@
         @csrf
         @method('patch')
 
-        <div class="flex items-center gap-6 mb-6">
+        <div class="flex flex-col sm:flex-row items-center sm:items-center gap-4 sm:gap-6 mb-6">
             <div class="shrink-0 relative group">
-                <img id="avatar-preview" class="h-24 w-24 object-cover rounded-full border-4 border-white shadow-lg" 
+                <img id="avatar-preview" class="h-20 w-20 sm:h-24 sm:w-24 object-cover rounded-full border-4 border-white shadow-lg" 
                      src="{{ $user->avatar ? route('file.avatar', $user->id) : 'https://ui-avatars.com/api/?name='.urlencode($user->name).'&background=3b82f6&color=fff&size=200' }}" 
                      alt="{{ $user->name }}">
                 <div class="absolute inset-0 bg-black bg-opacity-40 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"

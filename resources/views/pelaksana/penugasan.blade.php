@@ -1,10 +1,10 @@
 <x-pelaksana-layout>
     <div x-data="{ viewMode: localStorage.getItem('taskViewPref') || 'grid' }" x-init="$watch('viewMode', val => localStorage.setItem('taskViewPref', val))">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 md:mb-8 gap-4">
             <div>
-                <h1 class="text-slate-800 dark:text-white text-3xl font-bold mb-1">Daftar Tugas</h1>
-                <p class="text-slate-600 dark:text-slate-400">Pantau dan kerjakan tugas PKL kamu</p>
+                <h1 class="text-slate-800 dark:text-white text-2xl md:text-3xl font-bold mb-1">Daftar Tugas</h1>
+                <p class="text-slate-600 dark:text-slate-400 text-sm md:text-base">Pantau dan kerjakan tugas PKL kamu</p>
             </div>
             
             <!-- View Toggle -->
@@ -19,65 +19,65 @@
         </div>
 
         <!-- Stats Summary -->
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div class="grid grid-cols-2 lg:grid-cols-4 gap-3 md:gap-6 mb-6 md:mb-8">
             <!-- Total Tasks -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                <div class="w-12 h-12 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400">
-                    <span class="text-xl"><i class="fi fi-rr-clipboard-list"></i></span>
+            <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-3 md:gap-4">
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-blue-50 dark:bg-blue-900/30 rounded-full flex items-center justify-center text-blue-600 dark:text-blue-400 shrink-0">
+                    <span class="text-lg md:text-xl"><i class="fi fi-rr-clipboard-list"></i></span>
                 </div>
-                <div>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Total Tugas</p>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['total'] }}</h3>
+                <div class="min-w-0">
+                    <p class="text-slate-500 dark:text-slate-400 text-[10px] md:text-sm font-medium uppercase tracking-wider">Total Tugas</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['total'] }}</h3>
                 </div>
             </div>
 
             <!-- Completed Tasks -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                <div class="w-12 h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400">
-                    <span class="text-xl"><i class="fi fi-rr-check"></i></span>
+            <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-3 md:gap-4">
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-emerald-50 dark:bg-emerald-900/30 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 shrink-0">
+                    <span class="text-lg md:text-xl"><i class="fi fi-rr-check"></i></span>
                 </div>
-                <div>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Selesai</p>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['selesai'] }}</h3>
+                <div class="min-w-0">
+                    <p class="text-slate-500 dark:text-slate-400 text-[10px] md:text-sm font-medium uppercase tracking-wider">Selesai</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['selesai'] }}</h3>
                 </div>
             </div>
 
             <!-- Pending Tasks -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                <div class="w-12 h-12 bg-amber-50 dark:bg-amber-900/30 rounded-full flex items-center justify-center text-amber-600 dark:text-amber-400">
-                    <span class="text-xl"><i class="fi fi-rr-hourglass-end"></i></span>
+            <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-3 md:gap-4">
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-amber-50 dark:bg-amber-900/30 rounded-full flex items-center justify-center text-amber-600 dark:text-amber-400 shrink-0">
+                    <span class="text-lg md:text-xl"><i class="fi fi-rr-hourglass-end"></i></span>
                 </div>
-                <div>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Belum Selesai</p>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['dalam_proses'] + $stats['belum_dikerjakan'] }}</h3>
+                <div class="min-w-0">
+                    <p class="text-slate-500 dark:text-slate-400 text-[10px] md:text-sm font-medium uppercase tracking-wider">Belum Selesai</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['dalam_proses'] + $stats['belum_dikerjakan'] }}</h3>
                 </div>
             </div>
 
             <!-- Late Tasks -->
-            <div class="bg-white dark:bg-slate-800 p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-4">
-                <div class="w-12 h-12 bg-red-50 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-600 dark:text-red-400">
-                    <span class="text-xl"><i class="fi fi-rr-triangle-warning"></i></span>
+            <div class="bg-white dark:bg-slate-800 p-4 md:p-6 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 flex items-center gap-3 md:gap-4">
+                <div class="w-10 h-10 md:w-12 md:h-12 bg-red-50 dark:bg-red-900/30 rounded-full flex items-center justify-center text-red-600 dark:text-red-400 shrink-0">
+                    <span class="text-lg md:text-xl"><i class="fi fi-rr-triangle-warning"></i></span>
                 </div>
-                <div>
-                    <p class="text-slate-500 dark:text-slate-400 text-sm font-medium uppercase tracking-wider">Terlambat</p>
-                    <h3 class="text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['terlambat'] }}</h3>
+                <div class="min-w-0">
+                    <p class="text-slate-500 dark:text-slate-400 text-[10px] md:text-sm font-medium uppercase tracking-wider">Terlambat</p>
+                    <h3 class="text-xl md:text-2xl font-bold text-slate-800 dark:text-white">{{ $stats['terlambat'] }}</h3>
                 </div>
             </div>
         </div>
 
         <!-- Filters -->
-        <form method="GET" action="{{ route('pelaksana.penugasan') }}" class="flex flex-col md:flex-row justify-between items-center mb-6 bg-white dark:bg-slate-800 p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 gap-4">
-            <div class="flex gap-4 w-full md:w-auto">
+        <form method="GET" action="{{ route('pelaksana.penugasan') }}" class="flex flex-col sm:flex-row justify-between items-stretch sm:items-center mb-4 md:mb-6 bg-white dark:bg-slate-800 p-3 md:p-5 rounded-xl shadow-sm border border-slate-100 dark:border-slate-700 gap-3 md:gap-4">
+            <div class="hidden sm:flex gap-4 w-auto">
                  <div class="text-sm font-medium text-slate-500 dark:text-slate-400 pt-2">Filter Tugas:</div>
             </div>
-            <div class="flex flex-col md:flex-row gap-4 items-center w-full md:w-auto">
-                <select name="status" onchange="this.form.submit()" class="p-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-white cursor-pointer text-sm min-w-[150px] focus:outline-none focus:border-blue-500 dark:focus:border-blue-500">
+            <div class="flex flex-col sm:flex-row gap-3 md:gap-4 items-stretch sm:items-center w-full sm:w-auto">
+                <select name="status" onchange="this.form.submit()" class="p-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-white cursor-pointer text-sm w-full sm:min-w-[150px] sm:w-auto focus:outline-none focus:border-blue-500 dark:focus:border-blue-500">
                     <option value="Semua Status" {{ request('status') == 'Semua Status' ? 'selected' : '' }}>Semua Status</option>
                     <option value="Belum Dikerjakan" {{ request('status') == 'Belum Dikerjakan' ? 'selected' : '' }}>Belum Dikerjakan</option>
                     <option value="Dalam Proses" {{ request('status') == 'Dalam Proses' ? 'selected' : '' }}>Dalam Proses</option>
                     <option value="Selesai" {{ request('status') == 'Selesai' ? 'selected' : '' }}>Selesai</option>
                 </select>
-                <input type="text" name="search" value="{{ request('search') }}" onblur="this.form.submit()" class="p-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-white w-full md:w-64 text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-500" placeholder="Cari tugas...">
+                <input type="text" name="search" value="{{ request('search') }}" onblur="this.form.submit()" class="p-2.5 border-2 border-slate-200 dark:border-slate-600 rounded-lg bg-white dark:bg-slate-700 dark:text-white w-full sm:w-64 text-sm focus:outline-none focus:border-blue-500 dark:focus:border-blue-500" placeholder="Cari tugas...">
             </div>
         </form>
 

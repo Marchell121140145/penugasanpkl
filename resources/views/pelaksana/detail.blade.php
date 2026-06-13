@@ -1,9 +1,9 @@
 <x-pelaksana-layout>
     <div class="w-full pb-12">
         <!-- Header -->
-        <div class="flex flex-col md:flex-row md:justify-between md:items-center gap-4 mb-8">
+        <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 md:gap-4 mb-6 md:mb-8">
             <div>
-                <h1 class="text-3xl font-bold text-slate-800 dark:text-white mb-2">Welcome Back, {{ Auth::user()->name }}</h1>
+                <h1 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-1 md:mb-2">Welcome Back, {{ Auth::user()->name }}</h1>
                 <p class="text-slate-600 dark:text-slate-400">Berikut adalah detail tugas Anda.</p>
             </div>
             <a href="{{ route('pelaksana.penugasan') }}" class="inline-flex items-center gap-2 px-5 py-2.5 bg-white dark:bg-slate-800 border-2 border-slate-200 dark:border-slate-700 rounded-xl text-slate-700 dark:text-slate-300 font-semibold hover:border-blue-500 hover:text-blue-600 dark:hover:border-blue-500 dark:hover:text-blue-400 transition-colors shadow-sm">
@@ -31,9 +31,9 @@
 
         <!-- Result & Review Section (Only if graded) -->
         @if($submission->status == 'graded' || $submission->komentar)
-        <div class="bg-blue-50 dark:bg-slate-800/80 border-l-4 border-blue-500 rounded-r-2xl shadow-sm mb-8 overflow-hidden">
-            <div class="p-6">
-                <div class="flex justify-between items-start mb-4">
+        <div class="bg-blue-50 dark:bg-slate-800/80 border-l-4 border-blue-500 rounded-r-2xl shadow-sm mb-6 md:mb-8 overflow-hidden">
+            <div class="p-4 md:p-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start gap-3 mb-4">
                     <div>
                         <h2 class="text-xl font-bold text-slate-800 dark:text-white mb-1">Hasil Review Admin</h2>
                         <p class="text-sm text-slate-600 dark:text-slate-400">Admin telah meninjau hasil pekerjaan Anda.</p>
@@ -58,11 +58,11 @@
 
         <!-- Task Detail Card -->
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden mb-8">
-            <div class="p-6 md:p-8">
-                <div class="flex flex-col md:flex-row md:justify-between md:items-start gap-4 mb-8">
+            <div class="p-4 md:p-6 lg:p-8">
+                <div class="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-3 md:gap-4 mb-6 md:mb-8">
                     <div>
-                        <h1 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-4">{{ $task->judul }}</h1>
-                        <div class="flex flex-wrap gap-6 text-sm">
+                        <h1 class="text-xl sm:text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-3 md:mb-4">{{ $task->judul }}</h1>
+                        <div class="flex flex-wrap gap-4 md:gap-6 text-sm">
                             <div class="flex flex-col">
                                 <span class="font-semibold text-slate-500 dark:text-slate-400 mb-1">Pemberi Tugas</span>
                                 <span class="font-medium text-slate-800 dark:text-white">{{ $task->creator->name ?? 'Admin' }}</span>
@@ -185,9 +185,9 @@
                 @endif
 
                 <!-- Deadline Section -->
-                <div class="mb-8">
-                    <div class="bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 rounded-r-xl p-5 shadow-sm">
-                        <div class="flex justify-between items-center mb-3">
+                <div class="mb-6 md:mb-8">
+                    <div class="bg-orange-50 dark:bg-orange-900/10 border-l-4 border-orange-500 rounded-r-xl p-4 md:p-5 shadow-sm">
+                        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2 mb-3">
                             <h2 class="text-lg font-bold text-slate-800 dark:text-white">Deadline</h2>
                             @if($isLate)
                                 <div class="text-red-600 dark:text-red-400 font-bold flex items-center gap-2 bg-red-100 dark:bg-red-900/30 px-3 py-1 rounded-full text-sm"><i class="fi fi-rr-triangle-warning"></i> Terlambat</div>
@@ -195,7 +195,7 @@
                                 <div class="text-emerald-700 dark:text-emerald-400 font-bold flex items-center gap-2 bg-emerald-100 dark:bg-emerald-900/30 px-3 py-1 rounded-full text-sm"><i class="fi fi-rr-hourglass-end"></i> {{ \Carbon\Carbon::parse($task->deadline_date)->diffForHumans() }}</div>
                             @endif
                         </div>
-                        <div class="text-orange-600 dark:text-orange-400 font-bold text-lg flex items-center gap-2">
+                        <div class="text-orange-600 dark:text-orange-400 font-bold text-base md:text-lg flex items-center gap-2 flex-wrap">
                             <i class="fi fi-rr-calendar"></i> {{ \Carbon\Carbon::parse($task->deadline_date)->format('d F Y') }} - {{ $task->deadline_time }} WIB
                         </div>
                     </div>
@@ -276,14 +276,14 @@
 
         <!-- Dialogue Section -->
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden mb-8">
-            <div class="p-6 border-b border-slate-100 dark:border-slate-700">
+            <div class="p-4 md:p-6 border-b border-slate-100 dark:border-slate-700">
                 <h2 class="text-xl font-bold text-slate-800 dark:text-white flex items-center gap-2">
-                    <i class="fi fi-rr-comment-alt text-indigo-500"></i> Diskusi dengan Admin
+                    <i class="fi fi-rr-comment-alt text-indigo-500"></i> <span class="text-base md:text-xl">Diskusi dengan Admin</span>
                 </h2>
             </div>
             
-            <div class="p-6 bg-slate-50 dark:bg-slate-900/50">
-                <div class="max-h-[500px] overflow-y-auto mb-6 pr-2 space-y-4" id="pelaksanaCommentFeed">
+            <div class="p-4 md:p-6 bg-slate-50 dark:bg-slate-900/50">
+                <div class="max-h-[400px] md:max-h-[500px] overflow-y-auto mb-4 md:mb-6 pr-1 md:pr-2 space-y-3 md:space-y-4" id="pelaksanaCommentFeed">
                     @forelse($submission->comments as $comment)
                         @php
                             $isAdmin = $comment->user->role_id != 3;
@@ -303,9 +303,9 @@
                                 @endif
                             @endif
                             
-                            <div class="flex flex-col {{ !$isAdmin ? 'items-end' : 'items-start' }} max-w-[85%]">
+                            <div class="flex flex-col {{ !$isAdmin ? 'items-end' : 'items-start' }} max-w-[90%] sm:max-w-[85%]">
                                 <span class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-medium px-1">{{ $comment->user->name }}</span>
-                                <div class="px-5 py-3 rounded-2xl {{ $bubbleBg }} text-sm leading-relaxed">
+                                <div class="px-3 py-2 md:px-5 md:py-3 rounded-2xl {{ $bubbleBg }} text-sm leading-relaxed">
                                     {{ $comment->pesan }}
                                 </div>
                                 <span class="text-[10px] text-slate-400 mt-1 px-1">{{ $comment->created_at->translatedFormat('d M Y, H:i') }}</span>
@@ -345,8 +345,8 @@
     </div>
 
     <!-- PDF Modal -->
-    <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 transition-opacity hidden" id="pdfModalOverlay" onclick="closePdfModal(event)" style="display: none;">
-        <div class="bg-white dark:bg-slate-800 rounded-2xl w-full max-w-5xl h-[85vh] flex flex-col overflow-hidden shadow-2xl scale-95 transition-transform" id="pdfModalContent" onclick="event.stopPropagation()">
+    <div class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm z-50 flex items-center justify-center p-2 md:p-4 transition-opacity hidden" id="pdfModalOverlay" onclick="closePdfModal(event)" style="display: none;">
+        <div class="bg-white dark:bg-slate-800 rounded-xl md:rounded-2xl w-full max-w-5xl h-[95vh] md:h-[85vh] flex flex-col overflow-hidden shadow-2xl scale-95 transition-transform" id="pdfModalContent" onclick="event.stopPropagation()">
             <div class="flex justify-between items-center px-6 py-4 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-800/80">
                 <h3 class="font-bold text-slate-800 dark:text-white flex items-center gap-2"><i class="fi fi-rr-document"></i> <span id="pdfModalTitle">PDF Viewer</span></h3>
                 <button class="w-8 h-8 flex items-center justify-center rounded-lg bg-slate-200 hover:bg-slate-300 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-600 dark:text-slate-300 transition-colors" onclick="closePdfModal()">

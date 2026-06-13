@@ -5,7 +5,7 @@
             <a href="{{ route('pelaksana.absensi') }}" class="text-slate-500 dark:text-slate-400 hover:text-blue-600 dark:hover:text-blue-400 flex items-center gap-2 text-sm font-medium transition-colors mb-4 inline-flex">
                 <i class="fi fi-rr-arrow-left"></i> Kembali ke Riwayat
             </a>
-            <h1 class="text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
+            <h1 class="text-2xl md:text-3xl font-bold text-slate-800 dark:text-white mb-2 flex items-center gap-3">
                 <i class="fi fi-rr-exit text-blue-600 dark:text-blue-500"></i> Check-Out Absensi
             </h1>
             <p class="text-slate-600 dark:text-slate-400">Ambil foto sebagai bukti check-out untuk mengakhiri sesi absen.</p>
@@ -14,16 +14,16 @@
         <div class="bg-white dark:bg-slate-800 rounded-2xl shadow-sm border border-slate-100 dark:border-slate-700 overflow-hidden mb-6">
             <!-- Time Display -->
             <div class="bg-gradient-to-br from-blue-600 to-blue-800 dark:from-slate-800 dark:to-slate-900 text-white p-8 text-center border-b border-blue-900/50">
-                <div class="text-4xl md:text-5xl font-black mb-2 tracking-tight" id="currentTime">--:--:--</div>
+                <div class="text-3xl md:text-4xl lg:text-5xl font-black mb-2 tracking-tight" id="currentTime">--:--:--</div>
                 <div class="text-blue-100 dark:text-slate-400 font-medium" id="currentDate">-- --- ----</div>
                 <div class="mt-4 inline-flex items-center gap-2 bg-white/20 dark:bg-slate-700/50 backdrop-blur-sm px-4 py-1.5 rounded-full text-sm font-semibold border border-white/10">
                     <i class="fi fi-rr-sign-out-alt"></i> Check-Out Mode
                 </div>
             </div>
 
-            <div class="p-6 md:p-8">
+            <div class="p-4 md:p-6 lg:p-8">
                 <!-- Check-in Summary -->
-                <div class="flex items-center gap-4 bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-200 dark:border-emerald-800/50 rounded-xl p-5 mb-6">
+                <div class="flex items-center gap-3 md:gap-4 bg-emerald-50 dark:bg-emerald-900/20 border-2 border-emerald-200 dark:border-emerald-800/50 rounded-xl p-4 md:p-5 mb-6">
                     <div class="w-12 h-12 bg-emerald-100 dark:bg-emerald-900/50 rounded-full flex items-center justify-center text-emerald-600 dark:text-emerald-400 text-xl flex-shrink-0">
                         <i class="fi fi-rr-check"></i>
                     </div>
@@ -34,7 +34,7 @@
                 </div>
 
                 <!-- Attendance Info -->
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-8 bg-slate-50 dark:bg-slate-900/50 p-6 rounded-xl border border-slate-100 dark:border-slate-800">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 md:gap-4 mb-6 md:mb-8 bg-slate-50 dark:bg-slate-900/50 p-4 md:p-6 rounded-xl border border-slate-100 dark:border-slate-800">
                     <div>
                         <div class="text-xs font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-1">Nama</div>
                         <div class="font-semibold text-slate-800 dark:text-white">{{ Auth::user()->name }}</div>

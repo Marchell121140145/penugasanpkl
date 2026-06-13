@@ -32,8 +32,14 @@
     @include('layouts.sidebar')
 
     <!-- Main Content -->
-    <div class="flex-1 p-8 print:p-0 overflow-y-auto">
+    <div class="flex-1 p-8 print:p-0 overflow-y-auto flex flex-col">
         {{ $slot }}
+        
+        <footer class="mt-auto pt-8 pb-2 text-center text-xs text-slate-500 dark:text-slate-400 print:hidden">
+            <div class="border-t border-slate-200 dark:border-slate-800 pt-4">
+                &copy; {{ date('Y') }} SISPKL Telkom. All rights reserved.
+            </div>
+        </footer>
     </div>
 
 </body>
