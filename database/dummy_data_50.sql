@@ -56,7 +56,11 @@ ON DUPLICATE KEY UPDATE `nama` = VALUES(`nama`);
 
 -- Admin
 INSERT INTO `users` (`id`, `name`, `email`, `email_verified_at`, `password`, `role_id`, `divisi_id`, `pembimbing_id`, `avatar`, `pkl_start`, `pkl_end`, `created_at`, `updated_at`) VALUES
-(1, 'Administrator', 'admin@penugasanpkl.com', NOW(), '$2y$12$0HoGJY6FEwVHTJg.oONIvOXmdJPC7sziARaw6C/EcC.rUSndvUQB.', 1, NULL, NULL, NULL, NULL, NULL, NOW(), NOW())
+(1, 'Administrator', 'admin@penugasanpkl.com', NOW(), '$2y$12$0HoGJY6FEwVHTJg.oONIvOXmdJPC7sziARaw6C/EcC.rUSndvUQB.', 1, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(57, 'Eko Dwi Nugroho, S.Kom., M.Cs.', 'eko.nugroho@if.itera.ac.id', NOW(), '$2y$12$0HoGJY6FEwVHTJg.oONIvOXmdJPC7sziARaw6C/EcC.rUSndvUQB.', 1, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(58, 'Muhammad Habib Algifari, S.Kom., M.TI.', 'muhammad.algifari@if.itera.ac.id', NOW(), '$2y$12$0HoGJY6FEwVHTJg.oONIvOXmdJPC7sziARaw6C/EcC.rUSndvUQB.', 1, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(59, 'Ilham Firman Ashari, S.Kom., M.T.', 'firman.ashari@if.itera.ac.id', NOW(), '$2y$12$0HoGJY6FEwVHTJg.oONIvOXmdJPC7sziARaw6C/EcC.rUSndvUQB.', 1, NULL, NULL, NULL, NULL, NULL, NOW(), NOW()),
+(60, 'Meida Cahyo Untoro, S.Kom., M.Kom', 'cahyo.untoro@if.itera.ac.id', NOW(), '$2y$12$0HoGJY6FEwVHTJg.oONIvOXmdJPC7sziARaw6C/EcC.rUSndvUQB.', 1, NULL, NULL, NULL, NULL, NULL, NOW(), NOW())
 ON DUPLICATE KEY UPDATE `name` = VALUES(`name`);
 
 -- Pembimbing (ID 2-6)
@@ -157,80 +161,331 @@ INSERT INTO `attendances` (`id`, `title`, `description`, `deadline`, `checkout_s
 -- Semua berstatus "Belum Mengisi" agar bisa diisi manual saat testing
 -- ============================================================
 
--- Absensi 1 (1 Mei) - Semua "Belum Mengisi"
+-- Absensi 1 (1 Mei) - Dengan berbagai variasi status
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 1, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-01 06:00:00', '2026-05-01 06:00:00'
+SELECT 1, u.id, 
+    CASE 
+        WHEN u.id IN (7, 8, 9, 10) THEN 'Hadir'
+        WHEN u.id IN (11, 12) THEN 'Terlambat'
+        WHEN u.id = 13 THEN 'Izin'
+        WHEN u.id = 14 THEN 'Sakit'
+        ELSE 'Belum Mengisi'
+    END as status,
+    CASE 
+        WHEN u.id IN (7, 8, 9, 10) THEN '2026-05-01 08:00:00'
+        WHEN u.id IN (11, 12) THEN '2026-05-01 09:30:00'
+        ELSE NULL
+    END as check_in_time,
+    CASE 
+        WHEN u.id IN (7, 8, 9, 10) THEN '2026-05-01 17:05:00'
+        WHEN u.id IN (11, 12) THEN '2026-05-01 17:10:00'
+        ELSE NULL
+    END as check_out_time,
+    CASE 
+        WHEN u.id = 13 THEN 'Keperluan keluarga'
+        WHEN u.id = 14 THEN 'Sakit demam'
+        ELSE NULL
+    END as keterangan,
+    CASE 
+        WHEN u.id = 14 THEN 'surat_sakit/dummy.jpg'
+        ELSE NULL
+    END as photo_path,
+    NULL as checkout_photo_path,
+    '2026-05-01 06:00:00' as created_at,
+    '2026-05-01 06:00:00' as updated_at
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 2 (4 Mei)
+-- =============================================
+-- MINGGU 1 (Absensi 2-6): Mayoritas Hadir, beberapa variasi
+-- =============================================
+
+-- Absensi 2 (4 Mei) - Mayoritas hadir
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 2, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-04 06:00:00', '2026-05-04 06:00:00'
+SELECT 2, u.id,
+    CASE
+        WHEN u.id BETWEEN 7 AND 40 THEN 'Hadir'
+        WHEN u.id IN (41, 42) THEN 'Terlambat'
+        WHEN u.id = 43 THEN 'Sakit'
+        WHEN u.id = 44 THEN 'Izin'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id BETWEEN 7 AND 40 THEN '2026-05-04 08:10:00'
+        WHEN u.id IN (41, 42) THEN '2026-05-04 09:15:00'
+        WHEN u.id IN (43, 44) THEN NULL
+        ELSE '2026-05-04 08:20:00'
+    END,
+    CASE
+        WHEN u.id IN (43, 44) THEN NULL
+        ELSE '2026-05-04 17:05:00'
+    END,
+    CASE
+        WHEN u.id = 43 THEN 'Flu berat'
+        WHEN u.id = 44 THEN 'Urusan kampus'
+        ELSE NULL
+    END,
+    NULL, NULL,
+    '2026-05-04 06:00:00', '2026-05-04 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 3 (5 Mei)
+-- Absensi 3 (5 Mei) - Mayoritas hadir, 3 terlambat
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 3, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-05 06:00:00', '2026-05-05 06:00:00'
+SELECT 3, u.id,
+    CASE
+        WHEN u.id IN (15, 16, 17) THEN 'Terlambat'
+        WHEN u.id = 18 THEN 'Izin'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (15, 16, 17) THEN '2026-05-05 09:00:00'
+        WHEN u.id = 18 THEN NULL
+        ELSE '2026-05-05 08:05:00'
+    END,
+    CASE
+        WHEN u.id = 18 THEN NULL
+        ELSE '2026-05-05 17:00:00'
+    END,
+    CASE WHEN u.id = 18 THEN 'Mengurus KRS di kampus' ELSE NULL END,
+    NULL, NULL,
+    '2026-05-05 06:00:00', '2026-05-05 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 4 (6 Mei)
+-- Absensi 4 (6 Mei) - Semua hadir kecuali 2 sakit
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 4, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-06 06:00:00', '2026-05-06 06:00:00'
+SELECT 4, u.id,
+    CASE
+        WHEN u.id IN (29, 30) THEN 'Sakit'
+        ELSE 'Hadir'
+    END,
+    CASE WHEN u.id IN (29, 30) THEN NULL ELSE '2026-05-06 07:55:00' END,
+    CASE WHEN u.id IN (29, 30) THEN NULL ELSE '2026-05-06 17:10:00' END,
+    CASE WHEN u.id = 29 THEN 'Demam tinggi' WHEN u.id = 30 THEN 'Sakit perut' ELSE NULL END,
+    NULL, NULL,
+    '2026-05-06 06:00:00', '2026-05-06 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 5 (7 Mei)
+-- Absensi 5 (7 Mei) - Ada yang terlambat dan izin
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 5, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-07 06:00:00', '2026-05-07 06:00:00'
+SELECT 5, u.id,
+    CASE
+        WHEN u.id IN (7, 8) THEN 'Terlambat'
+        WHEN u.id = 35 THEN 'Izin'
+        WHEN u.id = 36 THEN 'Sakit'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (7, 8) THEN '2026-05-07 09:45:00'
+        WHEN u.id IN (35, 36) THEN NULL
+        ELSE '2026-05-07 08:15:00'
+    END,
+    CASE WHEN u.id IN (35, 36) THEN NULL ELSE '2026-05-07 17:00:00' END,
+    CASE
+        WHEN u.id = 35 THEN 'Ada acara keluarga'
+        WHEN u.id = 36 THEN 'Radang tenggorokan'
+        ELSE NULL
+    END,
+    NULL, NULL,
+    '2026-05-07 06:00:00', '2026-05-07 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 6 (8 Mei)
+-- Absensi 6 (8 Mei) - Mayoritas hadir
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 6, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-08 06:00:00', '2026-05-08 06:00:00'
+SELECT 6, u.id,
+    CASE
+        WHEN u.id IN (23, 24, 25) THEN 'Terlambat'
+        WHEN u.id = 26 THEN 'Izin'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (23, 24, 25) THEN '2026-05-08 08:50:00'
+        WHEN u.id = 26 THEN NULL
+        ELSE '2026-05-08 08:00:00'
+    END,
+    CASE WHEN u.id = 26 THEN NULL ELSE '2026-05-08 17:05:00' END,
+    CASE WHEN u.id = 26 THEN 'Pergi ke rumah sakit' ELSE NULL END,
+    NULL, NULL,
+    '2026-05-08 06:00:00', '2026-05-08 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 7 (11 Mei)
+-- =============================================
+-- MINGGU 2 (Absensi 7-11): Variasi lebih banyak
+-- =============================================
+
+-- Absensi 7 (11 Mei) - Sebagian hadir, banyak terlambat (hari Senin)
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 7, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-11 06:00:00', '2026-05-11 06:00:00'
+SELECT 7, u.id,
+    CASE
+        WHEN u.id IN (9, 10, 11, 20, 21, 37, 38) THEN 'Terlambat'
+        WHEN u.id = 39 THEN 'Sakit'
+        WHEN u.id = 40 THEN 'Izin'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (9, 10, 11, 20, 21, 37, 38) THEN '2026-05-11 09:20:00'
+        WHEN u.id IN (39, 40) THEN NULL
+        ELSE '2026-05-11 08:10:00'
+    END,
+    CASE WHEN u.id IN (39, 40) THEN NULL ELSE '2026-05-11 17:00:00' END,
+    CASE
+        WHEN u.id = 39 THEN 'Vertigo kambuh'
+        WHEN u.id = 40 THEN 'Mengurus surat di kelurahan'
+        ELSE NULL
+    END,
+    NULL, NULL,
+    '2026-05-11 06:00:00', '2026-05-11 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 8 (12 Mei)
+-- Absensi 8 (12 Mei) - Mayoritas hadir
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 8, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-12 06:00:00', '2026-05-12 06:00:00'
+SELECT 8, u.id,
+    CASE
+        WHEN u.id IN (45, 46) THEN 'Terlambat'
+        WHEN u.id = 47 THEN 'Sakit'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (45, 46) THEN '2026-05-12 09:10:00'
+        WHEN u.id = 47 THEN NULL
+        ELSE '2026-05-12 08:05:00'
+    END,
+    CASE WHEN u.id = 47 THEN NULL ELSE '2026-05-12 17:10:00' END,
+    CASE WHEN u.id = 47 THEN 'Tipes, perlu istirahat' ELSE NULL END,
+    NULL, NULL,
+    '2026-05-12 06:00:00', '2026-05-12 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 9 (13 Mei)
+-- Absensi 9 (13 Mei) - Semua hadir (hari sempurna)
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 9, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-13 06:00:00', '2026-05-13 06:00:00'
+SELECT 9, u.id, 'Hadir', '2026-05-13 08:00:00', '2026-05-13 17:00:00', NULL, NULL, NULL,
+    '2026-05-13 06:00:00', '2026-05-13 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 10 (14 Mei)
+-- Absensi 10 (14 Mei) - Beberapa izin dan sakit
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 10, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-14 06:00:00', '2026-05-14 06:00:00'
+SELECT 10, u.id,
+    CASE
+        WHEN u.id IN (12, 13) THEN 'Izin'
+        WHEN u.id IN (48, 49) THEN 'Sakit'
+        WHEN u.id = 50 THEN 'Terlambat'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (12, 13, 48, 49) THEN NULL
+        WHEN u.id = 50 THEN '2026-05-14 09:30:00'
+        ELSE '2026-05-14 08:10:00'
+    END,
+    CASE WHEN u.id IN (12, 13, 48, 49) THEN NULL ELSE '2026-05-14 17:05:00' END,
+    CASE
+        WHEN u.id = 12 THEN 'Wisuda saudara'
+        WHEN u.id = 13 THEN 'Keperluan mendadak'
+        WHEN u.id = 48 THEN 'Batuk parah'
+        WHEN u.id = 49 THEN 'Alergi makanan'
+        ELSE NULL
+    END,
+    NULL, NULL,
+    '2026-05-14 06:00:00', '2026-05-14 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 11 (15 Mei)
+-- Absensi 11 (15 Mei) - Hari Jumat, beberapa terlambat
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 11, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-15 06:00:00', '2026-05-15 06:00:00'
+SELECT 11, u.id,
+    CASE
+        WHEN u.id IN (14, 15, 16, 17, 51) THEN 'Terlambat'
+        WHEN u.id = 52 THEN 'Izin'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (14, 15, 16, 17, 51) THEN '2026-05-15 09:05:00'
+        WHEN u.id = 52 THEN NULL
+        ELSE '2026-05-15 08:15:00'
+    END,
+    CASE WHEN u.id = 52 THEN NULL ELSE '2026-05-15 17:00:00' END,
+    CASE WHEN u.id = 52 THEN 'Pulang kampung' ELSE NULL END,
+    NULL, NULL,
+    '2026-05-15 06:00:00', '2026-05-15 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 12 (18 Mei)
+-- =============================================
+-- MINGGU 3 (Absensi 12-15): Variasi realistis
+-- =============================================
+
+-- Absensi 12 (18 Mei) - Hari Senin, banyak terlambat
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 12, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-18 06:00:00', '2026-05-18 06:00:00'
+SELECT 12, u.id,
+    CASE
+        WHEN u.id IN (7, 8, 9, 10, 11, 18, 19, 20, 33, 34) THEN 'Terlambat'
+        WHEN u.id IN (53, 54) THEN 'Sakit'
+        WHEN u.id = 55 THEN 'Izin'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (7, 8, 9, 10, 11, 18, 19, 20, 33, 34) THEN '2026-05-18 09:00:00'
+        WHEN u.id IN (53, 54, 55) THEN NULL
+        ELSE '2026-05-18 08:20:00'
+    END,
+    CASE WHEN u.id IN (53, 54, 55) THEN NULL ELSE '2026-05-18 17:05:00' END,
+    CASE
+        WHEN u.id = 53 THEN 'Demam'
+        WHEN u.id = 54 THEN 'Sakit gigi'
+        WHEN u.id = 55 THEN 'Ada jadwal kuliah'
+        ELSE NULL
+    END,
+    NULL, NULL,
+    '2026-05-18 06:00:00', '2026-05-18 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 13 (19 Mei)
+-- Absensi 13 (19 Mei) - Mayoritas hadir
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 13, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-19 06:00:00', '2026-05-19 06:00:00'
+SELECT 13, u.id,
+    CASE
+        WHEN u.id = 28 THEN 'Terlambat'
+        WHEN u.id = 56 THEN 'Sakit'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id = 28 THEN '2026-05-19 08:45:00'
+        WHEN u.id = 56 THEN NULL
+        ELSE '2026-05-19 08:00:00'
+    END,
+    CASE WHEN u.id = 56 THEN NULL ELSE '2026-05-19 17:00:00' END,
+    CASE WHEN u.id = 56 THEN 'Kecelakaan ringan' ELSE NULL END,
+    NULL, NULL,
+    '2026-05-19 06:00:00', '2026-05-19 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 14 (20 Mei)
+-- Absensi 14 (20 Mei) - Semua hadir
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 14, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-20 06:00:00', '2026-05-20 06:00:00'
+SELECT 14, u.id, 'Hadir', '2026-05-20 08:05:00', '2026-05-20 17:00:00', NULL, NULL, NULL,
+    '2026-05-20 06:00:00', '2026-05-20 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
 
--- Absensi 15 (21 Mei)
+-- Absensi 15 (21 Mei) - Beberapa terlambat dan izin
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
-SELECT 15, u.id, 'Belum Mengisi', NULL, NULL, NULL, NULL, NULL, '2026-05-21 06:00:00', '2026-05-21 06:00:00'
+SELECT 15, u.id,
+    CASE
+        WHEN u.id IN (31, 32) THEN 'Terlambat'
+        WHEN u.id = 22 THEN 'Izin'
+        WHEN u.id = 27 THEN 'Sakit'
+        ELSE 'Hadir'
+    END,
+    CASE
+        WHEN u.id IN (31, 32) THEN '2026-05-21 09:10:00'
+        WHEN u.id IN (22, 27) THEN NULL
+        ELSE '2026-05-21 08:00:00'
+    END,
+    CASE WHEN u.id IN (22, 27) THEN NULL ELSE '2026-05-21 17:05:00' END,
+    CASE
+        WHEN u.id = 22 THEN 'Mengurus dokumen di kampus'
+        WHEN u.id = 27 THEN 'Masuk angin'
+        ELSE NULL
+    END,
+    NULL, NULL,
+    '2026-05-21 06:00:00', '2026-05-21 06:00:00'
 FROM `users` u WHERE u.id BETWEEN 7 AND 56;
+
+-- =============================================
+-- MINGGU 4 (Absensi 16-21): Tetap "Belum Mengisi" (absensi terbaru)
+-- =============================================
 
 -- Absensi 16 (22 Mei)
 INSERT INTO `attendance_assignees` (`attendance_id`, `user_id`, `status`, `check_in_time`, `check_out_time`, `keterangan`, `photo_path`, `checkout_photo_path`, `created_at`, `updated_at`)
@@ -391,17 +646,17 @@ INSERT INTO `task_submissions` (`task_id`, `user_id`, `status`, `file_nama`, `fi
 -- ACTIVE TASKS - SEMUA PENDING (bisa diisi sendiri!)
 -- =============================================
 
--- Task 7 (active) - semua pending
-(7, 23, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
-(7, 24, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
-(7, 25, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
+-- Task 7 (active) - beberapa sudah submit
+(7, 23, 'submitted', 'hasil_kerja.pdf', 'submissions/hasil_kerja.pdf', 12000, NULL, NULL, '2026-05-21 10:00:00', '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
+(7, 24, 'submitted', 'hasil_kerja2.pdf', 'submissions/hasil_kerja2.pdf', 10500, NULL, NULL, '2026-05-21 11:30:00', '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
+(7, 25, 'late', 'hasil_kerja_telat.pdf', 'submissions/hasil_kerja_telat.pdf', 15000, NULL, NULL, '2026-05-22 14:00:00', '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
 (7, 26, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
 (7, 27, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
 (7, 28, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-20 08:00:00', '2026-05-20 08:00:00'),
 
--- Task 8 (active) - semua pending
-(8, 33, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-22 07:30:00', '2026-05-22 07:30:00'),
-(8, 34, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-22 07:30:00', '2026-05-22 07:30:00'),
+-- Task 8 (active) - variasi status
+(8, 33, 'working', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-22 07:30:00', '2026-05-22 07:30:00'),
+(8, 34, 'returned', NULL, NULL, 0, NULL, 'Laporan tidak sesuai format, harap perbaiki.', NULL, '2026-05-22 07:30:00', '2026-05-22 07:30:00'),
 (8, 35, 'pending', NULL, NULL, 0, NULL, NULL, NULL, '2026-05-22 07:30:00', '2026-05-22 07:30:00'),
 
 -- Task 9 (active) - semua pending
@@ -464,36 +719,36 @@ INSERT INTO `task_submissions` (`task_id`, `user_id`, `status`, `file_nama`, `fi
 -- LANGKAH 11: Aktifkan kembali foreign key check
 -- ============================================================
 SET FOREIGN_KEY_CHECKS = 1;
-
 -- ============================================================
 -- RINGKASAN DATA YANG DI-INSERT:
 -- ============================================================
 -- Roles:                 3 records (admin, pembimbing, pelaksana)
 -- Divisi:                3 records (SSGS, BGES, HERO)
--- Users:                56 records (1 Admin + 5 Pembimbing + 50 Pelaksana)
+-- Users:                60 records (5 Admin + 5 Pembimbing + 50 Pelaksana)
 -- Attendances:          21 records (21 hari kerja: 1-29 Mei 2026)
--- Attendance Assignees: 1050 records (50 pelaksana × 21 hari, SEMUA "Belum Mengisi")
+-- Attendance Assignees: 1050 records (50 pelaksana × 21 hari)
 -- Tasks:                20 records (6 completed, 10 active, 4 draft)
 -- Task Assignees:       68 records
--- Task Submissions:     68 records (23 graded + 45 PENDING)
+-- Task Submissions:     68 records (23 graded + variasi status)
 -- ============================================================
 -- 
--- STATUS UNTUK BLACKBOX TESTING:
+-- STATUS DATA UNTUK PRESENTASI:
 -- ============================================================
--- ✅ Absensi:  SEMUA KOSONG → Pelaksana bisa check-in & check-out manual
--- ✅ Tugas:    10 tugas ACTIVE dengan submission PENDING → Pelaksana bisa submit
--- ✅ Tugas:    6 tugas COMPLETED dengan nilai → Untuk riwayat/laporan
--- ✅ Tugas:    4 tugas DRAFT → Untuk testing publish oleh pembimbing
+-- ✅ Absensi Hari 1-15:  TERISI dengan variasi (Hadir/Terlambat/Izin/Sakit)
+-- ✅ Absensi Hari 16-21: KOSONG (Belum Mengisi) → untuk demo live
+-- ✅ Tugas 1-6:   COMPLETED + GRADED (sudah dinilai, ada riwayat)
+-- ✅ Tugas 7:     ACTIVE → 2 submitted, 1 late, 3 pending
+-- ✅ Tugas 8:     ACTIVE → 1 working, 1 returned, 1 pending
+-- ✅ Tugas 9-16:  ACTIVE → semua pending (bisa disubmit saat demo)
+-- ✅ Tugas 17-20: DRAFT → untuk demo publish oleh pembimbing
 --
 -- AKUN LOGIN UNTUK TESTING:
 -- ============================================================
--- Admin:      admin@penugasanpkl.com          / password
--- Pembimbing: pembimbing1@penugasanpkl.com    / password
--- Pembimbing: pembimbing2@penugasanpkl.com    / password
--- Pembimbing: pembimbing3@penugasanpkl.com    / password
--- Pembimbing: pembimbing4@penugasanpkl.com    / password
--- Pembimbing: pembimbing5@penugasanpkl.com    / password
--- Pelaksana:  pelaksana1@penugasanpkl.com     / password
--- ...sampai...
--- Pelaksana:  pelaksana50@penugasanpkl.com    / password
+-- Admin (Default):  admin@penugasanpkl.com                  / password
+-- Admin (ITERA):    eko.nugroho@if.itera.ac.id              / password
+-- Admin (ITERA):    muhammad.algifari@if.itera.ac.id        / password
+-- Admin (ITERA):    firman.ashari@if.itera.ac.id            / password
+-- Admin (ITERA):    cahyo.untoro@if.itera.ac.id             / password
+-- Pembimbing 1-5:   pembimbing1@penugasanpkl.com dsk.       / password
+-- Pelaksana 1-50:   pelaksana1@penugasanpkl.com dsk.        / password
 -- ============================================================

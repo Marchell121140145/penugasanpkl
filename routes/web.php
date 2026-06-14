@@ -10,6 +10,7 @@ use App\Http\Controllers\ReportController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ExcelEditorController;
 use App\Http\Controllers\FileServeController;
+use App\Http\Controllers\TestingController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke dashboard jika sudah login
@@ -125,3 +126,8 @@ Route::prefix('pelaksana')->middleware(['auth', 'verified', 'role:3'])->name('pe
 
 
 require __DIR__.'/auth.php';
+
+// Tambahkan di dalam file routes/web.php
+
+// Route Baru Kamu:
+Route::get('/testing', [TestingController::class, 'index'])->name('testing.index');

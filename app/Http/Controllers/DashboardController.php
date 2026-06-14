@@ -197,30 +197,68 @@ class DashboardController extends Controller
         }
 
         // ============================
-        // 4. CHART: Trend Kehadiran 4 Minggu Terakhir
+        // 4. CHART: Trend Kehadiran
         // ============================
         $attendanceChartLabels = [];
         $attendanceChartData = [];
+        $attendanceChartTitle = 'Trend Kehadiran';
 
-        for ($i = 3; $i >= 0; $i--) {
-            $weekStart = now()->subWeeks($i)->startOfWeek();
-            $weekEnd = now()->subWeeks($i)->endOfWeek();
-            $weekLabel = 'Minggu ' . (4 - $i);
-            $attendanceChartLabels[] = $weekLabel;
+        if ($timeRange == 'this_month') {
+            $attendanceChartTitle = 'Trend Kehadiran Bulan Ini';
+            $daysInMonth = now()->daysInMonth;
+            for ($i = 1; $i <= $daysInMonth; $i++) {
+                $date = now()->startOfMonth()->addDays($i - 1);
+                $attendanceChartLabels[] = $date->format('d/m');
 
-            $weekAttendanceIds = Attendance::whereBetween('deadline', [$weekStart, $weekEnd])->pluck('id');
-            $weekAssigneesQuery = AttendanceAssignee::whereIn('attendance_id', $weekAttendanceIds);
-            
-            if ($divisiId) {
-                $weekAssigneesQuery->whereHas('user', function($q) use ($divisiId) {
-                    $q->where('divisi_id', $divisiId);
-                });
+                $dayAttendanceIds = Attendance::whereDate('deadline', $date->toDateString())->pluck('id');
+                $dayAssigneesQuery = AttendanceAssignee::whereIn('attendance_id', $dayAttendanceIds);
+                if ($divisiId) {
+                    $dayAssigneesQuery->whereHas('user', function($q) use ($divisiId) {
+                        $q->where('divisi_id', $divisiId);
+                    });
+                }
+                $dayTotal = (clone $dayAssigneesQuery)->count();
+                $dayHadir = (clone $dayAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
+                $attendanceChartData[] = $dayTotal > 0 ? round(($dayHadir / $dayTotal) * 100) : 0;
             }
-            
-            $weekTotal = (clone $weekAssigneesQuery)->count();
-            $weekHadir = (clone $weekAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
+        } elseif ($timeRange == 'this_year') {
+            $attendanceChartTitle = 'Trend Kehadiran Tahun Ini';
+            for ($i = 1; $i <= 12; $i++) {
+                $date = now()->startOfYear()->addMonths($i - 1);
+                $attendanceChartLabels[] = $date->translatedFormat('M');
+                
+                $startMonth = (clone $date)->startOfMonth();
+                $endMonth = (clone $date)->endOfMonth();
 
-            $attendanceChartData[] = $weekTotal > 0 ? round(($weekHadir / $weekTotal) * 100) : 0;
+                $monthAttendanceIds = Attendance::whereBetween('deadline', [$startMonth, $endMonth])->pluck('id');
+                $monthAssigneesQuery = AttendanceAssignee::whereIn('attendance_id', $monthAttendanceIds);
+                if ($divisiId) {
+                    $monthAssigneesQuery->whereHas('user', function($q) use ($divisiId) {
+                        $q->where('divisi_id', $divisiId);
+                    });
+                }
+                $monthTotal = (clone $monthAssigneesQuery)->count();
+                $monthHadir = (clone $monthAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
+                $attendanceChartData[] = $monthTotal > 0 ? round(($monthHadir / $monthTotal) * 100) : 0;
+            }
+        } else {
+            // 7_days or today (fallback for trend)
+            $attendanceChartTitle = 'Trend Kehadiran 7 Hari Terakhir';
+            for ($i = 6; $i >= 0; $i--) {
+                $date = now()->subDays($i);
+                $attendanceChartLabels[] = $date->translatedFormat('D d/m');
+
+                $dayAttendanceIds = Attendance::whereDate('deadline', $date->toDateString())->pluck('id');
+                $dayAssigneesQuery = AttendanceAssignee::whereIn('attendance_id', $dayAttendanceIds);
+                if ($divisiId) {
+                    $dayAssigneesQuery->whereHas('user', function($q) use ($divisiId) {
+                        $q->where('divisi_id', $divisiId);
+                    });
+                }
+                $dayTotal = (clone $dayAssigneesQuery)->count();
+                $dayHadir = (clone $dayAssigneesQuery)->whereIn('status', ['Hadir', 'Terlambat', 'Hadir - Selesai', 'Terlambat - Selesai'])->count();
+                $attendanceChartData[] = $dayTotal > 0 ? round(($dayHadir / $dayTotal) * 100) : 0;
+            }
         }
 
         // Rata-rata kehadiran bulan ini
@@ -431,6 +469,7 @@ class DashboardController extends Controller
             'taskChartCreated',
             'attendanceChartLabels',
             'attendanceChartData',
+            'attendanceChartTitle',
             'avgAttendanceMonth',
             'recentActivities',
             'recentTasks',

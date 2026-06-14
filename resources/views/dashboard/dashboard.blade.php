@@ -184,7 +184,7 @@
             </p>
         </div>
         <div class="bg-white rounded-xl p-6 shadow-sm text-center">
-            <h3 class="text-slate-800 mb-4 text-lg font-semibold">Trend Kehadiran Bulanan</h3>
+            <h3 class="text-slate-800 mb-4 text-lg font-semibold">{{ $attendanceChartTitle ?? 'Trend Kehadiran Bulanan' }}</h3>
             <div class="h-[250px] relative">
                 <canvas id="attendanceChart"></canvas>
             </div>
