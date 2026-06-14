@@ -553,8 +553,10 @@ class TaskController extends Controller
             $submission = TaskSubmission::create([
                 'task_id' => $task->id,
                 'user_id' => $user->id,
-                'status' => 'pending'
+                'status' => 'working'
             ]);
+        } elseif ($submission->status === 'pending') {
+            $submission->update(['status' => 'working']);
         }
 
         return view('pelaksana.detail', compact('task', 'submission'));
