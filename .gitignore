@@ -28,3 +28,13 @@ Thumbs.db
 /take-screenshots.js
 /pictures/
 *.zip
+
+# Load Testing & Pengujian Konkurensi
+/testaksesserentak.ps1
+hasil_uji_konkurensi*.txt
+
+# File Testing & Uji Coba Sementara
+/resources/views/testing.blade.php
+/resources/views/testing-login.blade.php
+/app/Http/Controllers/TestingController.php
+/app/Http/Controllers/TestingLoginController.php

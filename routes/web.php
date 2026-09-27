@@ -11,6 +11,7 @@ use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\ExcelEditorController;
 use App\Http\Controllers\FileServeController;
 use App\Http\Controllers\TestingController;
+use App\Http\Controllers\TestingLoginController;
 use Illuminate\Support\Facades\Route;
 
 // Redirect root ke dashboard jika sudah login
@@ -127,7 +128,7 @@ Route::prefix('pelaksana')->middleware(['auth', 'verified', 'role:3'])->name('pe
 
 require __DIR__.'/auth.php';
 
-// Tambahkan di dalam file routes/web.php
-
-// Route Baru Kamu:
-Route::get('/testing', [TestingController::class, 'index'])->name('testing.index');
+// Route Uji Coba Sementara (Dinonaktifkan):
+// Route::get('/testing', [TestingController::class, 'index'])->name('testing.index');
+// Route::get('/testing-login', [TestingLoginController::class, 'showForm']);
+// Route::post('/testing-login', [TestingLoginController::class, 'processLogin']);

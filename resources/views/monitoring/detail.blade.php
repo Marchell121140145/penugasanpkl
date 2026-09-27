@@ -346,12 +346,12 @@
                                                     return [
                                                         'user_name' => $c->user->name,
                                                         'avatar' => $c->user->avatar ? route('file.avatar', $c->user->id) : null,
-                                                        'pesan' => $c->pesan,
+                                                        'pesan' => e($c->pesan),
                                                         'is_admin' => $c->user->role_id != 3,
                                                         'time' => $c->created_at->translatedFormat('d M, H:i')
                                                     ];
                                                 })
-                                            ]) }})"
+                                            ], JSON_HEX_TAG | JSON_HEX_APOS | JSON_HEX_QUOT | JSON_HEX_AMP) }})"
                                             class="bg-indigo-50 hover:bg-indigo-600 text-indigo-600 hover:text-white dark:bg-indigo-900/30 dark:hover:bg-indigo-600 dark:text-indigo-400 dark:hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors inline-flex items-center gap-1.5 border border-indigo-200 dark:border-indigo-800 hover:border-transparent">
                                         <i class="fi fi-rr-comment-alt"></i> Review
                                     </button>
@@ -508,6 +508,12 @@
             }, 300); // match tailwind transition duration if any, or just 300ms
         }
 
+        function escapeHtml(text) {
+            const div = document.createElement('div');
+            div.textContent = text;
+            return div.innerHTML;
+        }
+
         function openEvaluationModal(data) {
             document.getElementById('evalModalTitle').textContent = "Review: " + data.nama;
             document.getElementById('evalForm').action = "/penugasan/grade/" + data.id;
@@ -545,9 +551,9 @@
                         <div class="flex gap-3 mb-4 ${flexAlign}">
                             ${!isAdmin ? avatarHtml : ''}
                             <div class="flex flex-col ${isAdmin ? 'items-end' : 'items-start'} max-w-[85%]">
-                                <span class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-medium px-1">${c.user_name}</span>
+                                <span class="text-xs text-slate-500 dark:text-slate-400 mb-1 font-medium px-1">${escapeHtml(c.user_name)}</span>
                                 <div class="px-4 py-2.5 rounded-2xl ${bubbleBg} shadow-sm text-sm">
-                                    ${c.pesan}
+                                    ${escapeHtml(c.pesan)}
                                 </div>
                                 <span class="text-[10px] text-slate-400 mt-1 px-1">${c.time}</span>
                             </div>
